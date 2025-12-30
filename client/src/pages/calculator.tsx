@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { format, differenceInCalendarDays, isValid, isBefore, startOfToday } from "date-fns";
+import { format, differenceInCalendarDays, isValid, isBefore, startOfToday, startOfYear, isSameYear, max } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { toPng } from "html-to-image";
 import { 
@@ -149,7 +149,14 @@ const Calculator = () => {
     // Validation
     if (isBefore(checkDate, startDate)) return null;
 
-    const daysWorked = differenceInCalendarDays(checkDate, startDate) + 1; // Inclusive
+    // Determine effective start date for YTD calculation
+    // If job started in a previous year, YTD starts on Jan 1 of the check year
+    const checkYearStart = startOfYear(checkDate);
+    const effectiveStartDate = isBefore(startDate, checkYearStart) 
+      ? checkYearStart 
+      : startDate;
+
+    const daysWorked = differenceInCalendarDays(checkDate, effectiveStartDate) + 1; // Inclusive
     if (daysWorked <= 0) return null;
 
     const income = parseFloat(ytdIncome);
@@ -160,7 +167,7 @@ const Calculator = () => {
     const monthly = (daily * 365) / 12; // Normalized
     const annual = daily * 365;
 
-    return { daysWorked, daily, weekly, monthly, annual };
+    return { daysWorked, daily, weekly, monthly, annual, effectiveStartDate };
   };
 
   const results = calculate();
@@ -171,7 +178,7 @@ const Calculator = () => {
     if (!results) return;
     
     const text = `Income Calculator Results:\n\n` +
-      `📅 Days Worked: ${results.daysWorked}\n` +
+      `📅 Days Worked: ${results.daysWorked} (from ${format(results.effectiveStartDate, "MMM d, yyyy")})\n` +
       `💵 Daily: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(results.daily)}\n` +
       `📅 Weekly: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(results.weekly)}\n` +
       `🗓 Monthly: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(results.monthly)}\n` +
@@ -259,7 +266,15 @@ const Calculator = () => {
                 onChange={setYtdIncome} 
                 className="h-12 text-base"
               />
-              <p className="text-xs text-muted-foreground">Pre-tax gross income from your paystub.</p>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Pre-tax gross income from your paystub.</p>
+                {startDate && checkDate && isBefore(startDate, startOfYear(checkDate)) && (
+                   <p className="text-xs text-primary/80 flex items-center gap-1">
+                     <Info className="w-3 h-3" />
+                     <span>Calculating YTD from Jan 1, {checkDate.getFullYear()}</span>
+                   </p>
+                )}
+              </div>
             </div>
 
             {/* Check Date */}
@@ -327,7 +342,7 @@ const Calculator = () => {
                   <Check className="h-4 w-4" /> Projection Ready
                 </h3>
                 <div className="text-xs font-mono text-primary/80 bg-primary/10 px-2 py-1 rounded">
-                  {results.daysWorked} Days Worked
+                  {results.daysWorked} Days (from {format(results.effectiveStartDate, "MMM d")})
                 </div>
               </div>
               
