@@ -35,6 +35,8 @@ import { DateInput } from "@/components/date-input";
 import { ResultsCard, type CalculationResults } from "@/components/results-card";
 import { PTISection } from "@/components/pti-section";
 import { PaymentCalculator } from "@/components/payment-calculator";
+import { AffiliateSection } from "@/components/affiliate-section";
+import { LeadCaptureModal } from "@/components/lead-capture-modal";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -47,6 +49,8 @@ function Calculator() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [checkDate, setCheckDate] = useState<Date | undefined>(startOfToday());
   const [ytdIncome, setYtdIncome] = useState<string>("");
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [hasShownModal, setHasShownModal] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -100,6 +104,17 @@ function Calculator() {
   };
 
   const results = calculate();
+
+  // Show lead capture modal after results are displayed (with delay)
+  useEffect(() => {
+    if (results && !hasShownModal && !user) {
+      const timer = setTimeout(() => {
+        setShowLeadModal(true);
+        setHasShownModal(true);
+      }, 8000); // Show after 8 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [results, hasShownModal, user]);
 
   // Calculate max affordable payment (12% PTI)
   const maxAffordablePayment = results ? results.monthly * 0.12 : undefined;
@@ -286,6 +301,9 @@ function Calculator() {
           <PaymentCalculator maxAffordablePayment={maxAffordablePayment} />
         )}
 
+        {/* Affiliate Section */}
+        {results && <AffiliateSection annualIncome={results.annual} />}
+
         {/* Empty State */}
         {!results && (
           <motion.div
@@ -317,6 +335,13 @@ function Calculator() {
           </p>
         </motion.footer>
       </div>
+
+      {/* Lead Capture Modal */}
+      <LeadCaptureModal
+        isOpen={showLeadModal}
+        onClose={() => setShowLeadModal(false)}
+        annualIncome={results?.annual}
+      />
     </div>
   );
 }

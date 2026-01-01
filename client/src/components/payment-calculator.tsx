@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Calculator, Car, DollarSign, Percent, Clock } from "lucide-react";
+import { Calculator, Car, DollarSign, Percent, Clock, ArrowLeftRight, Receipt, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { MoneyInput } from "@/components/money-input";
@@ -12,6 +12,7 @@ interface PaymentCalculatorProps {
 
 const LOAN_TERMS = [36, 48, 60, 72, 84];
 const DEFAULT_APR = 7.99;
+const DEFAULT_TAX_RATE = 6.0;
 
 function calculateMonthlyPayment(
   principal: number,
@@ -40,13 +41,25 @@ function formatCurrency(amount: number): string {
 export function PaymentCalculator({ maxAffordablePayment }: PaymentCalculatorProps) {
   const [vehiclePrice, setVehiclePrice] = useState("");
   const [downPayment, setDownPayment] = useState("");
+  const [tradeIn, setTradeIn] = useState("");
+  const [taxRate, setTaxRate] = useState(DEFAULT_TAX_RATE.toString());
+  const [fees, setFees] = useState("");
   const [apr, setApr] = useState(DEFAULT_APR.toString());
   const [selectedTerm, setSelectedTerm] = useState(60);
 
   const price = parseFloat(vehiclePrice) || 0;
   const down = parseFloat(downPayment) || 0;
+  const trade = parseFloat(tradeIn) || 0;
+  const tax = parseFloat(taxRate) || 0;
+  const dealerFees = parseFloat(fees) || 0;
   const rate = parseFloat(apr) || DEFAULT_APR;
-  const loanAmount = Math.max(0, price - down);
+
+  // Calculate taxable amount (price minus trade-in in most states)
+  const taxableAmount = Math.max(0, price - trade);
+  const taxAmount = taxableAmount * (tax / 100);
+
+  // Total amount to finance: price + tax + fees - trade-in - down payment
+  const loanAmount = Math.max(0, price + taxAmount + dealerFees - trade - down);
 
   const monthlyPayment = loanAmount > 0
     ? calculateMonthlyPayment(loanAmount, rate, selectedTerm)
@@ -95,6 +108,64 @@ export function PaymentCalculator({ maxAffordablePayment }: PaymentCalculatorPro
               onChange={setDownPayment}
               className="h-11"
             />
+          </div>
+
+          {/* Trade-In Value */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <ArrowLeftRight className="h-3.5 w-3.5 text-muted-foreground" />
+              Trade-In Value
+            </Label>
+            <MoneyInput
+              value={tradeIn}
+              onChange={setTradeIn}
+              className="h-11"
+            />
+          </div>
+
+          {/* Tax and Fees Row */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Tax Rate */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium flex items-center gap-2">
+                <Receipt className="h-3.5 w-3.5 text-muted-foreground" />
+                Sales Tax
+              </Label>
+              <div className="relative">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={taxRate}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^\d.]/g, "");
+                    if ((val.match(/\./g) || []).length <= 1) {
+                      setTaxRate(val);
+                    }
+                  }}
+                  className={cn(
+                    "w-full h-11 px-3 pr-8 rounded-lg border bg-background font-mono text-base",
+                    "elite-input focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none"
+                  )}
+                  placeholder="6.0"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  %
+                </span>
+              </div>
+            </div>
+
+            {/* Dealer Fees */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium flex items-center gap-2">
+                <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                Fees
+              </Label>
+              <MoneyInput
+                value={fees}
+                onChange={setFees}
+                className="h-11"
+              />
+            </div>
           </div>
 
           {/* APR */}
@@ -193,11 +264,17 @@ export function PaymentCalculator({ maxAffordablePayment }: PaymentCalculatorPro
               </div>
 
               {/* Breakdown Stats */}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <div className="stat-card text-center">
-                  <div className="text-xs text-muted-foreground">Loan Amount</div>
+                  <div className="text-xs text-muted-foreground">Amount Financed</div>
                   <div className="text-sm font-bold mono-value mt-1">
                     {formatCurrency(loanAmount)}
+                  </div>
+                </div>
+                <div className="stat-card text-center">
+                  <div className="text-xs text-muted-foreground">Sales Tax</div>
+                  <div className="text-sm font-bold mono-value mt-1">
+                    {formatCurrency(taxAmount)}
                   </div>
                 </div>
                 <div className="stat-card text-center">
@@ -209,7 +286,7 @@ export function PaymentCalculator({ maxAffordablePayment }: PaymentCalculatorPro
                 <div className="stat-card text-center">
                   <div className="text-xs text-muted-foreground">Total Cost</div>
                   <div className="text-sm font-bold mono-value mt-1">
-                    {formatCurrency(totalCost)}
+                    {formatCurrency(totalCost + down + trade)}
                   </div>
                 </div>
               </div>
