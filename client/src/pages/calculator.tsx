@@ -15,6 +15,10 @@ import {
   LogIn,
   LogOut,
   Sparkles,
+  Calculator as CalcIcon,
+  Shield,
+  Zap,
+  Mail,
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -135,68 +139,105 @@ function Calculator() {
 
       <div className="relative w-full max-w-md px-4 py-6 sm:py-8 space-y-6">
         {/* Header */}
-        <header className="flex items-center justify-between">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-0.5"
-          >
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <span className="dark:neon-text">Income Calc</span>
-              <Sparkles className="h-4 w-4 text-primary opacity-70" />
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Precision Annual Projections
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex gap-1"
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleReset}
-              className="rounded-full hover:bg-secondary/80 elite-button"
-              title="Reset"
+        <header className="space-y-4">
+          <div className="flex items-center justify-between">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-0.5"
             >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full hover:bg-secondary/80 elite-button"
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
+                  <CalcIcon className="h-5 w-5 text-primary" />
+                </div>
+                <h1 className="text-2xl font-bold tracking-tight">
+                  <span className="dark:neon-text">Autolytiq</span>
+                </h1>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Free Income Calculator
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex gap-1"
             >
-              {theme === "dark" ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
-            {user ? (
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={logout}
+                onClick={handleReset}
                 className="rounded-full hover:bg-secondary/80 elite-button"
-                title={`Logout (${user.email})`}
+                title="Reset Calculator"
               >
-                <LogOut className="h-4 w-4" />
+                <RotateCcw className="h-4 w-4" />
               </Button>
-            ) : (
-              <Link href="/login">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="rounded-full hover:bg-secondary/80 elite-button"
+                title="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
+              </Button>
+              {user ? (
                 <Button
                   variant="ghost"
                   size="icon"
+                  onClick={logout}
                   className="rounded-full hover:bg-secondary/80 elite-button"
-                  title="Sign in"
+                  title={`Logout (${user.email})`}
                 >
-                  <LogIn className="h-4 w-4" />
+                  <LogOut className="h-4 w-4" />
                 </Button>
-              </Link>
-            )}
+              ) : (
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full hover:bg-secondary/80 elite-button"
+                    title="Sign in"
+                  >
+                    <LogIn className="h-4 w-4" />
+                  </Button>
+                </Link>
+              )}
+            </motion.div>
+          </div>
+
+          {/* Hero Text */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="text-center space-y-2 py-2"
+          >
+            <h2 className="text-lg font-semibold text-foreground">
+              Calculate Your Annual Income from YTD Earnings
+            </h2>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+              Enter your paystub details to instantly project your yearly salary.
+              Perfect for W2 employees, hourly workers, and contractors.
+            </p>
+            <div className="flex justify-center gap-4 pt-1">
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Shield className="h-3 w-3 text-primary" />
+                100% Private
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Zap className="h-3 w-3 text-primary" />
+                Instant Results
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Sparkles className="h-3 w-3 text-primary" />
+                Free Forever
+              </span>
+            </div>
           </motion.div>
         </header>
 
@@ -328,11 +369,71 @@ function Calculator() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center pt-6 pb-4"
+          className="pt-8 pb-6 space-y-6"
         >
-          <p className="text-xs text-muted-foreground/50">
-            Calculations are estimates only. Consult a financial advisor.
+          {/* How It Works Section */}
+          <div className="text-center space-y-3 border-t border-border/30 pt-6">
+            <h3 className="text-sm font-semibold text-foreground">How It Works</h3>
+            <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+              <div className="space-y-1">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mx-auto text-primary font-bold text-xs">1</div>
+                <p>Enter your job start date</p>
+              </div>
+              <div className="space-y-1">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mx-auto text-primary font-bold text-xs">2</div>
+                <p>Add YTD income from paystub</p>
+              </div>
+              <div className="space-y-1">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mx-auto text-primary font-bold text-xs">3</div>
+                <p>Get instant projections</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="flex justify-center gap-6 text-xs text-muted-foreground/70">
+            <div className="flex items-center gap-1">
+              <Shield className="h-3.5 w-3.5" />
+              <span>SSL Secured</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Zap className="h-3.5 w-3.5" />
+              <span>No Sign-up Required</span>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <p className="text-xs text-muted-foreground/50 text-center max-w-sm mx-auto">
+            This calculator provides estimates only and should not be considered financial advice.
+            Consult a qualified financial advisor for important financial decisions.
           </p>
+
+          {/* Links */}
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
+            <Link href="/privacy" className="text-muted-foreground/60 hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="text-muted-foreground/60 hover:text-primary transition-colors">
+              Terms of Service
+            </Link>
+            <a
+              href="mailto:admin@autolytiqs.com"
+              className="text-muted-foreground/60 hover:text-primary transition-colors inline-flex items-center gap-1"
+            >
+              <Mail className="h-3 w-3" />
+              Contact
+            </a>
+          </div>
+
+          {/* Copyright */}
+          <div className="text-center space-y-1 pt-2 border-t border-border/20">
+            <p className="text-xs text-muted-foreground/40">
+              © {new Date().getFullYear()} Autolytiq. All rights reserved.
+            </p>
+            <p className="text-[10px] text-muted-foreground/30">
+              Free Income Calculator | Salary Estimator | YTD to Annual Converter
+            </p>
+          </div>
         </motion.footer>
       </div>
 
