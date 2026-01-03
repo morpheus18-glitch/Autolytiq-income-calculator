@@ -2,6 +2,7 @@ import type { Express } from "express";
 import type { Server } from "http";
 import authRoutes from "./auth";
 import leadsRoutes from "./leads";
+import adminRoutes from "./admin";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -15,6 +16,9 @@ export async function registerRoutes(
 
   // Leads routes
   app.use("/api/leads", leadsRoutes);
+
+  // Admin routes
+  app.use("/api/admin", adminRoutes);
 
   return httpServer;
 }

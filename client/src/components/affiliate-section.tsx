@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, CreditCard, Car, PiggyBank, TrendingUp } from "lucide-react";
+import { ExternalLink, CreditCard, Car, PiggyBank, TrendingUp, Briefcase, Home, GraduationCap, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface AffiliateLink {
@@ -8,34 +8,74 @@ interface AffiliateLink {
   url: string;
   icon: React.ReactNode;
   tag?: string;
+  category: "credit" | "loans" | "investing" | "insurance";
 }
 
+// Organized by income level relevance
 const affiliateLinks: AffiliateLink[] = [
+  // Credit & Monitoring
   {
     name: "Credit Karma",
-    description: "Check your credit score for free",
-    url: "https://www.creditkarma.com",
+    description: "Free credit scores & monitoring",
+    url: "https://www.creditkarma.com/lp/credit-score",
     icon: <CreditCard className="h-5 w-5" />,
     tag: "Free",
+    category: "credit",
   },
   {
+    name: "Experian",
+    description: "Credit reports & identity protection",
+    url: "https://www.experian.com/consumer-products/free-credit-report.html",
+    icon: <Shield className="h-5 w-5" />,
+    category: "credit",
+  },
+  // Loans & Refinancing
+  {
     name: "LendingTree",
-    description: "Compare auto loan rates",
-    url: "https://www.lendingtree.com/auto",
-    icon: <Car className="h-5 w-5" />,
+    description: "Compare rates from multiple lenders",
+    url: "https://www.lendingtree.com",
+    icon: <Home className="h-5 w-5" />,
+    tag: "Top Pick",
+    category: "loans",
   },
   {
     name: "SoFi",
-    description: "Personal loans & refinancing",
-    url: "https://www.sofi.com",
-    icon: <PiggyBank className="h-5 w-5" />,
+    description: "Student & personal loan refinancing",
+    url: "https://www.sofi.com/personal-loans",
+    icon: <GraduationCap className="h-5 w-5" />,
+    category: "loans",
+  },
+  // Investing
+  {
+    name: "Robinhood",
+    description: "Commission-free stock trading",
+    url: "https://join.robinhood.com",
+    icon: <TrendingUp className="h-5 w-5" />,
+    tag: "Free Stock",
+    category: "investing",
   },
   {
-    name: "NerdWallet",
-    description: "Compare credit cards & loans",
-    url: "https://www.nerdwallet.com",
-    icon: <TrendingUp className="h-5 w-5" />,
-    tag: "Popular",
+    name: "Betterment",
+    description: "Automated investing & retirement",
+    url: "https://www.betterment.com",
+    icon: <PiggyBank className="h-5 w-5" />,
+    category: "investing",
+  },
+  // Auto & Insurance
+  {
+    name: "Progressive",
+    description: "Compare auto insurance quotes",
+    url: "https://www.progressive.com",
+    icon: <Car className="h-5 w-5" />,
+    category: "insurance",
+  },
+  {
+    name: "Indeed",
+    description: "Find higher-paying jobs",
+    url: "https://www.indeed.com",
+    icon: <Briefcase className="h-5 w-5" />,
+    tag: "Careers",
+    category: "investing",
   },
 ];
 

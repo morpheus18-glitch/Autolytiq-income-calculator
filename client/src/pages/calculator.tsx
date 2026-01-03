@@ -44,6 +44,7 @@ import { PTISection } from "@/components/pti-section";
 import { PaymentCalculator } from "@/components/payment-calculator";
 import { AffiliateSection } from "@/components/affiliate-section";
 import { LeadCaptureModal } from "@/components/lead-capture-modal";
+import { ExitIntentPopup, useExitIntent } from "@/components/exit-intent-popup";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -58,6 +59,9 @@ function Calculator() {
   const [ytdIncome, setYtdIncome] = useState<string>("");
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [hasShownModal, setHasShownModal] = useState(false);
+
+  // Exit intent popup
+  const { showPopup: showExitIntent, closePopup: closeExitIntent } = useExitIntent();
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -633,6 +637,9 @@ function Calculator() {
         onClose={() => setShowLeadModal(false)}
         annualIncome={results?.annual}
       />
+
+      {/* Exit Intent Popup */}
+      {showExitIntent && <ExitIntentPopup onClose={closeExitIntent} />}
     </div>
   );
 }
