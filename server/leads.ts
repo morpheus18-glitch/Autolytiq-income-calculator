@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Database from "better-sqlite3";
 import path from "path";
+import { sendNewsletterWelcomeEmail } from "./email";
 
 const router = Router();
 
@@ -62,6 +63,11 @@ router.post("/", (req, res) => {
       INSERT INTO leads (email, name, income_range, source)
       VALUES (?, ?, ?, ?)
     `).run(email, name || null, income_range || null, source || "calculator");
+
+    // Send welcome email asynchronously (don't block the response)
+    sendNewsletterWelcomeEmail(email, name, income_range).catch(err => {
+      console.error("Failed to send newsletter welcome email:", err);
+    });
 
     res.status(201).json({
       message: "Subscribed",
