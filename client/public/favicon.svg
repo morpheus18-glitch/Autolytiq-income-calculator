@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00FF7F"/>
+      <stop offset="100%" stop-color="#00CC66"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#050505" stroke="url(#neonGrad)" stroke-width="1"/>
+
+  <!-- Stylized "A" for Autolytiq -->
+  <path d="M16 6L8 26h3.5l1.5-4h6l1.5 4H24L16 6zm0 6l2.2 6h-4.4L16 12z"
+        fill="url(#neonGrad)"
+        filter="url(#glow)"/>
+
+  <!-- Small chart bars to represent income/calculator -->
+  <rect x="11" y="21" width="2" height="3" fill="url(#neonGrad)" opacity="0.6"/>
+  <rect x="15" y="19" width="2" height="5" fill="url(#neonGrad)" opacity="0.6"/>
+  <rect x="19" y="20" width="2" height="4" fill="url(#neonGrad)" opacity="0.6"/>
+</svg>
