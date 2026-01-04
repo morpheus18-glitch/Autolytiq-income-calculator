@@ -7,8 +7,20 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
+// Track server state for graceful shutdown
+let isShuttingDown = false;
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Reject new requests during shutdown
+app.use((req, res, next) => {
+  if (isShuttingDown) {
+    res.status(503).json({ error: "Server is shutting down" });
+    return;
+  }
+  next();
+});
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -64,5 +76,46 @@ app.use((req, res, next) => {
   const port = parseInt(process.env.PORT || "5000", 10);
   httpServer.listen({ port, host: "0.0.0.0" }, () => {
     log(`serving on port ${port}`);
+    // Signal PM2 that we're ready
+    if (process.send) {
+      process.send("ready");
+    }
+  });
+
+  // Graceful shutdown handler
+  const gracefulShutdown = (signal: string) => {
+    log(`${signal} received, starting graceful shutdown...`);
+    isShuttingDown = true;
+
+    // Stop accepting new connections
+    httpServer.close((err) => {
+      if (err) {
+        log(`Error during shutdown: ${err.message}`);
+        process.exit(1);
+      }
+      log("All connections closed, exiting");
+      process.exit(0);
+    });
+
+    // Force exit after 10 seconds
+    setTimeout(() => {
+      log("Forcing shutdown after timeout");
+      process.exit(1);
+    }, 10000);
+  };
+
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
+  // Uncaught exception handlers
+  process.on("uncaughtException", (err) => {
+    log(`Uncaught Exception: ${err.message}`, "error");
+    console.error(err.stack);
+    // Give time to log, then exit (PM2 will restart)
+    setTimeout(() => process.exit(1), 1000);
+  });
+
+  process.on("unhandledRejection", (reason, promise) => {
+    log(`Unhandled Rejection at: ${promise}, reason: ${reason}`, "error");
   });
 })();

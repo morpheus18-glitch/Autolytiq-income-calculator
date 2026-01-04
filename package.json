@@ -7,6 +7,11 @@
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "vite build && tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
+    "start:pm2": "pm2 start ecosystem.config.cjs",
+    "stop:pm2": "pm2 stop autolytiq",
+    "restart:pm2": "pm2 restart autolytiq",
+    "logs:pm2": "pm2 logs autolytiq",
+    "status:pm2": "pm2 status",
     "check": "tsc"
   },
   "dependencies": {
