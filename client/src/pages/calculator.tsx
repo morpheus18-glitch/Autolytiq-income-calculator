@@ -97,7 +97,7 @@ function Calculator() {
 
   // Income Calculator State
   const [startDate, setStartDate] = useState<Date | undefined>();
-  const [checkDate, setCheckDate] = useState<Date | undefined>(startOfToday());
+  const [checkDate, setCheckDate] = useState<Date | undefined>();
   const [ytdIncome, setYtdIncome] = useState<string>("");
 
   // Payment Calculator State

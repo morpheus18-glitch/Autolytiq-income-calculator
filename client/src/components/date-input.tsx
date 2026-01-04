@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { format, parse, isValid, isBefore, isAfter } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -29,51 +29,50 @@ export function DateInput({
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync input value with date value
+  // Sync input value with date value (only when value changes externally)
   useEffect(() => {
     if (value && isValid(value)) {
       setInputValue(format(value, "MM/dd/yyyy"));
-    } else if (!value) {
+    } else if (value === undefined) {
       setInputValue("");
     }
   }, [value]);
 
+  const formatInput = (val: string): string => {
+    // Remove all non-digits
+    const digits = val.replace(/\D/g, "");
+
+    // Format as MM/DD/YYYY
+    if (digits.length <= 2) {
+      return digits;
+    } else if (digits.length <= 4) {
+      return digits.slice(0, 2) + "/" + digits.slice(2);
+    } else {
+      return digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4, 8);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value;
+    const rawValue = e.target.value;
+    const formatted = formatInput(rawValue);
 
-    // Only allow digits and slashes
-    val = val.replace(/[^\d/]/g, "");
+    setInputValue(formatted);
 
-    // Auto-insert slashes
-    const digits = val.replace(/\//g, "");
-    if (digits.length >= 2 && !val.includes("/")) {
-      val = digits.slice(0, 2) + "/" + digits.slice(2);
-    }
-    if (digits.length >= 4 && val.split("/").length < 3) {
-      const parts = val.split("/");
-      if (parts.length === 2 && parts[1].length >= 2) {
-        val = parts[0] + "/" + parts[1].slice(0, 2) + "/" + parts[1].slice(2);
-      }
-    }
-
-    // Limit length
-    if (val.length > 10) {
-      val = val.slice(0, 10);
-    }
-
-    setInputValue(val);
-
-    // Try to parse the date
-    if (val.length === 10) {
-      const parsed = parse(val, "MM/dd/yyyy", new Date());
+    // Try to parse when we have a complete date
+    if (formatted.length === 10) {
+      const parsed = parse(formatted, "MM/dd/yyyy", new Date());
       if (isValid(parsed)) {
-        // Check bounds
-        if (minDate && isBefore(parsed, minDate)) return;
-        if (maxDate && isAfter(parsed, maxDate)) return;
-        onChange(parsed);
+        const withinBounds =
+          (!minDate || !isBefore(parsed, minDate)) &&
+          (!maxDate || !isAfter(parsed, maxDate));
+
+        if (withinBounds) {
+          onChange(parsed);
+        }
       }
+    } else if (formatted.length === 0) {
+      onChange(undefined);
     }
   };
 
@@ -82,17 +81,14 @@ export function DateInput({
     setIsOpen(false);
   };
 
-  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleFocus = () => {
     setIsFocused(true);
-    // Select all text on focus so user can immediately type to replace
-    e.target.select();
   };
 
   const handleBlur = () => {
     setIsFocused(false);
-    // Validate on blur
+    // Reset invalid partial input
     if (inputValue.length > 0 && inputValue.length < 10) {
-      // Invalid partial date, reset to last valid value
       if (value && isValid(value)) {
         setInputValue(format(value, "MM/dd/yyyy"));
       } else {
@@ -114,9 +110,12 @@ export function DateInput({
         )}
       >
         <input
-          ref={inputRef}
           type="text"
           inputMode="numeric"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleFocus}
@@ -156,7 +155,7 @@ export function DateInput({
           </PopoverContent>
         </Popover>
       </div>
-      {/* Subtle date format hint */}
+      {/* Date format hint */}
       {isFocused && !isValidDate && inputValue.length > 0 && inputValue.length < 10 && (
         <div className="absolute -bottom-5 left-0 text-xs text-muted-foreground">
           Format: MM/DD/YYYY
