@@ -13,6 +13,9 @@ import ResetPassword from "@/pages/reset-password";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Admin from "@/pages/admin";
+import Auto from "@/pages/auto";
+import SmartMoney from "@/pages/smart-money";
+import Housing from "@/pages/housing";
 import BlogIndex from "@/pages/blog/index";
 import BlogCalculateIncome from "@/pages/blog/how-to-calculate-annual-income";
 import BlogSalaryNegotiation from "@/pages/blog/salary-negotiation-tips";
@@ -33,6 +36,9 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/admin" component={Admin} />
+      <Route path="/auto" component={Auto} />
+      <Route path="/smart-money" component={SmartMoney} />
+      <Route path="/housing" component={Housing} />
       <Route path="/blog" component={BlogIndex} />
       <Route path="/blog/how-to-calculate-annual-income" component={BlogCalculateIncome} />
       <Route path="/blog/salary-negotiation-tips" component={BlogSalaryNegotiation} />
