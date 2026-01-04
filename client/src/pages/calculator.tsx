@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   differenceInCalendarDays,
   isBefore,
@@ -7,8 +7,6 @@ import {
 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Moon,
-  Sun,
   Info,
   RotateCcw,
   LogIn,
@@ -16,7 +14,6 @@ import {
   Calculator as CalcIcon,
   DollarSign,
   BookOpen,
-  TrendingUp,
   Car,
   Clock,
   ChevronRight,
@@ -24,10 +21,12 @@ import {
   Home as HomeIcon,
   CreditCard,
   CheckCircle2,
+  Download,
+  Share2,
+  Printer,
 } from "lucide-react";
 import { Link } from "wouter";
 
-import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -41,6 +40,10 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { DateInput } from "@/components/date-input";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { FAQ, INCOME_CALCULATOR_FAQ } from "@/components/faq";
+import { ExportButtons, ShareButtons } from "@/components/pdf-export";
+import { BarChart } from "@/components/charts";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -88,9 +91,9 @@ function formatCurrency(amount: number): string {
 }
 
 function Calculator() {
-  const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Income Calculator State
   const [startDate, setStartDate] = useState<Date | undefined>();
@@ -232,14 +235,7 @@ function Calculator() {
                 Blog
               </Button>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            <ThemeToggle />
             {user ? (
               <Button variant="ghost" size="icon" onClick={logout}>
                 <LogOut className="h-4 w-4" />
@@ -712,6 +708,9 @@ function Calculator() {
             </div>
           </Link>
         </div>
+
+        {/* FAQ Section */}
+        <FAQ items={INCOME_CALCULATOR_FAQ} className="mt-8" />
       </main>
 
       {/* Footer */}

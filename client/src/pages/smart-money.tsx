@@ -41,6 +41,7 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { PieChart, BarChart } from "@/components/charts";
 import { ExternalLink } from "lucide-react";
 
 const STORAGE_KEY = "smart-money-state";
@@ -446,31 +447,43 @@ function SmartMoney() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* 50/30/20 Overview */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
-                    <div className="text-2xl font-bold text-emerald-400">50%</div>
-                    <div className="text-sm font-medium">Needs</div>
-                    <div className="text-lg font-mono font-bold mt-1">
-                      {formatCurrency(getViewAmount(needsAmount))}
+                {/* 50/30/20 Overview with Pie Chart */}
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <PieChart
+                    data={[
+                      { label: "Needs", value: 50, color: "#10b981" },
+                      { label: "Wants", value: 30, color: "#3b82f6" },
+                      { label: "Savings", value: 20, color: "hsl(var(--primary))" },
+                    ]}
+                    size={140}
+                    showLegend={false}
+                    className="shrink-0"
+                  />
+                  <div className="grid grid-cols-3 gap-3 flex-1 w-full">
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+                      <div className="text-2xl font-bold text-emerald-400">50%</div>
+                      <div className="text-sm font-medium">Needs</div>
+                      <div className="text-lg font-mono font-bold mt-1">
+                        {formatCurrency(getViewAmount(needsAmount))}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{viewLabel}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{viewLabel}</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-center">
-                    <div className="text-2xl font-bold text-blue-400">30%</div>
-                    <div className="text-sm font-medium">Wants</div>
-                    <div className="text-lg font-mono font-bold mt-1">
-                      {formatCurrency(getViewAmount(wantsAmount))}
+                    <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-center">
+                      <div className="text-2xl font-bold text-blue-400">30%</div>
+                      <div className="text-sm font-medium">Wants</div>
+                      <div className="text-lg font-mono font-bold mt-1">
+                        {formatCurrency(getViewAmount(wantsAmount))}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{viewLabel}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{viewLabel}</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-primary/10 border border-primary/30 text-center">
-                    <div className="text-2xl font-bold text-primary">20%</div>
-                    <div className="text-sm font-medium">Savings</div>
-                    <div className="text-lg font-mono font-bold mt-1">
-                      {formatCurrency(getViewAmount(savingsAmount))}
+                    <div className="p-4 rounded-xl bg-primary/10 border border-primary/30 text-center">
+                      <div className="text-2xl font-bold text-primary">20%</div>
+                      <div className="text-sm font-medium">Savings</div>
+                      <div className="text-lg font-mono font-bold mt-1">
+                        {formatCurrency(getViewAmount(savingsAmount))}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{viewLabel}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{viewLabel}</div>
                   </div>
                 </div>
 
