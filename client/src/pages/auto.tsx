@@ -36,8 +36,18 @@ import {
 } from "@/components/ui/tooltip";
 
 import { MoneyInput } from "@/components/money-input";
+import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { ExternalLink } from "lucide-react";
 
 const STORAGE_KEY = "auto-page-state";
+
+// Auto-focused affiliate links
+const AUTO_AFFILIATES = [
+  { name: "Progressive", desc: "Compare auto insurance quotes", url: "https://www.progressive.com", tag: "Insurance" },
+  { name: "LendingTree Auto", desc: "Compare auto loan rates", url: "https://www.lendingtree.com/auto", tag: "Top Pick" },
+  { name: "CarGurus", desc: "Find great deals on used cars", url: "https://www.cargurus.com", tag: "Research" },
+  { name: "Credit Karma", desc: "Free credit score for financing", url: "https://www.creditkarma.com", tag: "Free" },
+];
 
 const CREDIT_TIERS = [
   { id: "excellent", label: "Excellent", range: "750+", baseApr: 5.99, color: "text-emerald-500" },
@@ -183,8 +193,27 @@ function Auto() {
 
   if (!mounted) return null;
 
+  const seoData = {
+    calculator: createCalculatorSchema(
+      "Auto Affordability Calculator",
+      "Calculate how much car you can afford based on your income. Free auto loan calculator with insurance and ownership cost estimates.",
+      "https://autolytiqs.com/auto"
+    ),
+    breadcrumbs: createBreadcrumbSchema([
+      { name: "Home", url: "https://autolytiqs.com/" },
+      { name: "Auto Guide", url: "https://autolytiqs.com/auto" },
+    ]),
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
+      <SEO
+        title="Auto Affordability Calculator 2026 - How Much Car Can I Afford?"
+        description="Free auto affordability calculator. Calculate maximum vehicle price based on income, compare auto loan rates, and understand true ownership costs including insurance, fuel, and maintenance."
+        canonical="https://autolytiqs.com/auto"
+        keywords="auto affordability calculator, how much car can I afford, car payment calculator, auto loan calculator, car buying guide, vehicle budget calculator 2026"
+        structuredData={{ "@graph": [seoData.calculator, seoData.breadcrumbs] }}
+      />
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
       {/* Header */}
@@ -547,6 +576,37 @@ function Auto() {
                 giving you much of a new car experience at a used car price.
               </p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Auto Resources / Affiliates */}
+        <Card className="glass-card border-none shadow-xl mb-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm">Helpful Resources</h3>
+              <span className="text-xs text-primary/70 bg-primary/10 px-2 py-1 rounded-md">Recommended</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {AUTO_AFFILIATES.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
+                >
+                  <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
+                    {link.tag}
+                  </span>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{link.desc}</p>
+                </a>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
 

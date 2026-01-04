@@ -40,8 +40,18 @@ import {
 } from "@/components/ui/tooltip";
 
 import { MoneyInput } from "@/components/money-input";
+import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { ExternalLink } from "lucide-react";
 
 const STORAGE_KEY = "smart-money-state";
+
+// Finance-focused affiliate links
+const MONEY_AFFILIATES = [
+  { name: "Credit Karma", desc: "Free credit monitoring", url: "https://www.creditkarma.com", tag: "Free" },
+  { name: "Robinhood", desc: "Commission-free investing", url: "https://join.robinhood.com", tag: "Free Stock" },
+  { name: "Betterment", desc: "Automated investing", url: "https://www.betterment.com", tag: "Robo-Advisor" },
+  { name: "SoFi", desc: "Banking & loan refinancing", url: "https://www.sofi.com", tag: "Top Pick" },
+];
 
 // Tax brackets for 2024 (simplified federal only)
 const TAX_BRACKETS_2024 = [
@@ -207,8 +217,27 @@ function SmartMoney() {
 
   if (!mounted) return null;
 
+  const seoData = {
+    calculator: createCalculatorSchema(
+      "Budget Planner & Take-Home Pay Calculator",
+      "Calculate your take-home pay after taxes and plan your budget using the 50/30/20 rule. Free income breakdown and budget planning tool.",
+      "https://autolytiqs.com/smart-money"
+    ),
+    breadcrumbs: createBreadcrumbSchema([
+      { name: "Home", url: "https://autolytiqs.com/" },
+      { name: "Smart Money", url: "https://autolytiqs.com/smart-money" },
+    ]),
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
+      <SEO
+        title="Budget Planner 2026 - 50/30/20 Calculator & Take-Home Pay"
+        description="Free budget planner using the 50/30/20 rule. Calculate take-home pay after taxes, plan needs vs wants, and build smart savings goals. Daily, weekly, and monthly budget views."
+        canonical="https://autolytiqs.com/smart-money"
+        keywords="budget planner, 50 30 20 rule calculator, take home pay calculator, paycheck calculator after taxes, budget calculator, income breakdown, savings calculator 2026"
+        structuredData={{ "@graph": [seoData.calculator, seoData.breadcrumbs] }}
+      />
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
       {/* Header */}
@@ -604,6 +633,37 @@ function SmartMoney() {
             </CardContent>
           </Card>
         )}
+
+        {/* Financial Tools / Affiliates */}
+        <Card className="glass-card border-none shadow-xl mb-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm">Financial Tools</h3>
+              <span className="text-xs text-primary/70 bg-primary/10 px-2 py-1 rounded-md">Recommended</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {MONEY_AFFILIATES.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
+                >
+                  <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
+                    {link.tag}
+                  </span>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{link.desc}</p>
+                </a>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
+          </CardContent>
+        </Card>
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3">

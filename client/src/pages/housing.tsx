@@ -36,6 +36,16 @@ import {
 } from "@/components/ui/tooltip";
 
 import { MoneyInput } from "@/components/money-input";
+import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { ExternalLink } from "lucide-react";
+
+// Housing-focused affiliate links
+const HOUSING_AFFILIATES = [
+  { name: "LendingTree", desc: "Compare mortgage rates", url: "https://www.lendingtree.com", tag: "Top Pick" },
+  { name: "Zillow", desc: "Home search & values", url: "https://www.zillow.com", tag: "Research" },
+  { name: "NerdWallet", desc: "Best mortgage lenders", url: "https://www.nerdwallet.com/mortgages", tag: "Reviews" },
+  { name: "Credit Karma", desc: "Free credit score", url: "https://www.creditkarma.com", tag: "Free" },
+];
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -195,8 +205,27 @@ function Housing() {
 
   if (!mounted) return null;
 
+  const seoData = {
+    calculator: createCalculatorSchema(
+      "Housing Affordability Calculator",
+      "Calculate how much rent or mortgage you can afford. Free housing calculator with DTI analysis and rent vs buy comparison.",
+      "https://autolytiqs.com/housing"
+    ),
+    breadcrumbs: createBreadcrumbSchema([
+      { name: "Home", url: "https://autolytiqs.com/" },
+      { name: "Housing", url: "https://autolytiqs.com/housing" },
+    ]),
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
+      <SEO
+        title="Housing Affordability Calculator 2026 - Rent & Mortgage Calculator"
+        description="Free housing affordability calculator. Calculate how much rent you can afford (30% rule), estimate mortgage payments with PITI breakdown, and compare rent vs buy. DTI analysis included."
+        canonical="https://autolytiqs.com/housing"
+        keywords="housing affordability calculator, how much rent can I afford, mortgage calculator, rent vs buy calculator, DTI calculator, 30 percent rule rent, home affordability 2026"
+        structuredData={{ "@graph": [seoData.calculator, seoData.breadcrumbs] }}
+      />
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
       {/* Header */}
@@ -774,6 +803,37 @@ function Housing() {
                 </ul>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Housing Resources / Affiliates */}
+        <Card className="glass-card border-none shadow-xl mb-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm">Housing Resources</h3>
+              <span className="text-xs text-primary/70 bg-primary/10 px-2 py-1 rounded-md">Recommended</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {HOUSING_AFFILIATES.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
+                >
+                  <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
+                    {link.tag}
+                  </span>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
+                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{link.desc}</p>
+                </a>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
 
