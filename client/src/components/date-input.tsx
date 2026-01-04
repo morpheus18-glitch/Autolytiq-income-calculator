@@ -82,6 +82,12 @@ export function DateInput({
     setIsOpen(false);
   };
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setIsFocused(true);
+    // Select all text on focus so user can immediately type to replace
+    e.target.select();
+  };
+
   const handleBlur = () => {
     setIsFocused(false);
     // Validate on blur
@@ -113,7 +119,7 @@ export function DateInput({
           inputMode="numeric"
           value={inputValue}
           onChange={handleInputChange}
-          onFocus={() => setIsFocused(true)}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
           className={cn(
