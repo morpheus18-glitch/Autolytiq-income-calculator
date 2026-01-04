@@ -1,9 +1,10 @@
-const CACHE_NAME = 'autolytiq-v1';
+const CACHE_NAME = 'autolytiq-v2';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
   '/favicon.svg',
-  '/favicon.png'
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png'
 ];
 
 // Install event - cache static assets
