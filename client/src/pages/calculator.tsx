@@ -22,6 +22,7 @@ import {
   TrendingUp,
   DollarSign,
   Calendar,
+  BookOpen,
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -157,6 +158,12 @@ function Calculator() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Link href="/blog">
+              <Button variant="ghost" size="sm" className="rounded-full hover:bg-secondary/80">
+                <BookOpen className="h-4 w-4 mr-2" />
+                Blog
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="sm"
@@ -692,6 +699,10 @@ function MobileFooter() {
 
       {/* Links */}
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
+        <Link href="/blog" className="text-muted-foreground/60 hover:text-primary transition-colors inline-flex items-center gap-1">
+          <BookOpen className="h-3 w-3" />
+          Blog
+        </Link>
         <Link href="/privacy" className="text-muted-foreground/60 hover:text-primary transition-colors">
           Privacy Policy
         </Link>
@@ -772,6 +783,10 @@ function DesktopFooter() {
 
           {/* Links */}
           <div className="flex gap-6 text-sm">
+            <Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1">
+              <BookOpen className="h-4 w-4" />
+              Blog
+            </Link>
             <Link href="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
             </Link>

@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { Calendar, Clock, ArrowRight, TrendingUp } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Calculator as CalcIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const blogPosts = [
   {
@@ -54,22 +55,24 @@ const blogPosts = [
 
 export default function BlogIndex() {
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-[#1a1a1a]">
+      <header className="border-b border-border/40 bg-background/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/">
-            <a className="flex items-center gap-2 text-white hover:text-emerald-400 transition-colors">
-              <TrendingUp className="w-6 h-6 text-emerald-500" />
+            <a className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
+              <div className="p-1.5 rounded-lg bg-primary/10">
+                <CalcIcon className="w-5 h-5 text-primary" />
+              </div>
               <span className="font-bold text-lg">Autolytiq</span>
             </a>
           </Link>
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-4">
             <Link href="/">
-              <a className="text-neutral-400 hover:text-white transition-colors">Calculator</a>
+              <Button variant="ghost" size="sm">Calculator</Button>
             </Link>
             <Link href="/blog">
-              <a className="text-white font-medium">Blog</a>
+              <Button variant="ghost" size="sm" className="text-primary">Blog</Button>
             </Link>
           </nav>
         </div>
@@ -78,10 +81,10 @@ export default function BlogIndex() {
       {/* Hero */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Financial Insights & Tips
           </h1>
-          <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Expert advice on income optimization, tax strategies, and building wealth.
             Updated weekly with actionable insights.
           </p>
@@ -94,22 +97,22 @@ export default function BlogIndex() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogPosts.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`}>
-                <a className="group block bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl overflow-hidden hover:border-emerald-500/50 transition-all duration-300">
+                <a className="group block bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300">
                   {/* Category Badge */}
                   <div className="p-6">
-                    <span className="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-full mb-4">
+                    <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-4">
                       {post.category}
                     </span>
 
-                    <h2 className="text-xl font-semibold text-white mb-3 group-hover:text-emerald-400 transition-colors line-clamp-2">
+                    <h2 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
                       {post.title}
                     </h2>
 
-                    <p className="text-neutral-400 text-sm mb-4 line-clamp-3">
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                       {post.excerpt}
                     </p>
 
-                    <div className="flex items-center justify-between text-neutral-500 text-sm">
+                    <div className="flex items-center justify-between text-muted-foreground text-sm">
                       <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
@@ -120,7 +123,7 @@ export default function BlogIndex() {
                           {post.readTime}
                         </span>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </div>
                 </a>
@@ -131,33 +134,33 @@ export default function BlogIndex() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="py-16 px-4 border-t border-[#1a1a1a]">
+      <section className="py-16 px-4 border-t border-border">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">Get Weekly Financial Tips</h2>
-          <p className="text-neutral-400 mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Get Weekly Financial Tips</h2>
+          <p className="text-muted-foreground mb-6">
             Join 10,000+ subscribers getting actionable income-boosting strategies every week.
           </p>
           <Link href="/">
-            <a className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+            <Button size="lg" className="gap-2">
               Subscribe Free
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </Button>
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[#1a1a1a] py-8 px-4">
+      <footer className="border-t border-border py-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-neutral-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             © {new Date().getFullYear()} Autolytiq. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm">
             <Link href="/privacy">
-              <a className="text-neutral-400 hover:text-white transition-colors">Privacy</a>
+              <a className="text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
             </Link>
             <Link href="/terms">
-              <a className="text-neutral-400 hover:text-white transition-colors">Terms</a>
+              <a className="text-muted-foreground hover:text-foreground transition-colors">Terms</a>
             </Link>
           </div>
         </div>
