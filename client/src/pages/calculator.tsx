@@ -232,6 +232,16 @@ function Calculator() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex gap-1"
               >
+                <Link href="/blog">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full hover:bg-secondary/80 elite-button"
+                    title="Blog"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                  </Button>
+                </Link>
                 <Button
                   variant="ghost"
                   size="icon"
