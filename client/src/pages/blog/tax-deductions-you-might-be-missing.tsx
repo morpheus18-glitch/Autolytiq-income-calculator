@@ -1,31 +1,20 @@
 import { Link } from "wouter";
-import { ArrowLeft, Calendar, Clock, Receipt, Calculator, Share2, DollarSign, Home, Briefcase, Heart, GraduationCap, TrendingUp } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Receipt, Calculator, DollarSign, Home, Briefcase, Heart, GraduationCap, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BlogFeedback } from "@/components/blog-feedback";
 
 export default function TaxDeductionsYouMightBeMissing() {
-  const shareArticle = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "12 Tax Deductions You Might Be Missing",
-        url: window.location.href
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 py-4">
           <Link href="/blog">
             <a className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </a>
           </Link>
-          <button onClick={shareArticle} className="text-muted-foreground hover:text-foreground transition-colors">
-            <Share2 className="w-5 h-5" />
-          </button>
         </div>
       </header>
 
@@ -327,8 +316,14 @@ export default function TaxDeductionsYouMightBeMissing() {
           </div>
         </div>
 
+        {/* Feedback & Share */}
+        <BlogFeedback
+          slug="tax-deductions-you-might-be-missing"
+          title="12 Tax Deductions You Might Be Missing"
+        />
+
         {/* CTA */}
-        <div className="mt-12 p-8 bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 rounded-2xl text-center">
+        <div className="p-8 bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 rounded-2xl text-center">
           <Receipt className="w-12 h-12 text-primary mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-foreground mb-3">Know Your Income First</h3>
           <p className="text-muted-foreground mb-6">Calculate your annual income to understand your tax bracket and plan your deductions effectively.</p>

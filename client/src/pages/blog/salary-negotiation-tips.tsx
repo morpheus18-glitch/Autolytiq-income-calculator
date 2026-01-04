@@ -1,30 +1,19 @@
 import { Link } from "wouter";
-import { ArrowLeft, Calendar, Clock, TrendingUp, Share2, DollarSign } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, DollarSign } from "lucide-react";
+import { BlogFeedback } from "@/components/blog-feedback";
 
 export default function SalaryNegotiationTips() {
-  const shareArticle = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "10 Salary Negotiation Tips That Actually Work",
-        url: window.location.href
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#09090b]">
       {/* Header */}
       <header className="border-b border-[#1a1a1a] sticky top-0 bg-[#09090b]/95 backdrop-blur z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 py-4">
           <Link href="/blog">
             <a className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </a>
           </Link>
-          <button onClick={shareArticle} className="text-neutral-400 hover:text-white transition-colors">
-            <Share2 className="w-5 h-5" />
-          </button>
         </div>
       </header>
 
@@ -156,8 +145,14 @@ export default function SalaryNegotiationTips() {
           </div>
         </div>
 
+        {/* Feedback & Share */}
+        <BlogFeedback
+          slug="salary-negotiation-tips"
+          title="10 Salary Negotiation Tips That Actually Work"
+        />
+
         {/* CTA */}
-        <div className="mt-12 p-8 bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border border-emerald-500/30 rounded-2xl text-center">
+        <div className="p-8 bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 border border-emerald-500/30 rounded-2xl text-center">
           <h3 className="text-2xl font-bold text-white mb-3">Know Your Numbers First</h3>
           <p className="text-neutral-300 mb-6">Calculate your current projected income to negotiate from a position of knowledge.</p>
           <Link href="/">
