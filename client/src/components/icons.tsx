@@ -5,7 +5,7 @@ interface IconProps {
   size?: number;
 }
 
-// Autolytiq Logo - Clean ascending bars
+// Autolytiq Logo - Stylized "A" with pulse/analytics line
 export function AutolytiqLogo({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -15,14 +15,26 @@ export function AutolytiqLogo({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
-      <rect x="4" y="14" width="4" height="6" rx="1" fill="currentColor" opacity="0.5" />
-      <rect x="10" y="10" width="4" height="10" rx="1" fill="currentColor" opacity="0.75" />
-      <rect x="16" y="4" width="4" height="16" rx="1" fill="currentColor" />
+      {/* Stylized A shape */}
+      <path
+        d="M12 3L4 21h4l1.5-4h5l1.5 4h4L12 3z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      {/* Crossbar with pulse */}
+      <path
+        d="M7 14h2l1.5-3 1.5 4 1.5-4 1.5 3h2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-// Income/Dollar Icon - Dollar in circle
+// Income/Dollar Icon - Cash/bills stack
 export function IncomeIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -32,11 +44,15 @@ export function IncomeIcon({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+      {/* Stack of bills */}
+      <rect x="2" y="6" width="16" height="10" rx="1" stroke="currentColor" strokeWidth="2" />
+      <rect x="4" y="4" width="16" height="10" rx="1" stroke="currentColor" strokeWidth="2" fill="none" />
+      <rect x="6" y="2" width="16" height="10" rx="1" stroke="currentColor" strokeWidth="2" fill="none" />
+      {/* Dollar sign on front bill */}
       <path
-        d="M12 6v1.5m0 9V18m-2.5-9.5c0-1.1.9-2 2.5-2s2.5.9 2.5 2c0 1.1-.9 2-2.5 2s-2.5.9-2.5 2c0 1.1.9 2 2.5 2s2.5-.9 2.5-2"
+        d="M10 8v4m-1-3.5c0-.8.45-1.5 1-1.5s1 .7 1 1.5-.45 1.5-1 1.5-1 .7-1 1.5.45 1.5 1 1.5"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinecap="round"
       />
     </svg>
@@ -63,7 +79,7 @@ export function DollarIcon({ className, size = 24 }: IconProps) {
   );
 }
 
-// Car/Auto Icon - Simple sedan profile
+// Car/Auto Icon - Clean car silhouette
 export function AutoIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -73,22 +89,31 @@ export function AutoIcon({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
+      {/* Car body */}
       <path
-        d="M5 17h14M7 17V15.5L8.5 10h7l1.5 5.5V17M7 17H5.5a.5.5 0 01-.5-.5V15a1 1 0 011-1h1M17 17h1.5a.5.5 0 00.5-.5V15a1 1 0 00-1-1h-1"
+        d="M3 14h18v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      {/* Car top/cabin */}
+      <path
+        d="M5 14l2-5h10l2 5"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {/* Windows */}
       <path
-        d="M9 10l1-3h4l1 3"
+        d="M8 11h3v3H8zM13 11h3v3h-3z"
         stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
+        strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      <circle cx="7.5" cy="17" r="1.5" fill="currentColor" />
-      <circle cx="16.5" cy="17" r="1.5" fill="currentColor" />
+      {/* Wheels */}
+      <circle cx="7" cy="18" r="2" stroke="currentColor" strokeWidth="2" />
+      <circle cx="17" cy="18" r="2" stroke="currentColor" strokeWidth="2" />
     </svg>
   );
 }
