@@ -35,7 +35,7 @@ import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/component
 import { PieChart, BarChart, AnimatedNumber } from "@/components/charts";
 import { FAQ, BUDGET_PLANNER_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { InteractiveBudget } from "@/components/interactive-budget";
+import { ProtectedInteractiveBudget } from "@/components/interactive-budget";
 
 const STORAGE_KEY = "smart-money-state";
 
@@ -583,7 +583,7 @@ function SmartMoney() {
             transition={{ delay: 0.3 }}
             className="mb-6"
           >
-            <InteractiveBudget monthlyIncome={netMonthly} />
+            <ProtectedInteractiveBudget monthlyIncome={netMonthly} />
           </motion.div>
         )}
 
