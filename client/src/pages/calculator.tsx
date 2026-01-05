@@ -245,7 +245,7 @@ function Calculator() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
               <AutolytiqLogo className="h-5 w-5 text-primary" />
@@ -284,7 +284,7 @@ function Calculator() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-2">
@@ -788,7 +788,7 @@ function Calculator() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. For estimation purposes only.

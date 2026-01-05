@@ -1649,7 +1649,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   };
 
   return (
-    <Card className="border-primary/20 overflow-hidden lg:max-w-4xl lg:mx-auto">
+    <Card className="border-primary/20 overflow-hidden">
       <CardContent className="p-0">
         <div className="h-1 bg-muted">
           <motion.div
