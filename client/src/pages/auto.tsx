@@ -41,23 +41,12 @@ import { AnimatedNumber } from "@/components/charts";
 
 const STORAGE_KEY = "auto-page-state";
 
-// Auto-focused affiliate links with signup details
+// Auto-focused affiliate links
 const AUTO_AFFILIATES = [
-  // Auto Loans
-  { name: "LendingTree Auto", desc: "Compare rates from 5+ lenders in minutes. No impact to credit score.", url: "https://www.lendingtree.com/auto/", tag: "Top Pick", category: "Loans" },
-  { name: "Capital One Auto", desc: "Pre-qualify for financing with no SSN required. See real rates.", url: "https://www.capitalone.com/cars/", tag: "Pre-Qualify", category: "Loans" },
-  { name: "myAutoloan", desc: "Specializes in bad credit auto loans. 60-second application.", url: "https://www.myautoloan.com/", tag: "Bad Credit OK", category: "Loans" },
-  { name: "Auto Credit Express", desc: "Nationwide dealer network for all credit types. Fast approval.", url: "https://www.autocreditexpress.com/apply/", tag: "All Credit", category: "Loans" },
-  // Insurance
-  { name: "Progressive", desc: "Compare rates from multiple insurers. Bundle home & auto to save.", url: "https://www.progressive.com/auto/", tag: "Insurance", category: "Insurance" },
-  { name: "GEICO", desc: "15 minutes could save you 15% or more. Free online quote.", url: "https://www.geico.com/auto-insurance/", tag: "Quick Quote", category: "Insurance" },
-  { name: "The Zebra", desc: "Compare 100+ insurance companies at once. Average savings $440/year.", url: "https://www.thezebra.com/", tag: "Compare All", category: "Insurance" },
-  { name: "Root Insurance", desc: "Rates based on how you drive. Download app for personalized quote.", url: "https://www.joinroot.com/", tag: "App-Based", category: "Insurance" },
-  // Research & Credit
-  { name: "CarGurus", desc: "Dealer ratings, price analysis & deal scores. Know before you go.", url: "https://www.cargurus.com/", tag: "Research", category: "Research" },
-  { name: "Kelley Blue Book", desc: "Check trade-in values & fair purchase prices. Industry standard.", url: "https://www.kbb.com/", tag: "Pricing", category: "Research" },
-  { name: "Credit Karma", desc: "Free credit scores, monitoring & auto loan pre-approval odds.", url: "https://www.creditkarma.com/signup", tag: "Free", category: "Credit" },
-  { name: "Experian Boost", desc: "Instantly raise your credit score using bills you already pay.", url: "https://www.experian.com/consumer-products/score-boost.html", tag: "Boost Score", category: "Credit" },
+  { name: "LendingTree Auto", desc: "Compare auto loan rates", url: "https://www.lendingtree.com/auto/", tag: "Top Pick" },
+  { name: "Progressive", desc: "Compare insurance quotes", url: "https://www.progressive.com/auto/", tag: "Insurance" },
+  { name: "CarGurus", desc: "Research & find deals", url: "https://www.cargurus.com/", tag: "Research" },
+  { name: "Credit Karma", desc: "Free credit scores", url: "https://www.creditkarma.com/signup", tag: "Free" },
 ];
 
 const CREDIT_TIERS = [
@@ -584,32 +573,32 @@ function Auto() {
 
         {/* Auto Resources / Affiliates */}
         <Card className="glass-card border-none shadow-xl mb-6">
-          <CardContent className="p-4 lg:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Auto Resources & Partners</h3>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm">Helpful Resources</h3>
               <span className="text-xs text-primary/70 bg-primary/10 px-2 py-1 rounded-md">Recommended</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {AUTO_AFFILIATES.map((link) => (
                 <a
                   key={link.name}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="group relative p-4 rounded-lg bg-card border border-border/50 hover:border-primary/30 hover:shadow-md transition-all"
+                  className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
                 >
-                  <span className="absolute -top-2 -right-2 text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-medium shadow-sm">
+                  <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
                     {link.tag}
                   </span>
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <span className="font-medium group-hover:text-primary transition-colors">{link.name}</span>
-                    <ExternalLinkIcon className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
+                    <ExternalLinkIcon className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{link.desc}</p>
+                  <p className="text-xs text-muted-foreground">{link.desc}</p>
                 </a>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground/60 text-center mt-4">We may earn a commission from partner links. This helps keep our tools free.</p>
+            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
 

@@ -36,23 +36,12 @@ import { FAQ, HOUSING_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AmortizationChart, AnimatedNumber } from "@/components/charts";
 
-// Housing-focused affiliate links with signup details
+// Housing-focused affiliate links
 const HOUSING_AFFILIATES = [
-  // Mortgages
-  { name: "LendingTree", desc: "Compare rates from 5+ lenders instantly. No SSN required to start.", url: "https://www.lendingtree.com/home/mortgage/", tag: "Top Pick", category: "Mortgage" },
-  { name: "Rocket Mortgage", desc: "Apply online in minutes. Lock your rate for 90 days. #1 lender.", url: "https://www.rocketmortgage.com/", tag: "Fast Apply", category: "Mortgage" },
-  { name: "Better.com", desc: "No origination fees, no commission. Close in as little as 3 weeks.", url: "https://better.com/", tag: "No Fees", category: "Mortgage" },
-  { name: "Credible", desc: "Compare personalized rates from 10+ lenders. Free, no obligation.", url: "https://www.credible.com/mortgage", tag: "Compare 10+", category: "Mortgage" },
-  // Home Search
-  { name: "Zillow", desc: "Search millions of listings, see Zestimates, get pre-qualified.", url: "https://www.zillow.com/", tag: "Search", category: "Search" },
-  { name: "Redfin", desc: "Agent rebates up to 0.5%, 3D tours, most accurate listings.", url: "https://www.redfin.com/", tag: "Rebates", category: "Search" },
-  { name: "Realtor.com", desc: "Official MLS listings, open house schedules, neighborhood data.", url: "https://www.realtor.com/", tag: "Official MLS", category: "Search" },
-  { name: "Apartments.com", desc: "Largest rental listing site, virtual tours, verified listings.", url: "https://www.apartments.com/", tag: "Rentals", category: "Search" },
-  // Credit & Insurance
-  { name: "Credit Karma", desc: "Free credit monitoring, see your home-buying power, pre-approval odds.", url: "https://www.creditkarma.com/signup", tag: "Free", category: "Credit" },
-  { name: "Experian Boost", desc: "Improve your credit score for better mortgage rates. Free & instant.", url: "https://www.experian.com/consumer-products/score-boost.html", tag: "Boost Score", category: "Credit" },
-  { name: "Lemonade", desc: "Renters insurance from $5/mo. Home insurance from $25/mo. Instant claims.", url: "https://www.lemonade.com/", tag: "$5/month", category: "Insurance" },
-  { name: "Policygenius", desc: "Compare home & renters insurance from top carriers. Unbiased advice.", url: "https://www.policygenius.com/homeowners-insurance/", tag: "Compare All", category: "Insurance" },
+  { name: "LendingTree", desc: "Compare mortgage rates", url: "https://www.lendingtree.com/home/mortgage/", tag: "Top Pick" },
+  { name: "Zillow", desc: "Home search & values", url: "https://www.zillow.com/", tag: "Search" },
+  { name: "Credit Karma", desc: "Free credit score", url: "https://www.creditkarma.com/signup", tag: "Free" },
+  { name: "Lemonade", desc: "Renters insurance $5/mo", url: "https://www.lemonade.com/", tag: "Insurance" },
 ];
 
 function formatCurrency(amount: number): string {
@@ -824,32 +813,32 @@ function Housing() {
 
         {/* Housing Resources / Affiliates */}
         <Card className="glass-card border-none shadow-xl mb-6">
-          <CardContent className="p-4 lg:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Housing Resources & Partners</h3>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm">Housing Resources</h3>
               <span className="text-xs text-primary/70 bg-primary/10 px-2 py-1 rounded-md">Recommended</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {HOUSING_AFFILIATES.map((link) => (
                 <a
                   key={link.name}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="group relative p-4 rounded-lg bg-card border border-border/50 hover:border-primary/30 hover:shadow-md transition-all"
+                  className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
                 >
-                  <span className="absolute -top-2 -right-2 text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-medium shadow-sm">
+                  <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
                     {link.tag}
                   </span>
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <span className="font-medium group-hover:text-primary transition-colors">{link.name}</span>
-                    <ExternalLinkIcon className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
+                    <ExternalLinkIcon className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{link.desc}</p>
+                  <p className="text-xs text-muted-foreground">{link.desc}</p>
                 </a>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground/60 text-center mt-4">We may earn a commission from partner links. This helps keep our tools free.</p>
+            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
 
