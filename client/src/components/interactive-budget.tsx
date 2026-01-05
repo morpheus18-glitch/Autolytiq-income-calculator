@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus } from "lucide-react";
+import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus, Cigarette, Wine, Dice1, Scale, Briefcase, Banknote, Users, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -315,6 +315,79 @@ const FREQUENCY_QUESTIONS: FrequencyQuestion[] = [
     category: "needs",
     guideline: 0.05,
   },
+  {
+    id: "smoking",
+    icon: Cigarette,
+    title: "Smoking / Tobacco",
+    question: "Do you smoke or use tobacco products?",
+    frequencyLabel: "How often do you buy cigarettes/tobacco?",
+    amountLabel: "How much per purchase?",
+    frequencyOptions: [
+      { label: "Don't smoke", value: 0 },
+      { label: "Weekly", value: 4 },
+      { label: "Every few days", value: 10 },
+      { label: "Daily", value: 30 },
+    ],
+    amountOptions: [
+      { label: "$0", value: 0 },
+      { label: "$8-12 (1 pack)", value: 10 },
+      { label: "$15-20", value: 17 },
+      { label: "$25-35", value: 30 },
+      { label: "$40+", value: 45 },
+    ],
+    category: "wants",
+    guideline: 0.00,
+  },
+  {
+    id: "drinking",
+    icon: Wine,
+    title: "Alcohol / Drinks",
+    question: "Spending on alcohol (bars, beer, liquor, wine)?",
+    frequencyLabel: "How often do you buy alcohol?",
+    amountLabel: "Average spent each time?",
+    frequencyOptions: [
+      { label: "Don't drink", value: 0 },
+      { label: "Once a month", value: 1 },
+      { label: "2-3 times/month", value: 2.5 },
+      { label: "Weekly", value: 4 },
+      { label: "Multiple/week", value: 8 },
+    ],
+    amountOptions: [
+      { label: "$0", value: 0 },
+      { label: "$10-20", value: 15 },
+      { label: "$20-40", value: 30 },
+      { label: "$40-75", value: 57 },
+      { label: "$75-100", value: 87 },
+      { label: "$100+", value: 125 },
+    ],
+    category: "wants",
+    guideline: 0.02,
+  },
+  {
+    id: "gambling",
+    icon: Dice1,
+    title: "Gambling / Lottery",
+    question: "Do you gamble, bet, or play the lottery?",
+    frequencyLabel: "How often?",
+    amountLabel: "How much per session?",
+    frequencyOptions: [
+      { label: "Never", value: 0 },
+      { label: "Rarely (1-2x/mo)", value: 1.5 },
+      { label: "Weekly", value: 4 },
+      { label: "Multiple/week", value: 8 },
+    ],
+    amountOptions: [
+      { label: "$0", value: 0 },
+      { label: "$5-10", value: 7 },
+      { label: "$10-25", value: 17 },
+      { label: "$25-50", value: 37 },
+      { label: "$50-100", value: 75 },
+      { label: "$100-200", value: 150 },
+      { label: "$200+", value: 300 },
+    ],
+    category: "wants",
+    guideline: 0.00,
+  },
 ];
 
 interface FixedExpense {
@@ -406,21 +479,11 @@ const FIXED_EXPENSES: FixedExpense[] = [
     guideline: 0.02,
   },
   {
-    id: "health_insurance",
-    icon: Pill,
-    title: "Health Insurance",
-    question: "Monthly health insurance premium?",
-    placeholder: "Insurance premium (if not from paycheck)",
-    category: "needs",
-    guideline: 0.05,
-    optional: true,
-  },
-  {
     id: "health_expenses",
     icon: Pill,
     title: "Medical Expenses",
-    question: "Monthly out-of-pocket medical costs?",
-    placeholder: "Meds, copays, etc",
+    question: "Out-of-pocket medical costs (not deducted from paycheck)?",
+    placeholder: "Copays, prescriptions, dental, vision",
     category: "needs",
     guideline: 0.03,
     optional: true,
@@ -443,6 +506,56 @@ const FIXED_EXPENSES: FixedExpense[] = [
     placeholder: "Daycare, activities, etc",
     category: "needs",
     guideline: 0.10,
+    optional: true,
+  },
+  {
+    id: "child_support",
+    icon: Users,
+    title: "Child Support",
+    question: "Monthly child support payments?",
+    placeholder: "Court-ordered support",
+    category: "needs",
+    guideline: 0.10,
+    optional: true,
+  },
+  {
+    id: "alimony",
+    icon: Scale,
+    title: "Alimony / Spousal Support",
+    question: "Monthly alimony or spousal support?",
+    placeholder: "Court-ordered payments",
+    category: "needs",
+    guideline: 0.05,
+    optional: true,
+  },
+  {
+    id: "garnishments",
+    icon: Scale,
+    title: "Wage Garnishments",
+    question: "Any wage garnishments (taxes, judgments)?",
+    placeholder: "Amount withheld from pay",
+    category: "needs",
+    guideline: 0.00,
+    optional: true,
+  },
+  {
+    id: "other_loans",
+    icon: Banknote,
+    title: "Other Loans",
+    question: "Other loan payments (personal, payday, etc)?",
+    placeholder: "Monthly loan payments",
+    category: "needs",
+    guideline: 0.05,
+    optional: true,
+  },
+  {
+    id: "business_expenses",
+    icon: Briefcase,
+    title: "Business Expenses",
+    question: "Monthly out-of-pocket business expenses?",
+    placeholder: "Not reimbursed by employer",
+    category: "needs",
+    guideline: 0.05,
     optional: true,
   },
   {
@@ -477,9 +590,9 @@ const FIXED_EXPENSES: FixedExpense[] = [
   {
     id: "investments",
     icon: PiggyBank,
-    title: "Investments",
-    question: "Monthly investment contributions?",
-    placeholder: "Brokerage, IRA (outside 401k)",
+    title: "Additional Investments",
+    question: "Extra investments beyond 401k (already deducted)?",
+    placeholder: "Brokerage, Roth IRA, HSA",
     category: "savings",
     guideline: 0.10,
     optional: true,
@@ -789,6 +902,65 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
       recommendations.push({
         type: "warning",
         message: `Untracked cash spending is ${((personalCash / monthlyIncome) * 100).toFixed(0)}% of income. Try tracking where this goes for one month.`,
+      });
+    }
+
+    // Smoking habit
+    const smokingData = frequencyData.smoking;
+    if (smokingData && smokingData.frequency * smokingData.amount > 0) {
+      const smokingTotal = smokingData.frequency * smokingData.amount;
+      const yearlySmoke = smokingTotal * 12;
+      recommendations.push({
+        type: "danger",
+        message: `Smoking costs $${smokingTotal.toFixed(0)}/mo ($${yearlySmoke.toFixed(0)}/year). Quitting or cutting back significantly improves both health and finances.`,
+      });
+    }
+
+    // Drinking/Alcohol
+    const drinkingData = frequencyData.drinking;
+    if (drinkingData && drinkingData.frequency * drinkingData.amount > monthlyIncome * 0.05) {
+      const drinkingTotal = drinkingData.frequency * drinkingData.amount;
+      recommendations.push({
+        type: "warning",
+        message: `Alcohol spending: $${drinkingTotal.toFixed(0)}/mo (${((drinkingTotal / monthlyIncome) * 100).toFixed(0)}% of income). Consider cutting bar nights in half to save $${(drinkingTotal * 6).toFixed(0)}/year.`,
+      });
+    }
+
+    // Gambling
+    const gamblingData = frequencyData.gambling;
+    if (gamblingData && gamblingData.frequency * gamblingData.amount > 0) {
+      const gamblingTotal = gamblingData.frequency * gamblingData.amount;
+      if (gamblingTotal > monthlyIncome * 0.02) {
+        recommendations.push({
+          type: "danger",
+          message: `Gambling/lottery: $${gamblingTotal.toFixed(0)}/mo. This is ${((gamblingTotal / monthlyIncome) * 100).toFixed(1)}% of income going to negative expected value activities. Set a strict limit or consider stopping.`,
+        });
+      } else if (gamblingTotal > 0) {
+        recommendations.push({
+          type: "warning",
+          message: `Gambling/lottery: $${gamblingTotal.toFixed(0)}/mo ($${(gamblingTotal * 12).toFixed(0)}/year). Keep this strictly entertainment-only with a fixed budget.`,
+        });
+      }
+    }
+
+    // Child support / garnishments warning
+    const childSupport = fixedExpenses.child_support || 0;
+    const garnishments = fixedExpenses.garnishments || 0;
+    const alimony = fixedExpenses.alimony || 0;
+    const legalObligations = childSupport + garnishments + alimony;
+    if (legalObligations > monthlyIncome * 0.25) {
+      recommendations.push({
+        type: "danger",
+        message: `Legal obligations take ${((legalObligations / monthlyIncome) * 100).toFixed(0)}% of income. This leaves very little flexibility - focus on essential expenses only.`,
+      });
+    }
+
+    // Other loans / payday warning
+    const otherLoans = fixedExpenses.other_loans || 0;
+    if (otherLoans > 0) {
+      recommendations.push({
+        type: "warning",
+        message: `Other loans: $${otherLoans.toFixed(0)}/mo. If these are high-interest (payday, personal), prioritize paying them off aggressively.`,
       });
     }
 
