@@ -5,7 +5,7 @@ interface IconProps {
   size?: number;
 }
 
-// Autolytiq Logo - Chart with upward trend
+// Autolytiq Logo - Bar chart with growth arrow (matching reference)
 export function AutolytiqLogo({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -15,17 +15,18 @@ export function AutolytiqLogo({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
-      {/* Chart axes */}
-      <path d="M3 3v18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Upward trend line */}
-      <path d="M7 14l4-4 3 3 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Arrow head */}
-      <path d="M16 7h4v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Ascending bars */}
+      <rect x="4" y="16" width="3" height="5" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="9" y="12" width="3" height="9" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="14" y="8" width="3" height="13" stroke="currentColor" strokeWidth="1.5" />
+      {/* Growth arrow */}
+      <path d="M6 10l5-5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13 3l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-// Income/Calculator Icon - Calculator style
+// Income/Calculator Icon - Matching reference style
 export function IncomeIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -36,21 +37,25 @@ export function IncomeIcon({ className, size = 24 }: IconProps) {
       className={cn("text-primary", className)}
     >
       {/* Calculator body */}
-      <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="4" y="2" width="16" height="20" rx="1" stroke="currentColor" strokeWidth="1.5" />
       {/* Display */}
-      <rect x="6" y="4" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
-      {/* Buttons row 1 */}
-      <rect x="6" y="10" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="10.5" y="10" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="15" y="10" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      {/* Buttons row 2 */}
-      <rect x="6" y="14" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="10.5" y="14" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="15" y="14" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      {/* Buttons row 3 */}
-      <rect x="6" y="18" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="10.5" y="18" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
-      <rect x="15" y="18" width="3" height="2" rx="0.5" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="6" y="4" width="12" height="3" stroke="currentColor" strokeWidth="1.5" />
+      {/* Button grid - 4x4 */}
+      <rect x="6" y="9" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="9.5" y="9" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="13" y="9" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="6" y="12" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="9.5" y="12" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="13" y="12" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="6" y="15" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="9.5" y="15" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="13" y="15" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="6" y="18" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="9.5" y="18" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      <rect x="13" y="18" width="2.5" height="2" stroke="currentColor" strokeWidth="1" />
+      {/* Side column for operators */}
+      <rect x="16" y="9" width="2" height="5" stroke="currentColor" strokeWidth="1" />
+      <rect x="16" y="15" width="2" height="5" stroke="currentColor" strokeWidth="1" />
     </svg>
   );
 }
@@ -75,7 +80,7 @@ export function DollarIcon({ className, size = 24 }: IconProps) {
   );
 }
 
-// Car/Auto Icon - Clean sedan side profile
+// Car/Auto Icon - Matching reference style
 export function AutoIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -85,19 +90,15 @@ export function AutoIcon({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
-      {/* Car body and roof */}
+      {/* Complete car outline in one path */}
       <path
-        d="M2 14h20M4 14l1-4h4l2-3h4l1 3h4l1 4"
+        d="M2 14h3l1.5-3h2.5l2-3h2l2 3h2.5l1.5 3h3v2h-3.5a2.5 2.5 0 00-5 0h-3a2.5 2.5 0 00-5 0H2v-2z"
         stroke="currentColor"
         strokeWidth="1.5"
-        strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Bottom of car */}
-      <path d="M4 14v2h3m10 0h3v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Front wheel */}
+      {/* Wheels */}
       <circle cx="7" cy="16" r="2" stroke="currentColor" strokeWidth="1.5" />
-      {/* Rear wheel */}
       <circle cx="17" cy="16" r="2" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
