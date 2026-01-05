@@ -39,12 +39,23 @@ import { ProtectedInteractiveBudget } from "@/components/interactive-budget";
 
 const STORAGE_KEY = "smart-money-state";
 
-// Finance-focused affiliate links
+// Finance-focused affiliate links with signup details
 const MONEY_AFFILIATES = [
-  { name: "Credit Karma", desc: "Free credit monitoring", url: "https://www.creditkarma.com", tag: "Free" },
-  { name: "Robinhood", desc: "Commission-free investing", url: "https://join.robinhood.com", tag: "Free Stock" },
-  { name: "Betterment", desc: "Automated investing", url: "https://www.betterment.com", tag: "Robo-Advisor" },
-  { name: "SoFi", desc: "Banking & loan refinancing", url: "https://www.sofi.com", tag: "Top Pick" },
+  // Banking & Savings
+  { name: "SoFi", desc: "High-yield savings (4.00% APY), no fees, $300 bonus with direct deposit.", url: "https://www.sofi.com/invite/money", tag: "Top Pick", category: "Banking" },
+  { name: "Chime", desc: "No monthly fees, early direct deposit, $100 sign-up bonus available.", url: "https://www.chime.com/apply-debit-card/", tag: "$100 Bonus", category: "Banking" },
+  { name: "Marcus by Goldman", desc: "High-yield savings, no minimum deposit, FDIC insured.", url: "https://www.marcus.com/us/en/savings/high-yield-savings", tag: "High Yield", category: "Banking" },
+  { name: "Ally Bank", desc: "No minimum balance, 4.00%+ APY, 24/7 customer support.", url: "https://www.ally.com/bank/online-savings-account/", tag: "No Minimum", category: "Banking" },
+  // Investing
+  { name: "Robinhood", desc: "Commission-free stocks & crypto. Get a free stock when you sign up.", url: "https://join.robinhood.com/", tag: "Free Stock", category: "Investing" },
+  { name: "Betterment", desc: "Automated investing with tax-loss harvesting. Start with $10.", url: "https://www.betterment.com/signup", tag: "Robo-Advisor", category: "Investing" },
+  { name: "Fidelity", desc: "Zero expense ratio index funds, no account minimums, free trades.", url: "https://www.fidelity.com/open-account/overview", tag: "Zero Fees", category: "Investing" },
+  { name: "Acorns", desc: "Round up purchases & invest the spare change. $5/month all-in-one.", url: "https://www.acorns.com/invite/", tag: "Round-Ups", category: "Investing" },
+  // Credit & Budgeting
+  { name: "Credit Karma", desc: "Free credit scores, monitoring & personalized recommendations.", url: "https://www.creditkarma.com/signup", tag: "Free", category: "Credit" },
+  { name: "Experian Boost", desc: "Raise your FICO score instantly using utility & streaming bills.", url: "https://www.experian.com/consumer-products/score-boost.html", tag: "Boost Score", category: "Credit" },
+  { name: "YNAB", desc: "You Need A Budget - 34-day free trial, average $600 savings in month 1.", url: "https://www.ynab.com/", tag: "Budgeting", category: "Budgeting" },
+  { name: "Rocket Money", desc: "Cancel subscriptions, lower bills, track spending. Save an avg $720/yr.", url: "https://www.rocketmoney.com/", tag: "Save Money", category: "Budgeting" },
 ];
 
 // Tax brackets for 2024 (simplified federal only)
@@ -646,32 +657,32 @@ function SmartMoney() {
 
         {/* Financial Tools / Affiliates */}
         <Card className="glass-card border-none shadow-xl mb-6">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-sm">Financial Tools</h3>
+          <CardContent className="p-4 lg:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Financial Tools & Partners</h3>
               <span className="text-xs text-primary/70 bg-primary/10 px-2 py-1 rounded-md">Recommended</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {MONEY_AFFILIATES.map((link) => (
                 <a
                   key={link.name}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
+                  className="group relative p-4 rounded-lg bg-card border border-border/50 hover:border-primary/30 hover:shadow-md transition-all"
                 >
-                  <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
+                  <span className="absolute -top-2 -right-2 text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-medium shadow-sm">
                     {link.tag}
                   </span>
-                  <div className="flex items-center gap-1 mb-1">
-                    <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
-                    <ExternalLinkIcon className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="font-medium group-hover:text-primary transition-colors">{link.name}</span>
+                    <ExternalLinkIcon className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <p className="text-xs text-muted-foreground">{link.desc}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{link.desc}</p>
                 </a>
               ))}
             </div>
-            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
+            <p className="text-xs text-muted-foreground/60 text-center mt-4">We may earn a commission from partner links. This helps keep our tools free.</p>
           </CardContent>
         </Card>
 
