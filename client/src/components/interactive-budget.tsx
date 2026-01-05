@@ -1335,7 +1335,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <h3 className="text-xl font-bold mb-1">{exp.title}</h3>
           <p className="text-muted-foreground mb-4">{exp.question}</p>
 
-          <div className="max-w-xs mx-auto">
+          <div className="max-w-xs lg:max-w-sm mx-auto">
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
               <input
@@ -1344,7 +1344,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
                 value={value || ""}
                 onChange={(e) => handleFixedChange(exp.id, e.target.value.replace(/[^\d.]/g, ""))}
                 placeholder={exp.placeholder}
-                className="w-full h-14 pl-8 pr-4 text-2xl text-center rounded-lg border bg-background font-mono focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none"
+                className="w-full h-14 lg:h-16 pl-8 pr-4 text-2xl lg:text-3xl text-center rounded-lg border bg-background font-mono focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none"
               />
             </div>
             {monthlyIncome > 0 && value > 0 && (
@@ -1385,9 +1385,9 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <h3 className="text-xl font-bold mb-1">{q.title}</h3>
           <p className="text-muted-foreground mb-4">{q.question}</p>
 
-          <div className="space-y-4 max-w-sm mx-auto">
+          <div className="space-y-4 max-w-sm lg:max-w-xl mx-auto">
             <div>
-              <label className="text-sm font-medium block mb-2">{q.frequencyLabel}</label>
+              <label className="text-sm lg:text-base font-medium block mb-2">{q.frequencyLabel}</label>
               <div className="flex flex-wrap gap-2 justify-center">
                 {q.frequencyOptions.map((opt) => (
                   <button
@@ -1465,7 +1465,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <h3 className="text-xl font-bold mb-1">{category.title}</h3>
           <p className="text-muted-foreground mb-4">Select all that you subscribe to</p>
 
-          <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto max-h-48 overflow-y-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 max-w-sm lg:max-w-2xl mx-auto max-h-48 lg:max-h-64 overflow-y-auto">
             {category.items.map((item) => (
               <button
                 key={item.id}
@@ -1524,113 +1524,123 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
             <div className="p-3 rounded-full bg-primary/10 w-fit mx-auto mb-3">
               <Check className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-xl font-bold">Your Budget Analysis</h3>
+            <h3 className="text-xl lg:text-2xl font-bold">Your Budget Analysis</h3>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="text-center p-3 rounded-lg bg-blue-500/10">
-              <div className="text-2xl font-bold text-blue-500">{needsPercent.toFixed(0)}%</div>
-              <div className="text-xs text-muted-foreground">Needs</div>
-              <div className="text-xs font-medium">${needs.toFixed(0)}</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-purple-500/10">
-              <div className="text-2xl font-bold text-purple-500">{wantsPercent.toFixed(0)}%</div>
-              <div className="text-xs text-muted-foreground">Wants</div>
-              <div className="text-xs font-medium">${wants.toFixed(0)}</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-green-500/10">
-              <div className="text-2xl font-bold text-green-500">{savingsPercent.toFixed(0)}%</div>
-              <div className="text-xs text-muted-foreground">Savings</div>
-              <div className="text-xs font-medium">${savings.toFixed(0)}</div>
-            </div>
-          </div>
-
-          <div className="mb-6 p-4 rounded-lg bg-muted/50 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Monthly Income</span>
-              <span className="font-bold">${monthlyIncome.toFixed(0)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Total Spending</span>
-              <span className="font-bold">${total.toFixed(0)}</span>
-            </div>
-            <div className="flex justify-between text-muted-foreground">
-              <span className="pl-2">↳ Subscriptions</span>
-              <span>${subscriptionTotal.toFixed(0)}</span>
-            </div>
-            <div className="flex justify-between pt-2 border-t">
-              <span>Leftover</span>
-              <span className={cn("font-bold", leftover >= 0 ? "text-green-500" : "text-red-500")}>
-                ${leftover.toFixed(0)}
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-2 max-h-56 overflow-y-auto">
-            <h4 className="font-semibold sticky top-0 bg-background py-1">Recommendations</h4>
-            {getRecommendations().map((rec, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "p-3 rounded-lg flex gap-3 items-start text-sm",
-                  rec.type === "success" && "bg-green-500/10 text-green-700 dark:text-green-400",
-                  rec.type === "warning" && "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-                  rec.type === "danger" && "bg-red-500/10 text-red-700 dark:text-red-400"
-                )}
-              >
-                {rec.type === "success" ? (
-                  <Check className="h-4 w-4 shrink-0 mt-0.5" />
-                ) : (
-                  <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-                )}
-                <span>{rec.message}</span>
+          {/* Desktop: Two column layout */}
+          <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+            {/* Left Column: Budget Summary */}
+            <div>
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div className="text-center p-3 lg:p-4 rounded-lg bg-blue-500/10">
+                  <div className="text-2xl lg:text-3xl font-bold text-blue-500">{needsPercent.toFixed(0)}%</div>
+                  <div className="text-xs lg:text-sm text-muted-foreground">Needs</div>
+                  <div className="text-xs lg:text-sm font-medium">${needs.toFixed(0)}</div>
+                </div>
+                <div className="text-center p-3 lg:p-4 rounded-lg bg-purple-500/10">
+                  <div className="text-2xl lg:text-3xl font-bold text-purple-500">{wantsPercent.toFixed(0)}%</div>
+                  <div className="text-xs lg:text-sm text-muted-foreground">Wants</div>
+                  <div className="text-xs lg:text-sm font-medium">${wants.toFixed(0)}</div>
+                </div>
+                <div className="text-center p-3 lg:p-4 rounded-lg bg-green-500/10">
+                  <div className="text-2xl lg:text-3xl font-bold text-green-500">{savingsPercent.toFixed(0)}%</div>
+                  <div className="text-xs lg:text-sm text-muted-foreground">Savings</div>
+                  <div className="text-xs lg:text-sm font-medium">${savings.toFixed(0)}</div>
+                </div>
               </div>
-            ))}
-          </div>
 
-          {/* Save Budget & Expense Tracking */}
-          {user && (
-            <div className="mt-6 space-y-4 border-t pt-4">
-              {/* Save Budget Button */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSaveBudget}
-                  disabled={savingBudget}
-                  className="gap-2"
-                >
-                  {savingBudget ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="h-4 w-4" />
-                  )}
-                  Save Budget
-                </Button>
-                {savedMessage && (
-                  <span className={cn(
-                    "text-sm",
-                    savedMessage.includes("Failed") ? "text-destructive" : "text-green-600"
-                  )}>
-                    {savedMessage}
+              <div className="mb-6 p-4 rounded-lg bg-muted/50 space-y-2 text-sm lg:text-base">
+                <div className="flex justify-between">
+                  <span>Monthly Income</span>
+                  <span className="font-bold">${monthlyIncome.toFixed(0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Total Spending</span>
+                  <span className="font-bold">${total.toFixed(0)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span className="pl-2">↳ Subscriptions</span>
+                  <span>${subscriptionTotal.toFixed(0)}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t">
+                  <span>Leftover</span>
+                  <span className={cn("font-bold", leftover >= 0 ? "text-green-500" : "text-red-500")}>
+                    ${leftover.toFixed(0)}
                   </span>
-                )}
+                </div>
               </div>
 
-              {/* Expense Tracking Section */}
-              <div className="space-y-4">
-                <h4 className="font-semibold flex items-center gap-2">
-                  <Receipt className="h-4 w-4 text-primary" />
-                  Track Your Actual Spending
-                </h4>
-                <ReceiptUpload onTransactionCreated={handleTransactionCreated} />
-                <TransactionList
-                  onAddNew={() => setShowAddForm(true)}
-                  refreshTrigger={refreshTrigger}
-                />
+              {/* Save Budget Button */}
+              {user && (
+                <div className="flex items-center gap-2 mb-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSaveBudget}
+                    disabled={savingBudget}
+                    className="gap-2"
+                  >
+                    {savingBudget ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    Save Budget
+                  </Button>
+                  {savedMessage && (
+                    <span className={cn(
+                      "text-sm",
+                      savedMessage.includes("Failed") ? "text-destructive" : "text-green-600"
+                    )}>
+                      {savedMessage}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <div className="space-y-2 max-h-56 lg:max-h-72 overflow-y-auto">
+                <h4 className="font-semibold sticky top-0 bg-background py-1">Recommendations</h4>
+                {getRecommendations().map((rec, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "p-3 rounded-lg flex gap-3 items-start text-sm",
+                      rec.type === "success" && "bg-green-500/10 text-green-700 dark:text-green-400",
+                      rec.type === "warning" && "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
+                      rec.type === "danger" && "bg-red-500/10 text-red-700 dark:text-red-400"
+                    )}
+                  >
+                    {rec.type === "success" ? (
+                      <Check className="h-4 w-4 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                    )}
+                    <span>{rec.message}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
+
+            {/* Right Column: Expense Tracking (Desktop) */}
+            {user && (
+              <div className="mt-6 lg:mt-0 pt-6 lg:pt-0 border-t lg:border-t-0 lg:border-l lg:pl-8">
+                <div className="space-y-4">
+                  <h4 className="font-semibold flex items-center gap-2 text-lg">
+                    <Receipt className="h-5 w-5 text-primary" />
+                    Track Your Actual Spending
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Scan receipts or add transactions manually to compare your actual spending against your budget.
+                  </p>
+                  <ReceiptUpload onTransactionCreated={handleTransactionCreated} />
+                  <TransactionList
+                    onAddNew={() => setShowAddForm(true)}
+                    refreshTrigger={refreshTrigger}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       );
     }
@@ -1639,7 +1649,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   };
 
   return (
-    <Card className="border-primary/20 overflow-hidden">
+    <Card className="border-primary/20 overflow-hidden lg:max-w-4xl lg:mx-auto">
       <CardContent className="p-0">
         <div className="h-1 bg-muted">
           <motion.div
@@ -1663,7 +1673,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           </button>
         </div>
 
-        <div className="p-6 pt-2">
+        <div className="p-6 lg:p-8 pt-2">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentStepIndex}
