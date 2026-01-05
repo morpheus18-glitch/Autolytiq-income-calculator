@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus, Cigarette, Wine, Dice1, Scale, Briefcase, Banknote, Users, DollarSign, Train, Gift, Heart, GraduationCap, Ticket, Film } from "lucide-react";
+import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus, Cigarette, Wine, Dice1, Scale, Briefcase, Banknote, Users, DollarSign, Train, Gift, Heart, GraduationCap, Ticket, Film, Save, History, Loader2, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { AuthGuard } from "@/components/auth-guard";
+import { ReceiptUpload } from "@/components/receipt-upload";
+import { TransactionList } from "@/components/transaction-list";
+import { ManualTransactionForm } from "@/components/manual-transaction-form";
+import { budgetApi } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 
 // Subscription services with typical prices
 const SUBSCRIPTIONS = {
@@ -742,6 +748,7 @@ interface InteractiveBudgetProps {
 }
 
 export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -751,6 +758,12 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   const [frequencyData, setFrequencyData] = useState<Record<string, { frequency: number; amount: number }>>({});
   const [selectedSubscriptions, setSelectedSubscriptions] = useState<Set<string>>(new Set());
   const [customSubAmounts, setCustomSubAmounts] = useState<Record<string, number>>({});
+
+  // Expense tracking state
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [savingBudget, setSavingBudget] = useState(false);
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
 
   // Build step sequence
   const steps: Step[] = [
@@ -839,6 +852,40 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
     setCustomSubAmounts({});
     setIsOpen(true);
     setCurrentStepIndex(steps.length - 1); // Jump to results
+  };
+
+  // Save budget to server
+  const handleSaveBudget = async () => {
+    if (!user) return;
+
+    setSavingBudget(true);
+    setSavedMessage(null);
+
+    try {
+      const { data, error } = await budgetApi.save({
+        fixedExpenses,
+        frequencyData,
+        selectedSubscriptions: Array.from(selectedSubscriptions),
+        customSubAmounts,
+        monthlyIncome,
+      });
+
+      if (error) throw new Error(error);
+
+      setSavedMessage("Budget saved!");
+      setTimeout(() => setSavedMessage(null), 3000);
+    } catch (err) {
+      console.error("Save error:", err);
+      setSavedMessage("Failed to save");
+      setTimeout(() => setSavedMessage(null), 3000);
+    } finally {
+      setSavingBudget(false);
+    }
+  };
+
+  // Handle transaction created from receipt scan or manual entry
+  const handleTransactionCreated = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleNext = () => {
@@ -1537,6 +1584,50 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
               </div>
             ))}
           </div>
+
+          {/* Save Budget & Expense Tracking */}
+          {user && (
+            <div className="mt-6 space-y-4 border-t pt-4">
+              {/* Save Budget Button */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSaveBudget}
+                  disabled={savingBudget}
+                  className="gap-2"
+                >
+                  {savingBudget ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  Save Budget
+                </Button>
+                {savedMessage && (
+                  <span className={cn(
+                    "text-sm",
+                    savedMessage.includes("Failed") ? "text-destructive" : "text-green-600"
+                  )}>
+                    {savedMessage}
+                  </span>
+                )}
+              </div>
+
+              {/* Expense Tracking Section */}
+              <div className="space-y-4">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Receipt className="h-4 w-4 text-primary" />
+                  Track Your Actual Spending
+                </h4>
+                <ReceiptUpload onTransactionCreated={handleTransactionCreated} />
+                <TransactionList
+                  onAddNew={() => setShowAddForm(true)}
+                  refreshTrigger={refreshTrigger}
+                />
+              </div>
+            </div>
+          )}
         </div>
       );
     }
@@ -1603,6 +1694,28 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           </div>
         </div>
       </CardContent>
+
+      {/* Manual Transaction Form Modal */}
+      <AnimatePresence>
+        {showAddForm && (
+          <ManualTransactionForm
+            onClose={() => setShowAddForm(false)}
+            onCreated={handleTransactionCreated}
+          />
+        )}
+      </AnimatePresence>
     </Card>
+  );
+}
+
+/**
+ * Interactive Budget wrapped with AuthGuard.
+ * Requires login to use the budget builder and expense tracking features.
+ */
+export function ProtectedInteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
+  return (
+    <AuthGuard>
+      <InteractiveBudget monthlyIncome={monthlyIncome} />
+    </AuthGuard>
   );
 }

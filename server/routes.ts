@@ -3,6 +3,9 @@ import type { Server } from "http";
 import authRoutes from "./auth";
 import leadsRoutes from "./leads";
 import adminRoutes from "./admin";
+import budgetRoutes from "./budget";
+import transactionRoutes from "./transactions";
+import receiptRoutes from "./receipts";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -19,6 +22,15 @@ export async function registerRoutes(
 
   // Admin routes
   app.use("/api/admin", adminRoutes);
+
+  // Budget routes (requires auth)
+  app.use("/api/budget", budgetRoutes);
+
+  // Transaction routes (requires auth)
+  app.use("/api/transactions", transactionRoutes);
+
+  // Receipt upload routes (requires auth)
+  app.use("/api/receipts", receiptRoutes);
 
   return httpServer;
 }
