@@ -34,7 +34,7 @@ export function AutolytiqLogo({ className, size = 24 }: IconProps) {
   );
 }
 
-// Income/Calculator Icon - Calculator device
+// Income/Calculator Icon - Money with upward arrow
 export function IncomeIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -44,20 +44,14 @@ export function IncomeIcon({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
-      {/* Calculator body */}
-      <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" strokeWidth="2" />
-      {/* Display screen */}
-      <rect x="6" y="4" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
-      {/* Button grid */}
-      <circle cx="8" cy="11" r="1" fill="currentColor" />
-      <circle cx="12" cy="11" r="1" fill="currentColor" />
-      <circle cx="16" cy="11" r="1" fill="currentColor" />
-      <circle cx="8" cy="15" r="1" fill="currentColor" />
-      <circle cx="12" cy="15" r="1" fill="currentColor" />
-      <circle cx="16" cy="15" r="1" fill="currentColor" />
-      <circle cx="8" cy="19" r="1" fill="currentColor" />
-      <circle cx="12" cy="19" r="1" fill="currentColor" />
-      <circle cx="16" cy="19" r="1" fill="currentColor" />
+      {/* Coin/money circle */}
+      <circle cx="10" cy="14" r="7" stroke="currentColor" strokeWidth="2" />
+      {/* Dollar sign */}
+      <path d="M10 10v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M8 12.5c0-1 .9-1.5 2-1.5s2 .5 2 1.5-.9 1.5-2 1.5-2 .5-2 1.5.9 1.5 2 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Upward growth arrow */}
+      <path d="M17 10V4h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M17 4l-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -82,7 +76,7 @@ export function DollarIcon({ className, size = 24 }: IconProps) {
   );
 }
 
-// Car/Auto Icon - Classic sedan side view
+// Car/Auto Icon - Simple front-facing car
 export function AutoIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -92,21 +86,18 @@ export function AutoIcon({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
-      {/* Car body - single clean path */}
-      <path
-        d="M2 13h2l1.5-4h5l2 2h5l1-2h3.5v4H2z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      {/* Undercarriage */}
-      <path d="M4 17h3m10 0h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      {/* Front wheel */}
-      <circle cx="7" cy="17" r="2.5" stroke="currentColor" strokeWidth="2" />
-      <circle cx="7" cy="17" r="0.5" fill="currentColor" />
-      {/* Rear wheel */}
-      <circle cx="17" cy="17" r="2.5" stroke="currentColor" strokeWidth="2" />
-      <circle cx="17" cy="17" r="0.5" fill="currentColor" />
+      {/* Windshield */}
+      <path d="M7 8h10l-1 5H8L7 8z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      {/* Body */}
+      <rect x="4" y="13" width="16" height="5" rx="1" stroke="currentColor" strokeWidth="2" />
+      {/* Headlights */}
+      <rect x="5" y="14" width="3" height="2" rx="0.5" fill="currentColor" />
+      <rect x="16" y="14" width="3" height="2" rx="0.5" fill="currentColor" />
+      {/* Grille */}
+      <path d="M10 15h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      {/* Wheels */}
+      <rect x="5" y="18" width="4" height="2" rx="1" fill="currentColor" />
+      <rect x="15" y="18" width="4" height="2" rx="1" fill="currentColor" />
     </svg>
   );
 }
