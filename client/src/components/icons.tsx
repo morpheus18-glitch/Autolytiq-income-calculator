@@ -60,7 +60,7 @@ export function IncomeIcon({ className, size = 24 }: IconProps) {
   );
 }
 
-// Dollar Sign Icon
+// Dollar Sign Icon - Clean $ like reference
 export function DollarIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -70,17 +70,21 @@ export function DollarIcon({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
+      {/* Vertical line */}
+      <path d="M12 3v18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      {/* S curve */}
       <path
-        d="M12 4v2m0 12v2m-4-12c0-1.66 1.79-3 4-3s4 1.34 4 3-1.79 3-4 3-4 1.34-4 3 1.79 3 4 3 4-1.34 4-3"
+        d="M17 7c0-2-2-3-5-3s-5 1-5 3c0 4 10 2 10 6 0 2-2 3-5 3s-5-1-5-3"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
 }
 
-// Car/Auto Icon - Matching reference style
+// Car/Auto Icon - Simple side profile like reference
 export function AutoIcon({ className, size = 24 }: IconProps) {
   return (
     <svg
@@ -90,16 +94,23 @@ export function AutoIcon({ className, size = 24 }: IconProps) {
       fill="none"
       className={cn("text-primary", className)}
     >
-      {/* Complete car outline in one path */}
+      {/* Body */}
       <path
-        d="M2 14h3l1.5-3h2.5l2-3h2l2 3h2.5l1.5 3h3v2h-3.5a2.5 2.5 0 00-5 0h-3a2.5 2.5 0 00-5 0H2v-2z"
+        d="M3 14h18v3H3z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      {/* Cabin/roof */}
+      <path
+        d="M6 14v-3l2-2h8l2 2v3"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
       {/* Wheels */}
-      <circle cx="7" cy="16" r="2" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="17" cy="16" r="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="7" cy="17" r="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="17" cy="17" r="2" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
