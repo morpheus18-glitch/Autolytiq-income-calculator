@@ -259,7 +259,7 @@ function Calculator() {
               </Button>
             </Link>
             <Link href="/blog">
-              <Button variant="ghost" size="icon" className="sm:hidden">
+              <Button variant="ghost" size="icon" className="sm:hidden" aria-label="Read blog articles">
                 <BlogIcon className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5">
@@ -269,12 +269,12 @@ function Calculator() {
             </Link>
             <ThemeToggle />
             {user ? (
-              <Button variant="ghost" size="icon" onClick={logout}>
+              <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out">
                 <LogoutIcon className="h-4 w-4" />
               </Button>
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label="Log in">
                   <LoginIcon className="h-4 w-4" />
                 </Button>
               </Link>

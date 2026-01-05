@@ -1,28 +1,40 @@
+import { Suspense, lazy } from "react";
 import { Switch, Route } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth";
-import NotFound from "@/pages/not-found";
-import Calculator from "@/pages/calculator";
-import Desk from "@/pages/desk";
-import Login from "@/pages/login";
-import Signup from "@/pages/signup";
-import ForgotPassword from "@/pages/forgot-password";
-import ResetPassword from "@/pages/reset-password";
-import Privacy from "@/pages/privacy";
-import Terms from "@/pages/terms";
-import Admin from "@/pages/admin";
-import Auto from "@/pages/auto";
-import SmartMoney from "@/pages/smart-money";
-import Housing from "@/pages/housing";
-import BlogIndex from "@/pages/blog/index";
-import BlogCalculateIncome from "@/pages/blog/how-to-calculate-annual-income";
-import BlogSalaryNegotiation from "@/pages/blog/salary-negotiation-tips";
-import BlogMaximize401k from "@/pages/blog/maximize-your-401k";
-import BlogUnderstandingPaystub from "@/pages/blog/understanding-your-paystub";
-import BlogSideHustleIdeas from "@/pages/blog/side-hustle-income-ideas";
-import BlogTaxDeductions from "@/pages/blog/tax-deductions-you-might-be-missing";
+
+// Lazy load all pages for code splitting
+const Calculator = lazy(() => import("@/pages/calculator"));
+const Desk = lazy(() => import("@/pages/desk"));
+const Login = lazy(() => import("@/pages/login"));
+const Signup = lazy(() => import("@/pages/signup"));
+const ForgotPassword = lazy(() => import("@/pages/forgot-password"));
+const ResetPassword = lazy(() => import("@/pages/reset-password"));
+const Privacy = lazy(() => import("@/pages/privacy"));
+const Terms = lazy(() => import("@/pages/terms"));
+const Admin = lazy(() => import("@/pages/admin"));
+const Auto = lazy(() => import("@/pages/auto"));
+const SmartMoney = lazy(() => import("@/pages/smart-money"));
+const Housing = lazy(() => import("@/pages/housing"));
+const NotFound = lazy(() => import("@/pages/not-found"));
+const BlogIndex = lazy(() => import("@/pages/blog/index"));
+const BlogCalculateIncome = lazy(() => import("@/pages/blog/how-to-calculate-annual-income"));
+const BlogSalaryNegotiation = lazy(() => import("@/pages/blog/salary-negotiation-tips"));
+const BlogMaximize401k = lazy(() => import("@/pages/blog/maximize-your-401k"));
+const BlogUnderstandingPaystub = lazy(() => import("@/pages/blog/understanding-your-paystub"));
+const BlogSideHustleIdeas = lazy(() => import("@/pages/blog/side-hustle-income-ideas"));
+const BlogTaxDeductions = lazy(() => import("@/pages/blog/tax-deductions-you-might-be-missing"));
+
+// Minimal loading fallback
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse text-muted-foreground">Loading...</div>
+    </div>
+  );
+}
 
 function Router() {
   return (
@@ -57,7 +69,9 @@ function App() {
       <ThemeProvider defaultTheme="dark" storageKey="income-calc-theme">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <Suspense fallback={<PageLoader />}>
+            <Router />
+          </Suspense>
         </TooltipProvider>
       </ThemeProvider>
     </AuthProvider>

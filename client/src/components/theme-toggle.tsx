@@ -76,6 +76,7 @@ export function FloatingThemeToggle() {
         "bg-card border border-border",
         "sm:hidden" // Only show on mobile
       )}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
     >
       {isDark ? (
         <Sun className="h-5 w-5 text-yellow-500" />

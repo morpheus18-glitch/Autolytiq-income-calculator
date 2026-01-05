@@ -1296,18 +1296,21 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
               <button
                 onClick={() => applyPreset("minimal")}
                 className="px-3 py-1.5 text-xs rounded-full border border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20 transition-colors"
+                aria-label="Apply minimal spending preset"
               >
                 Minimal Spender
               </button>
               <button
                 onClick={() => applyPreset("moderate")}
                 className="px-3 py-1.5 text-xs rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors"
+                aria-label="Apply moderate lifestyle preset"
               >
                 Moderate Lifestyle
               </button>
               <button
                 onClick={() => applyPreset("comfortable")}
                 className="px-3 py-1.5 text-xs rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors"
+                aria-label="Apply comfortable living preset"
               >
                 Comfortable Living
               </button>
@@ -1651,7 +1654,11 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <span className="text-xs text-muted-foreground">
             Step {currentStepIndex + 1} of {totalSteps}
           </span>
-          <button onClick={() => setIsOpen(false)} className="p-1 rounded hover:bg-muted">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="p-1 rounded hover:bg-muted"
+            aria-label="Close budget builder"
+          >
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
