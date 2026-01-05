@@ -1,28 +1,29 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Car,
-  DollarSign,
-  Calculator as CalcIcon,
-  ChevronRight,
-  ChevronLeft,
-  Shield,
-  Fuel,
-  Wrench,
-  TrendingDown,
-  AlertTriangle,
-  CheckCircle2,
-  CreditCard,
-  Clock,
-  Info,
-  BookOpen,
-  Lightbulb,
-  Search,
-  FileText,
-} from "lucide-react";
+import { ChevronRight, ChevronLeft, TrendingDown, Search, FileText } from "lucide-react";
 import { Link } from "wouter";
 
 import { cn } from "@/lib/utils";
+import {
+  AutoIcon,
+  AutolytiqLogo,
+  IncomeIcon,
+  DollarIcon,
+  HousingIcon,
+  WalletIcon,
+  CreditScoreIcon,
+  ClockIcon,
+  BlogIcon,
+  CheckIcon,
+  WarningIcon,
+  ShieldIcon,
+  FuelIcon,
+  WrenchIcon,
+  LightbulbIcon,
+  InfoIcon,
+  ExternalLinkIcon,
+  ArrowLeftIcon,
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +38,6 @@ import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/component
 import { FAQ, AUTO_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedNumber } from "@/components/charts";
-import { ExternalLink } from "lucide-react";
 
 const STORAGE_KEY = "auto-page-state";
 
@@ -225,14 +225,14 @@ function Auto() {
               </Button>
             </Link>
             <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
-              <Car className="h-5 w-5 text-primary" />
+              <AutoIcon className="h-5 w-5 text-primary" />
             </div>
             <h1 className="text-lg font-bold tracking-tight dark:neon-text">Auto Guide</h1>
           </div>
           <nav className="flex items-center gap-1">
             <Link href="/blog">
               <Button variant="ghost" size="icon">
-                <BookOpen className="h-4 w-4" />
+                <BlogIcon className="h-4 w-4" />
               </Button>
             </Link>
             <ThemeToggle />
@@ -256,7 +256,7 @@ function Auto() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <CalcIcon className="h-5 w-5 text-primary" />
+                <DollarIcon className="h-5 w-5 text-primary" />
                 Affordability Calculator
               </CardTitle>
               <Button
@@ -282,7 +282,7 @@ function Auto() {
                         Monthly Income
                         <Tooltip>
                           <TooltipTrigger>
-                            <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                            <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Pre-tax monthly income</p>
@@ -316,7 +316,7 @@ function Auto() {
                   {/* Credit Tier */}
                   <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
-                      <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      <CreditScoreIcon className="h-4 w-4 text-muted-foreground" />
                       Credit Score Range
                     </Label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -333,7 +333,7 @@ function Auto() {
                           )}
                         >
                           {creditTier === t.id && (
-                            <CheckCircle2 className="absolute top-2 right-2 h-4 w-4 text-primary" />
+                            <CheckIcon className="absolute top-2 right-2 h-4 w-4 text-primary" />
                           )}
                           <div className={cn("font-semibold text-sm", t.color)}>{t.label}</div>
                           <div className="text-xs text-muted-foreground">{t.range}</div>
@@ -345,7 +345,7 @@ function Auto() {
                   {/* Loan Term */}
                   <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <ClockIcon className="h-4 w-4 text-muted-foreground" />
                       Loan Term
                     </Label>
                     <div className="grid grid-cols-5 gap-2">
@@ -422,7 +422,7 @@ function Auto() {
                       {/* Warning for short terms */}
                       {selectedTerm <= 48 && maxVehiclePrice < 15000 && (
                         <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 flex items-start gap-2">
-                          <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />
+                          <WarningIcon className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />
                           <p className="text-sm text-yellow-200/80">
                             Consider a longer term for more flexibility, or increase your down payment.
                           </p>
@@ -479,7 +479,7 @@ function Auto() {
         <Card className="glass-card border-none shadow-xl mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-primary" />
+              <LightbulbIcon className="h-5 w-5 text-primary" />
               Smart Shopping Tips
             </CardTitle>
           </CardHeader>
@@ -494,7 +494,7 @@ function Auto() {
                   <ul className="space-y-2">
                     {section.tips.map((tip, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                        <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
                         <span className="text-muted-foreground">{tip}</span>
                       </li>
                     ))}
@@ -509,7 +509,7 @@ function Auto() {
         <Card className="glass-card border-none shadow-xl mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Car className="h-5 w-5 text-primary" />
+              <AutoIcon className="h-5 w-5 text-primary" />
               New vs Used: What's Right for You?
             </CardTitle>
           </CardHeader>
@@ -520,19 +520,19 @@ function Auto() {
                 <h3 className="font-semibold text-emerald-500 mb-3">New Vehicle Pros</h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>Full manufacturer warranty</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>Latest safety features & technology</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>Lower interest rates available</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>Choose exact features you want</span>
                   </li>
                 </ul>
@@ -543,19 +543,19 @@ function Auto() {
                 <h3 className="font-semibold text-blue-500 mb-3">Used Vehicle Pros</h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>Significant cost savings (30-50% less)</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>Slower depreciation rate</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>Lower insurance costs</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>CPO options offer warranties</span>
                   </li>
                 </ul>
@@ -592,7 +592,7 @@ function Auto() {
                   </span>
                   <div className="flex items-center gap-1 mb-1">
                     <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
-                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLinkIcon className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                   <p className="text-xs text-muted-foreground">{link.desc}</p>
                 </a>
@@ -609,13 +609,13 @@ function Auto() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link href="/" className="flex-1">
             <Button variant="outline" className="w-full gap-2">
-              <CalcIcon className="h-4 w-4" />
+              <IncomeIcon className="h-4 w-4" />
               Income Calculator
             </Button>
           </Link>
           <Link href="/desk" className="flex-1">
             <Button className="w-full gap-2">
-              <Car className="h-4 w-4" />
+              <AutoIcon className="h-4 w-4" />
               Payment Calculator
               <ChevronRight className="h-4 w-4" />
             </Button>

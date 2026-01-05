@@ -7,24 +7,25 @@ import {
 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Info,
-  RotateCcw,
-  LogIn,
-  LogOut,
-  Calculator as CalcIcon,
-  DollarSign,
-  BookOpen,
-  Car,
-  Clock,
   ChevronRight,
-  Wallet,
-  Home as HomeIcon,
-  CreditCard,
-  CheckCircle2,
-  Download,
-  Share2,
-  Printer,
 } from "lucide-react";
+import {
+  AutolytiqLogo,
+  IncomeIcon,
+  DollarIcon,
+  AutoIcon,
+  HousingIcon,
+  WalletIcon,
+  CreditScoreIcon,
+  ClockIcon,
+  ResetIcon,
+  LoginIcon,
+  LogoutIcon,
+  BlogIcon,
+  CheckIcon,
+  DownloadIcon,
+  InfoIcon,
+} from "@/components/icons";
 import { Link } from "wouter";
 
 import { useAuth } from "@/lib/auth";
@@ -247,7 +248,7 @@ function Calculator() {
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
-              <CalcIcon className="h-5 w-5 text-primary" />
+              <AutolytiqLogo className="h-5 w-5 text-primary" />
             </div>
             <h1 className="text-lg font-bold tracking-tight dark:neon-text">Autolytiq</h1>
           </div>
@@ -259,22 +260,22 @@ function Calculator() {
             </Link>
             <Link href="/blog">
               <Button variant="ghost" size="icon" className="sm:hidden">
-                <BookOpen className="h-4 w-4" />
+                <BlogIcon className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5">
-                <BookOpen className="h-4 w-4" />
+                <BlogIcon className="h-4 w-4" />
                 Blog
               </Button>
             </Link>
             <ThemeToggle />
             {user ? (
               <Button variant="ghost" size="icon" onClick={logout}>
-                <LogOut className="h-4 w-4" />
+                <LogoutIcon className="h-4 w-4" />
               </Button>
             ) : (
               <Link href="/login">
                 <Button variant="ghost" size="icon">
-                  <LogIn className="h-4 w-4" />
+                  <LoginIcon className="h-4 w-4" />
                 </Button>
               </Link>
             )}
@@ -299,7 +300,7 @@ function Calculator() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
+                <IncomeIcon className="h-5 w-5 text-primary" />
                 Income Calculator
               </CardTitle>
               <div className="flex items-center gap-2">
@@ -314,7 +315,7 @@ function Calculator() {
                   onClick={handleReset}
                   className="h-8 px-2 text-muted-foreground hover:text-foreground"
                 >
-                  <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                  <ResetIcon className="h-3.5 w-3.5 mr-1" />
                   Reset
                 </Button>
               </div>
@@ -328,7 +329,7 @@ function Calculator() {
                   Job Start Date
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>When did you start this job?</p>
@@ -359,7 +360,7 @@ function Calculator() {
                   Paystub Date
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Date on your most recent paystub</p>
@@ -427,7 +428,7 @@ function Calculator() {
                         onClick={() => setShowEmailModal(true)}
                         className="gap-2"
                       >
-                        <Download className="h-4 w-4" />
+                        <DownloadIcon className="h-4 w-4" />
                         Email Results
                       </Button>
                       <ShareButtons
@@ -448,7 +449,7 @@ function Calculator() {
                           className="w-full gap-2"
                           size="lg"
                         >
-                          <Car className="h-5 w-5" />
+                          <AutoIcon className="h-5 w-5" />
                           Calculate What You Can Afford
                           <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -472,7 +473,7 @@ function Calculator() {
               <Card className="glass-card border-none shadow-xl mb-6">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Car className="h-5 w-5 text-primary" />
+                    <AutoIcon className="h-5 w-5 text-primary" />
                     Payment Calculator
                   </CardTitle>
                 </CardHeader>
@@ -480,7 +481,7 @@ function Calculator() {
                   {/* Credit Score Selector */}
                   <div className="space-y-3">
                     <Label className="text-sm font-medium flex items-center gap-2">
-                      <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      <CreditScoreIcon className="h-4 w-4 text-muted-foreground" />
                       Your Credit Score Range
                     </Label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -500,7 +501,7 @@ function Calculator() {
                           )}
                         >
                           {creditTier === tier.id && (
-                            <CheckCircle2 className="absolute top-2 right-2 h-4 w-4 text-primary" />
+                            <CheckIcon className="absolute top-2 right-2 h-4 w-4 text-primary" />
                           )}
                           <div className={cn("font-semibold text-sm", tier.color)}>
                             {tier.label}
@@ -545,7 +546,7 @@ function Calculator() {
                   {/* Loan Term */}
                   <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <ClockIcon className="h-4 w-4 text-muted-foreground" />
                       Loan Term
                     </Label>
                     <div className="grid grid-cols-5 gap-2">
@@ -669,7 +670,7 @@ function Calculator() {
                         )}>
                           {isAffordable ? (
                             <>
-                              <CheckCircle2 className="h-4 w-4" />
+                              <CheckIcon className="h-4 w-4" />
                               Within your budget (max {formatCurrency(maxAffordablePayment || 0)}/mo)
                             </>
                           ) : (
@@ -746,21 +747,21 @@ function Calculator() {
         <div className="grid grid-cols-3 gap-3 mt-8">
           <Link href="/auto">
             <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-              <Car className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <AutoIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
               <div className="text-sm font-medium">Auto Guide</div>
               <div className="text-xs text-muted-foreground">Shopping tips</div>
             </div>
           </Link>
           <Link href="/smart-money">
             <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-              <Wallet className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <WalletIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
               <div className="text-sm font-medium">Smart Money</div>
               <div className="text-xs text-muted-foreground">Budget planner</div>
             </div>
           </Link>
           <Link href="/housing">
             <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-              <HomeIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <HousingIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
               <div className="text-sm font-medium">Housing</div>
               <div className="text-xs text-muted-foreground">Rent & mortgage</div>
             </div>

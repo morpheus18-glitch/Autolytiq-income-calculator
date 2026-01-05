@@ -1,32 +1,26 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Wallet,
-  DollarSign,
-  Calculator as CalcIcon,
-  ChevronLeft,
-  PiggyBank,
-  Home,
-  Car,
-  ShoppingCart,
-  Utensils,
-  Heart,
-  Zap,
-  Smartphone,
-  Plane,
-  GraduationCap,
-  TrendingUp,
-  Info,
-  BookOpen,
-  ChevronRight,
-  AlertTriangle,
-  CheckCircle2,
-  Target,
-  Coffee,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart, Utensils, Zap, Smartphone, Plane, Coffee } from "lucide-react";
 import { Link } from "wouter";
 
 import { cn } from "@/lib/utils";
+import {
+  WalletIcon,
+  DollarIcon,
+  IncomeIcon,
+  PiggyIcon,
+  HousingIcon,
+  AutoIcon,
+  HeartIcon,
+  GraduationIcon,
+  TrendUpIcon,
+  InfoIcon,
+  BlogIcon,
+  WarningIcon,
+  CheckIcon,
+  TargetIcon,
+  ExternalLinkIcon,
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +35,6 @@ import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/component
 import { PieChart, BarChart, AnimatedNumber } from "@/components/charts";
 import { FAQ, BUDGET_PLANNER_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ExternalLink } from "lucide-react";
 
 const STORAGE_KEY = "smart-money-state";
 
@@ -249,14 +242,14 @@ function SmartMoney() {
               </Button>
             </Link>
             <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
-              <Wallet className="h-5 w-5 text-primary" />
+              <WalletIcon className="h-5 w-5 text-primary" />
             </div>
             <h1 className="text-lg font-bold tracking-tight dark:neon-text">Smart Money</h1>
           </div>
           <nav className="flex items-center gap-1">
             <Link href="/blog">
               <Button variant="ghost" size="icon">
-                <BookOpen className="h-4 w-4" />
+                <BlogIcon className="h-4 w-4" />
               </Button>
             </Link>
             <ThemeToggle />
@@ -279,7 +272,7 @@ function SmartMoney() {
         <Card className="glass-card border-none shadow-xl mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" />
+              <DollarIcon className="h-5 w-5 text-primary" />
               Income & Deductions
             </CardTitle>
           </CardHeader>
@@ -298,7 +291,7 @@ function SmartMoney() {
                   State Tax Rate
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Your state income tax rate (0% for TX, FL, etc.)</p>
@@ -414,7 +407,7 @@ function SmartMoney() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <CalcIcon className="h-5 w-5 text-primary" />
+                    <IncomeIcon className="h-5 w-5 text-primary" />
                     50/30/20 Budget Planner
                   </CardTitle>
                   <div className="flex items-center gap-2">
@@ -499,7 +492,7 @@ function SmartMoney() {
                       {/* Needs */}
                       <div>
                         <h3 className="text-sm font-semibold text-emerald-400 mb-2 flex items-center gap-2">
-                          <Home className="h-4 w-4" />
+                          <HousingIcon className="h-4 w-4" />
                           Needs (50%)
                         </h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -525,7 +518,7 @@ function SmartMoney() {
                       {/* Wants */}
                       <div>
                         <h3 className="text-sm font-semibold text-blue-400 mb-2 flex items-center gap-2">
-                          <Heart className="h-4 w-4" />
+                          <HeartIcon className="h-4 w-4" />
                           Wants (30%)
                         </h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -551,7 +544,7 @@ function SmartMoney() {
                       {/* Savings */}
                       <div>
                         <h3 className="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-                          <PiggyBank className="h-4 w-4" />
+                          <PiggyIcon className="h-4 w-4" />
                           Savings & Investments (20%)
                         </h3>
                         <div className="grid grid-cols-3 gap-2">
@@ -585,7 +578,7 @@ function SmartMoney() {
         <Card className="glass-card border-none shadow-xl mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <GraduationCap className="h-5 w-5 text-primary" />
+              <GraduationIcon className="h-5 w-5 text-primary" />
               Smart Money Tips
             </CardTitle>
           </CardHeader>
@@ -609,7 +602,7 @@ function SmartMoney() {
           <Card className="glass-card border-none shadow-xl mb-6">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
+                <TargetIcon className="h-5 w-5 text-primary" />
                 Quick Reference
               </CardTitle>
             </CardHeader>
@@ -659,7 +652,7 @@ function SmartMoney() {
                   </span>
                   <div className="flex items-center gap-1 mb-1">
                     <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
-                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLinkIcon className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                   <p className="text-xs text-muted-foreground">{link.desc}</p>
                 </a>
@@ -676,13 +669,13 @@ function SmartMoney() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link href="/" className="flex-1">
             <Button variant="outline" className="w-full gap-2">
-              <CalcIcon className="h-4 w-4" />
+              <IncomeIcon className="h-4 w-4" />
               Income Calculator
             </Button>
           </Link>
           <Link href="/housing" className="flex-1">
             <Button className="w-full gap-2">
-              <Home className="h-4 w-4" />
+              <HousingIcon className="h-4 w-4" />
               Housing Affordability
               <ChevronRight className="h-4 w-4" />
             </Button>

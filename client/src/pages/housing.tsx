@@ -1,28 +1,26 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Home,
-  DollarSign,
-  Calculator as CalcIcon,
-  ChevronLeft,
-  ChevronRight,
-  Building,
-  Key,
-  TrendingUp,
-  Info,
-  BookOpen,
-  CheckCircle2,
-  AlertTriangle,
-  Percent,
-  Clock,
-  Shield,
-  Lightbulb,
-  MapPin,
-  Wallet,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Building, Key, MapPin } from "lucide-react";
 import { Link } from "wouter";
 
 import { cn } from "@/lib/utils";
+import {
+  HousingIcon,
+  AutoIcon,
+  WalletIcon,
+  IncomeIcon,
+  DollarIcon,
+  CheckIcon,
+  WarningIcon,
+  ShieldIcon,
+  TrendUpIcon,
+  LightbulbIcon,
+  BlogIcon,
+  InfoIcon,
+  ClockIcon,
+  PercentIcon,
+  ExternalLinkIcon,
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +35,6 @@ import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/component
 import { FAQ, HOUSING_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AmortizationChart, AnimatedNumber } from "@/components/charts";
-import { ExternalLink } from "lucide-react";
 
 // Housing-focused affiliate links
 const HOUSING_AFFILIATES = [
@@ -237,14 +234,14 @@ function Housing() {
               </Button>
             </Link>
             <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
-              <Home className="h-5 w-5 text-primary" />
+              <HousingIcon className="h-5 w-5 text-primary" />
             </div>
             <h1 className="text-lg font-bold tracking-tight dark:neon-text">Housing</h1>
           </div>
           <nav className="flex items-center gap-1">
             <Link href="/blog">
               <Button variant="ghost" size="icon">
-                <BookOpen className="h-4 w-4" />
+                <BlogIcon className="h-4 w-4" />
               </Button>
             </Link>
             <ThemeToggle />
@@ -267,7 +264,7 @@ function Housing() {
         <Card className="glass-card border-none shadow-xl mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" />
+              <DollarIcon className="h-5 w-5 text-primary" />
               Your Income
             </CardTitle>
           </CardHeader>
@@ -278,7 +275,7 @@ function Housing() {
                   Monthly Gross Income
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Pre-tax monthly income</p>
@@ -296,7 +293,7 @@ function Housing() {
                   Monthly Debt Payments
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
+                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Car payments, student loans, credit cards, etc.</p>
@@ -419,12 +416,12 @@ function Housing() {
                         )}>
                           {isRentAffordable ? (
                             <>
-                              <CheckCircle2 className="h-4 w-4" />
+                              <CheckIcon className="h-4 w-4" />
                               Within the 30% guideline
                             </>
                           ) : (
                             <>
-                              <AlertTriangle className="h-4 w-4" />
+                              <WarningIcon className="h-4 w-4" />
                               Above 30% - may strain your budget
                             </>
                           )}
@@ -475,7 +472,7 @@ function Housing() {
               <Card className="glass-card border-none shadow-xl mb-6">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <LightbulbIcon className="h-5 w-5 text-primary" />
                     Renting Tips
                   </CardTitle>
                 </CardHeader>
@@ -559,7 +556,7 @@ function Housing() {
                   {/* Loan Term */}
                   <div className="space-y-2">
                     <Label className="text-sm font-medium flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <ClockIcon className="h-4 w-4 text-muted-foreground" />
                       Loan Term
                     </Label>
                     <div className="grid grid-cols-3 gap-2">
@@ -638,12 +635,12 @@ function Housing() {
                         )}>
                           {isMortgageAffordable ? (
                             <>
-                              <CheckCircle2 className="h-4 w-4" />
+                              <CheckIcon className="h-4 w-4" />
                               Within DTI guidelines (28%/36%)
                             </>
                           ) : (
                             <>
-                              <AlertTriangle className="h-4 w-4" />
+                              <WarningIcon className="h-4 w-4" />
                               DTI too high - {frontEndDTI.toFixed(0)}% front / {backEndDTI.toFixed(0)}% back
                             </>
                           )}
@@ -712,7 +709,7 @@ function Housing() {
                       {/* PMI Warning */}
                       {pmi > 0 && (
                         <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 flex items-start gap-2">
-                          <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />
+                          <WarningIcon className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />
                           <p className="text-sm text-yellow-200/80">
                             With less than 20% down, you'll pay PMI (~{formatCurrency(pmi)}/mo) until you reach 20% equity.
                           </p>
@@ -727,7 +724,7 @@ function Housing() {
               <Card className="glass-card border-none shadow-xl mb-6">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Lightbulb className="h-5 w-5 text-primary" />
+                    <LightbulbIcon className="h-5 w-5 text-primary" />
                     Home Buying Tips
                   </CardTitle>
                 </CardHeader>
@@ -753,7 +750,7 @@ function Housing() {
         <Card className="glass-card border-none shadow-xl mb-6">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
+              <TrendUpIcon className="h-5 w-5 text-primary" />
               Rent vs Buy: Quick Comparison
             </CardTitle>
           </CardHeader>
@@ -767,19 +764,19 @@ function Housing() {
                 </h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>You may move within 3-5 years</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>You prefer flexibility and less responsibility</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>You haven't saved 20% for a down payment</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-blue-500 mt-0.5" />
                     <span>Rent is significantly cheaper than buying</span>
                   </li>
                 </ul>
@@ -793,19 +790,19 @@ function Housing() {
                 </h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>You plan to stay 5+ years</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>You want to build equity and wealth</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>You have 20% down + 6 months reserves</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5" />
+                    <CheckIcon className="h-4 w-4 text-emerald-500 mt-0.5" />
                     <span>Monthly payment fits within 28% DTI</span>
                   </li>
                 </ul>
@@ -835,7 +832,7 @@ function Housing() {
                   </span>
                   <div className="flex items-center gap-1 mb-1">
                     <span className="text-sm font-medium group-hover:text-primary transition-colors">{link.name}</span>
-                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLinkIcon className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                   <p className="text-xs text-muted-foreground">{link.desc}</p>
                 </a>
@@ -852,13 +849,13 @@ function Housing() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link href="/" className="flex-1">
             <Button variant="outline" className="w-full gap-2">
-              <CalcIcon className="h-4 w-4" />
+              <IncomeIcon className="h-4 w-4" />
               Income Calculator
             </Button>
           </Link>
           <Link href="/smart-money" className="flex-1">
             <Button className="w-full gap-2">
-              <Wallet className="h-4 w-4" />
+              <WalletIcon className="h-4 w-4" />
               Budget Planner
               <ChevronRight className="h-4 w-4" />
             </Button>
