@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Building, Key, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Building, Key, MapPin, DollarSign, Shield, Percent, TrendingUp, Clock } from "lucide-react";
 import { Link } from "wouter";
 
 import { cn } from "@/lib/utils";

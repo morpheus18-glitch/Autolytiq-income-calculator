@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, TrendingDown, Search, FileText } from "lucide-react";
+import { ChevronRight, ChevronLeft, TrendingDown, Search, FileText, DollarSign, Shield, Fuel, Wrench } from "lucide-react";
 import { Link } from "wouter";
 
 import { cn } from "@/lib/utils";

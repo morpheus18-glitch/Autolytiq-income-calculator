@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ShoppingCart, Utensils, Zap, Smartphone, Plane, Coffee } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart, Utensils, Zap, Smartphone, Plane, Coffee, Home, Car, PiggyBank, TrendingUp, Target, AlertTriangle, Heart } from "lucide-react";
 import { Link } from "wouter";
 
 import { cn } from "@/lib/utils";
