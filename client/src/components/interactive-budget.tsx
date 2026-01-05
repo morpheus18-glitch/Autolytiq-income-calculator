@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus, Cigarette, Wine, Dice1, Scale, Briefcase, Banknote, Users, DollarSign } from "lucide-react";
+import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus, Cigarette, Wine, Dice1, Scale, Briefcase, Banknote, Users, DollarSign, Train, Gift, Heart, GraduationCap, Ticket, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -147,6 +147,21 @@ const SUBSCRIPTIONS = {
       { id: "lastpass", name: "LastPass", price: 3.00 },
       { id: "vpn", name: "VPN Service", price: 12.99 },
       { id: "domain", name: "Domain/Hosting", price: 15.00 },
+    ],
+  },
+  education: {
+    title: "Learning & Education",
+    icon: GraduationCap,
+    items: [
+      { id: "coursera", name: "Coursera Plus", price: 59.00 },
+      { id: "linkedin_learning", name: "LinkedIn Learning", price: 29.99 },
+      { id: "skillshare", name: "Skillshare", price: 13.99 },
+      { id: "masterclass", name: "MasterClass", price: 10.00 },
+      { id: "udemy", name: "Udemy (avg)", price: 15.00 },
+      { id: "duolingo", name: "Duolingo Plus", price: 12.99 },
+      { id: "brilliant", name: "Brilliant", price: 24.99 },
+      { id: "codecademy", name: "Codecademy Pro", price: 17.99 },
+      { id: "pluralsight", name: "Pluralsight", price: 29.00 },
     ],
   },
 };
@@ -388,6 +403,103 @@ const FREQUENCY_QUESTIONS: FrequencyQuestion[] = [
     category: "wants",
     guideline: 0.00,
   },
+  {
+    id: "rideshare",
+    icon: Car,
+    title: "Uber / Lyft / Taxis",
+    question: "How often do you use rideshare services?",
+    frequencyLabel: "Rides per month",
+    amountLabel: "Average cost per ride",
+    frequencyOptions: [
+      { label: "Never", value: 0 },
+      { label: "1-2 times/month", value: 1.5 },
+      { label: "Weekly", value: 4 },
+      { label: "2-3 times/week", value: 10 },
+      { label: "Daily", value: 22 },
+    ],
+    amountOptions: [
+      { label: "$0", value: 0 },
+      { label: "$8-15", value: 12 },
+      { label: "$15-25", value: 20 },
+      { label: "$25-40", value: 32 },
+      { label: "$40-60", value: 50 },
+      { label: "$60+", value: 75 },
+    ],
+    category: "needs",
+    guideline: 0.03,
+  },
+  {
+    id: "entertainment",
+    icon: Film,
+    title: "Movies & Events",
+    question: "Movies, concerts, sports, shows, etc?",
+    frequencyLabel: "Events per month",
+    amountLabel: "Average cost per event",
+    frequencyOptions: [
+      { label: "Never", value: 0 },
+      { label: "1-2 times/month", value: 1.5 },
+      { label: "Weekly", value: 4 },
+      { label: "Multiple/week", value: 8 },
+    ],
+    amountOptions: [
+      { label: "$0", value: 0 },
+      { label: "$15-25 (movie)", value: 20 },
+      { label: "$30-50", value: 40 },
+      { label: "$50-100", value: 75 },
+      { label: "$100-200", value: 150 },
+      { label: "$200+", value: 300 },
+    ],
+    category: "wants",
+    guideline: 0.03,
+  },
+  {
+    id: "gifts",
+    icon: Gift,
+    title: "Gifts & Presents",
+    question: "Average monthly spending on gifts?",
+    frequencyLabel: "Gift-buying occasions per month",
+    amountLabel: "Average spent per gift",
+    frequencyOptions: [
+      { label: "Rarely", value: 0.5 },
+      { label: "1-2 times/month", value: 1.5 },
+      { label: "Several/month", value: 3 },
+      { label: "Frequently", value: 5 },
+    ],
+    amountOptions: [
+      { label: "$0", value: 0 },
+      { label: "$20-40", value: 30 },
+      { label: "$40-75", value: 57 },
+      { label: "$75-125", value: 100 },
+      { label: "$125-200", value: 162 },
+      { label: "$200+", value: 250 },
+    ],
+    category: "wants",
+    guideline: 0.02,
+  },
+  {
+    id: "donations",
+    icon: Heart,
+    title: "Charity & Donations",
+    question: "Do you donate to charity or causes?",
+    frequencyLabel: "How often do you donate?",
+    amountLabel: "Average donation amount",
+    frequencyOptions: [
+      { label: "Never", value: 0 },
+      { label: "Occasionally", value: 0.5 },
+      { label: "Monthly", value: 1 },
+      { label: "Multiple/month", value: 2 },
+    ],
+    amountOptions: [
+      { label: "$0", value: 0 },
+      { label: "$10-25", value: 17 },
+      { label: "$25-50", value: 37 },
+      { label: "$50-100", value: 75 },
+      { label: "$100-250", value: 175 },
+      { label: "$250+", value: 350 },
+    ],
+    category: "wants",
+    guideline: 0.05,
+  },
 ];
 
 interface FixedExpense {
@@ -427,6 +539,26 @@ const FIXED_EXPENSES: FixedExpense[] = [
     title: "Car Insurance",
     question: "Monthly car insurance cost?",
     placeholder: "Insurance premium",
+    category: "needs",
+    guideline: 0.03,
+    optional: true,
+  },
+  {
+    id: "renters_insurance",
+    icon: Home,
+    title: "Renters / Home Insurance",
+    question: "Monthly renters or homeowners insurance?",
+    placeholder: "Insurance premium",
+    category: "needs",
+    guideline: 0.01,
+    optional: true,
+  },
+  {
+    id: "transit_pass",
+    icon: Train,
+    title: "Transit Pass",
+    question: "Monthly transit pass or commute costs?",
+    placeholder: "Bus, subway, train pass",
     category: "needs",
     guideline: 0.03,
     optional: true,
@@ -638,6 +770,75 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
     setFrequencyData({});
     setSelectedSubscriptions(new Set());
     setCustomSubAmounts({});
+  };
+
+  // Quick start presets for faster completion
+  const applyPreset = (preset: "minimal" | "moderate" | "comfortable") => {
+    const presets = {
+      minimal: {
+        fixed: {
+          housing: monthlyIncome * 0.25,
+          utilities: monthlyIncome * 0.04,
+          phone: 50,
+          internet: 60,
+        },
+        frequency: {
+          groceries: { frequency: 4, amount: 75 },
+          dining: { frequency: 2, amount: 15 },
+          gas: { frequency: 2, amount: 50 },
+        },
+        subscriptions: new Set(["netflix", "spotify"]),
+      },
+      moderate: {
+        fixed: {
+          housing: monthlyIncome * 0.28,
+          utilities: monthlyIncome * 0.05,
+          phone: 80,
+          internet: 75,
+          car_payment: monthlyIncome * 0.06,
+          car_insurance: 120,
+          savings: monthlyIncome * 0.10,
+        },
+        frequency: {
+          groceries: { frequency: 4, amount: 125 },
+          dining: { frequency: 4, amount: 25 },
+          coffee: { frequency: 4, amount: 6 },
+          gas: { frequency: 3, amount: 60 },
+          shopping: { frequency: 1, amount: 75 },
+        },
+        subscriptions: new Set(["netflix", "spotify", "amazon_music", "gym"]),
+      },
+      comfortable: {
+        fixed: {
+          housing: monthlyIncome * 0.30,
+          utilities: monthlyIncome * 0.05,
+          phone: 100,
+          internet: 90,
+          car_payment: monthlyIncome * 0.08,
+          car_insurance: 150,
+          savings: monthlyIncome * 0.15,
+          investments: monthlyIncome * 0.05,
+        },
+        frequency: {
+          groceries: { frequency: 4, amount: 175 },
+          dining: { frequency: 6, amount: 35 },
+          coffee: { frequency: 10, amount: 7 },
+          gas: { frequency: 4, amount: 70 },
+          shopping: { frequency: 2, amount: 100 },
+          entertainment: { frequency: 3, amount: 50 },
+          haircare: { frequency: 1, amount: 50 },
+        },
+        subscriptions: new Set(["netflix", "hulu", "spotify", "chatgpt", "gym", "nyt"]),
+      },
+    };
+
+    const selected = presets[preset];
+    setFixedExpenses(selected.fixed);
+    setFrequencyData(selected.frequency);
+    setSelectedSubscriptions(selected.subscriptions);
+    setCustomSubAmounts({});
+    setIsOpen(true);
+    setCurrentStepIndex(steps.length - 1); // Jump to results
   };
 
   const handleNext = () => {
@@ -964,6 +1165,59 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
       });
     }
 
+    // Rideshare spending
+    const rideshareData = frequencyData.rideshare;
+    if (rideshareData && rideshareData.frequency * rideshareData.amount > monthlyIncome * 0.05) {
+      const rideshareTotal = rideshareData.frequency * rideshareData.amount;
+      recommendations.push({
+        type: "warning",
+        message: `Rideshare costs: $${rideshareTotal.toFixed(0)}/mo. Consider transit, biking, or carpooling to reduce this significant expense.`,
+      });
+    }
+
+    // Entertainment spending
+    const entertainmentData = frequencyData.entertainment;
+    if (entertainmentData && entertainmentData.frequency * entertainmentData.amount > monthlyIncome * 0.05) {
+      const entertainmentTotal = entertainmentData.frequency * entertainmentData.amount;
+      recommendations.push({
+        type: "warning",
+        message: `Entertainment: $${entertainmentTotal.toFixed(0)}/mo. Look for free community events, matinee prices, or use rewards points.`,
+      });
+    }
+
+    // Debt-to-income ratio
+    const carPayment = fixedExpenses.car_payment || 0;
+    const ccPayments = fixedExpenses.credit_cards || 0;
+    const studentLoans = fixedExpenses.student_loans || 0;
+    const totalDebtPayments = carPayment + ccPayments + studentLoans + otherLoans + legalObligations;
+    const debtToIncomeRatio = monthlyIncome > 0 ? (totalDebtPayments / monthlyIncome) * 100 : 0;
+    if (debtToIncomeRatio > 43) {
+      recommendations.push({
+        type: "danger",
+        message: `Debt-to-income ratio: ${debtToIncomeRatio.toFixed(0)}%. Above 43% makes it hard to qualify for loans. Focus on debt payoff before new borrowing.`,
+      });
+    } else if (debtToIncomeRatio > 36) {
+      recommendations.push({
+        type: "warning",
+        message: `Debt-to-income ratio: ${debtToIncomeRatio.toFixed(0)}%. You're approaching the limit where lenders get cautious (36-43%).`,
+      });
+    } else if (debtToIncomeRatio > 0 && debtToIncomeRatio <= 20) {
+      recommendations.push({
+        type: "success",
+        message: `Debt-to-income ratio: ${debtToIncomeRatio.toFixed(0)}%. Healthy level - you have good financial flexibility.`,
+      });
+    }
+
+    // Generous giving recognition
+    const donationsData = frequencyData.donations;
+    if (donationsData && donationsData.frequency * donationsData.amount > monthlyIncome * 0.03) {
+      const donationsTotal = donationsData.frequency * donationsData.amount;
+      recommendations.push({
+        type: "success",
+        message: `Charitable giving: $${donationsTotal.toFixed(0)}/mo. Generous! Remember to track for tax deductions.`,
+      });
+    }
+
     return recommendations;
   };
 
@@ -984,10 +1238,34 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <p className="text-muted-foreground mb-4">
             Answer easy questions about your spending habits to get personalized budget recommendations.
           </p>
-          <Button onClick={handleStart} className="gap-2">
+          <Button onClick={handleStart} className="gap-2 mb-4">
             Start Interactive Budget
             <ChevronRight className="h-4 w-4" />
           </Button>
+
+          <div className="border-t pt-4 mt-2">
+            <p className="text-xs text-muted-foreground mb-3">Or quick start with a preset lifestyle:</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <button
+                onClick={() => applyPreset("minimal")}
+                className="px-3 py-1.5 text-xs rounded-full border border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20 transition-colors"
+              >
+                Minimal Spender
+              </button>
+              <button
+                onClick={() => applyPreset("moderate")}
+                className="px-3 py-1.5 text-xs rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors"
+              >
+                Moderate Lifestyle
+              </button>
+              <button
+                onClick={() => applyPreset("comfortable")}
+                className="px-3 py-1.5 text-xs rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors"
+              >
+                Comfortable Living
+              </button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
