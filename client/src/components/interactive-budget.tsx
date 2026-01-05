@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X } from "lucide-react";
+import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,8 @@ const SUBSCRIPTIONS = {
       { id: "peacock", name: "Peacock", price: 7.99 },
       { id: "paramount", name: "Paramount+", price: 11.99 },
       { id: "youtube_premium", name: "YouTube Premium", price: 13.99 },
+      { id: "crunchyroll", name: "Crunchyroll", price: 7.99 },
+      { id: "espn", name: "ESPN+", price: 10.99 },
     ],
   },
   music: {
@@ -29,8 +31,11 @@ const SUBSCRIPTIONS = {
       { id: "spotify", name: "Spotify", price: 11.99 },
       { id: "apple_music", name: "Apple Music", price: 10.99 },
       { id: "amazon_music", name: "Amazon Music", price: 9.99 },
-      { id: "audible", name: "Audible", price: 14.95 },
+      { id: "youtube_music", name: "YouTube Music", price: 10.99 },
       { id: "tidal", name: "Tidal", price: 10.99 },
+      { id: "pandora", name: "Pandora Plus", price: 4.99 },
+      { id: "audible", name: "Audible", price: 14.95 },
+      { id: "sirius", name: "SiriusXM", price: 16.99 },
     ],
   },
   ai: {
@@ -40,9 +45,12 @@ const SUBSCRIPTIONS = {
       { id: "chatgpt", name: "ChatGPT Plus", price: 20.00 },
       { id: "claude", name: "Claude Pro", price: 20.00 },
       { id: "copilot", name: "GitHub Copilot", price: 10.00 },
+      { id: "copilot_pro", name: "MS Copilot Pro", price: 20.00 },
       { id: "midjourney", name: "Midjourney", price: 10.00 },
-      { id: "notion", name: "Notion", price: 10.00 },
+      { id: "notion", name: "Notion AI", price: 10.00 },
       { id: "canva", name: "Canva Pro", price: 12.99 },
+      { id: "grammarly", name: "Grammarly", price: 12.00 },
+      { id: "adobe_cc", name: "Adobe CC", price: 54.99 },
     ],
   },
   gaming: {
@@ -53,6 +61,8 @@ const SUBSCRIPTIONS = {
       { id: "ps_plus", name: "PlayStation Plus", price: 17.99 },
       { id: "nintendo", name: "Nintendo Online", price: 3.99 },
       { id: "ea_play", name: "EA Play", price: 9.99 },
+      { id: "ubisoft", name: "Ubisoft+", price: 17.99 },
+      { id: "humble", name: "Humble Choice", price: 11.99 },
     ],
   },
   fitness: {
@@ -60,10 +70,13 @@ const SUBSCRIPTIONS = {
     icon: Dumbbell,
     items: [
       { id: "gym", name: "Gym Membership", price: 40.00 },
+      { id: "planet_fitness", name: "Planet Fitness", price: 24.99 },
+      { id: "crossfit", name: "CrossFit Box", price: 150.00 },
       { id: "peloton", name: "Peloton", price: 44.00 },
       { id: "classpass", name: "ClassPass", price: 49.00 },
       { id: "headspace", name: "Headspace", price: 12.99 },
       { id: "calm", name: "Calm", price: 14.99 },
+      { id: "noom", name: "Noom", price: 59.00 },
     ],
   },
   boxes: {
@@ -72,12 +85,16 @@ const SUBSCRIPTIONS = {
     items: [
       { id: "hellofresh", name: "HelloFresh", price: 60.00 },
       { id: "bluapron", name: "Blue Apron", price: 50.00 },
+      { id: "factor", name: "Factor", price: 60.00 },
       { id: "fabfitfun", name: "FabFitFun", price: 55.00 },
       { id: "birchbox", name: "Birchbox", price: 15.00 },
       { id: "ipsy", name: "Ipsy", price: 13.00 },
       { id: "boxycharm", name: "BoxyCharm", price: 28.00 },
+      { id: "sephora", name: "Sephora Box", price: 10.00 },
       { id: "stitch_fix", name: "Stitch Fix", price: 20.00 },
+      { id: "trunk_club", name: "Trunk Club", price: 25.00 },
       { id: "bark_box", name: "BarkBox", price: 35.00 },
+      { id: "chewy", name: "Chewy Autoship", price: 40.00 },
     ],
   },
   news: {
@@ -87,19 +104,49 @@ const SUBSCRIPTIONS = {
       { id: "nyt", name: "NY Times", price: 17.00 },
       { id: "wsj", name: "Wall Street Journal", price: 12.00 },
       { id: "wapo", name: "Washington Post", price: 10.00 },
+      { id: "athletic", name: "The Athletic", price: 9.99 },
+      { id: "economist", name: "The Economist", price: 22.00 },
       { id: "kindle", name: "Kindle Unlimited", price: 11.99 },
+      { id: "scribd", name: "Scribd", price: 11.99 },
       { id: "medium", name: "Medium", price: 5.00 },
+      { id: "substack", name: "Substack(s)", price: 10.00 },
     ],
   },
-  other: {
-    title: "Other Services",
+  auto: {
+    title: "Auto & Vehicle",
+    icon: Car,
+    items: [
+      { id: "car_wash", name: "Car Wash Pass", price: 25.00 },
+      { id: "aaa", name: "AAA Membership", price: 12.00 },
+      { id: "oil_change", name: "Oil Change Plan", price: 30.00 },
+      { id: "parking", name: "Parking Spot", price: 150.00 },
+      { id: "tolls", name: "Toll Pass", price: 50.00 },
+    ],
+  },
+  services: {
+    title: "Services & Maintenance",
+    icon: Wind,
+    items: [
+      { id: "dry_cleaning", name: "Dry Cleaning", price: 60.00 },
+      { id: "laundry", name: "Laundry Service", price: 80.00 },
+      { id: "house_cleaning", name: "House Cleaning", price: 150.00 },
+      { id: "lawn_care", name: "Lawn Care", price: 100.00 },
+      { id: "pest_control", name: "Pest Control", price: 40.00 },
+      { id: "security", name: "Home Security", price: 30.00 },
+    ],
+  },
+  cloud: {
+    title: "Cloud & Tech",
     icon: Smartphone,
     items: [
       { id: "icloud", name: "iCloud+", price: 2.99 },
       { id: "google_one", name: "Google One", price: 2.99 },
       { id: "dropbox", name: "Dropbox", price: 11.99 },
+      { id: "onedrive", name: "OneDrive", price: 2.99 },
       { id: "1password", name: "1Password", price: 4.99 },
+      { id: "lastpass", name: "LastPass", price: 3.00 },
       { id: "vpn", name: "VPN Service", price: 12.99 },
+      { id: "domain", name: "Domain/Hosting", price: 15.00 },
     ],
   },
 };
@@ -126,12 +173,14 @@ const FREQUENCY_QUESTIONS: FrequencyQuestion[] = [
     frequencyLabel: "How often do you go grocery shopping?",
     amountLabel: "About how much per trip?",
     frequencyOptions: [
+      { label: "Never/Rarely", value: 0 },
       { label: "Once a week", value: 4 },
       { label: "Twice a week", value: 8 },
       { label: "Every 2 weeks", value: 2 },
       { label: "Once a month", value: 1 },
     ],
     amountOptions: [
+      { label: "$0", value: 0 },
       { label: "$50-75", value: 62 },
       { label: "$75-100", value: 87 },
       { label: "$100-150", value: 125 },
@@ -145,11 +194,12 @@ const FREQUENCY_QUESTIONS: FrequencyQuestion[] = [
   {
     id: "dining",
     icon: Utensils,
-    title: "Dining Out",
+    title: "Dining Out & Delivery",
     question: "How often do you eat out or order delivery?",
     frequencyLabel: "Times per month eating out/ordering",
     amountLabel: "Average spent per meal",
     frequencyOptions: [
+      { label: "Never", value: 0 },
       { label: "Rarely (1-2x)", value: 1.5 },
       { label: "Sometimes (3-4x)", value: 3.5 },
       { label: "Weekly (4-5x)", value: 4.5 },
@@ -157,6 +207,7 @@ const FREQUENCY_QUESTIONS: FrequencyQuestion[] = [
       { label: "Very often (10+)", value: 12 },
     ],
     amountOptions: [
+      { label: "$0", value: 0 },
       { label: "$10-15", value: 12 },
       { label: "$15-25", value: 20 },
       { label: "$25-40", value: 32 },
@@ -198,12 +249,14 @@ const FREQUENCY_QUESTIONS: FrequencyQuestion[] = [
     frequencyLabel: "Shopping trips per month",
     amountLabel: "Average spent per trip",
     frequencyOptions: [
+      { label: "Never", value: 0 },
       { label: "Rarely (0-1x)", value: 0.5 },
       { label: "Monthly (1-2x)", value: 1.5 },
       { label: "Often (2-4x)", value: 3 },
       { label: "Very often (4+)", value: 5 },
     ],
     amountOptions: [
+      { label: "$0", value: 0 },
       { label: "$25-50", value: 37 },
       { label: "$50-100", value: 75 },
       { label: "$100-200", value: 150 },
@@ -221,12 +274,14 @@ const FREQUENCY_QUESTIONS: FrequencyQuestion[] = [
     frequencyLabel: "Salon/barber visits per month",
     amountLabel: "Average cost per visit",
     frequencyOptions: [
+      { label: "Never", value: 0 },
       { label: "Every 2-3 months", value: 0.4 },
       { label: "Monthly", value: 1 },
       { label: "Twice a month", value: 2 },
       { label: "Weekly", value: 4 },
     ],
     amountOptions: [
+      { label: "$0", value: 0 },
       { label: "$15-25", value: 20 },
       { label: "$25-50", value: 37 },
       { label: "$50-100", value: 75 },
@@ -270,6 +325,7 @@ interface FixedExpense {
   placeholder: string;
   category: "needs" | "wants" | "savings";
   guideline: number;
+  optional?: boolean;
 }
 
 const FIXED_EXPENSES: FixedExpense[] = [
@@ -290,6 +346,7 @@ const FIXED_EXPENSES: FixedExpense[] = [
     placeholder: "Loan or lease payment",
     category: "needs",
     guideline: 0.08,
+    optional: true,
   },
   {
     id: "car_insurance",
@@ -299,6 +356,7 @@ const FIXED_EXPENSES: FixedExpense[] = [
     placeholder: "Insurance premium",
     category: "needs",
     guideline: 0.03,
+    optional: true,
   },
   {
     id: "credit_cards",
@@ -308,6 +366,17 @@ const FIXED_EXPENSES: FixedExpense[] = [
     placeholder: "Minimum or payoff amount",
     category: "needs",
     guideline: 0.05,
+    optional: true,
+  },
+  {
+    id: "student_loans",
+    icon: BookOpen,
+    title: "Student Loans",
+    question: "Monthly student loan payment?",
+    placeholder: "Loan payment",
+    category: "needs",
+    guideline: 0.05,
+    optional: true,
   },
   {
     id: "utilities",
@@ -337,6 +406,26 @@ const FIXED_EXPENSES: FixedExpense[] = [
     guideline: 0.02,
   },
   {
+    id: "health_insurance",
+    icon: Pill,
+    title: "Health Insurance",
+    question: "Monthly health insurance premium?",
+    placeholder: "Insurance premium (if not from paycheck)",
+    category: "needs",
+    guideline: 0.05,
+    optional: true,
+  },
+  {
+    id: "health_expenses",
+    icon: Pill,
+    title: "Medical Expenses",
+    question: "Monthly out-of-pocket medical costs?",
+    placeholder: "Meds, copays, etc",
+    category: "needs",
+    guideline: 0.03,
+    optional: true,
+  },
+  {
     id: "pets",
     icon: Dog,
     title: "Pet Expenses",
@@ -344,6 +433,7 @@ const FIXED_EXPENSES: FixedExpense[] = [
     placeholder: "Pet expenses",
     category: "needs",
     guideline: 0.02,
+    optional: true,
   },
   {
     id: "childcare",
@@ -353,24 +443,46 @@ const FIXED_EXPENSES: FixedExpense[] = [
     placeholder: "Daycare, activities, etc",
     category: "needs",
     guideline: 0.10,
+    optional: true,
   },
   {
-    id: "health",
-    icon: Pill,
-    title: "Health & Medical",
-    question: "Monthly health expenses (meds, copays)?",
-    placeholder: "Out of pocket medical",
-    category: "needs",
-    guideline: 0.03,
+    id: "personal_cash",
+    icon: Wallet,
+    title: "Personal Cash / Misc",
+    question: "Cash spending not tracked elsewhere?",
+    placeholder: "ATM withdrawals, misc cash",
+    category: "wants",
+    guideline: 0.05,
+    optional: true,
+  },
+  {
+    id: "vacation_fund",
+    icon: Plane,
+    title: "Vacation / Travel Fund",
+    question: "Monthly amount set aside for travel?",
+    placeholder: "Vacation savings",
+    category: "wants",
+    guideline: 0.05,
+    optional: true,
   },
   {
     id: "savings",
     icon: PiggyBank,
     title: "Savings",
     question: "How much do you save each month?",
-    placeholder: "Savings & investments",
+    placeholder: "Emergency fund, general savings",
     category: "savings",
-    guideline: 0.20,
+    guideline: 0.10,
+  },
+  {
+    id: "investments",
+    icon: PiggyBank,
+    title: "Investments",
+    question: "Monthly investment contributions?",
+    placeholder: "Brokerage, IRA (outside 401k)",
+    category: "savings",
+    guideline: 0.10,
+    optional: true,
   },
 ];
 
@@ -393,16 +505,13 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   const [fixedExpenses, setFixedExpenses] = useState<Record<string, number>>({});
   const [frequencyData, setFrequencyData] = useState<Record<string, { frequency: number; amount: number }>>({});
   const [selectedSubscriptions, setSelectedSubscriptions] = useState<Set<string>>(new Set());
+  const [customSubAmounts, setCustomSubAmounts] = useState<Record<string, number>>({});
 
   // Build step sequence
   const steps: Step[] = [
-    // Fixed expenses first
     ...FIXED_EXPENSES.map(exp => ({ type: "fixed" as const, data: exp })),
-    // Then frequency-based questions
     ...FREQUENCY_QUESTIONS.map(q => ({ type: "frequency" as const, data: q })),
-    // Then subscriptions by category
     ...Object.keys(SUBSCRIPTIONS).map(cat => ({ type: "subscriptions" as const, category: cat as keyof typeof SUBSCRIPTIONS })),
-    // Finally results
     { type: "results" as const },
   ];
 
@@ -415,6 +524,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
     setFixedExpenses({});
     setFrequencyData({});
     setSelectedSubscriptions(new Set());
+    setCustomSubAmounts({});
   };
 
   const handleNext = () => {
@@ -431,6 +541,13 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
     }
   };
 
+  const handleSkip = () => {
+    if (currentStep.type === "fixed") {
+      setFixedExpenses({ ...fixedExpenses, [currentStep.data.id]: 0 });
+    }
+    handleNext();
+  };
+
   const handleFixedChange = (id: string, value: string) => {
     setFixedExpenses({ ...fixedExpenses, [id]: parseFloat(value) || 0 });
   };
@@ -438,10 +555,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   const handleFrequencySelect = (id: string, type: "frequency" | "amount", value: number) => {
     setFrequencyData({
       ...frequencyData,
-      [id]: {
-        ...frequencyData[id],
-        [type]: value,
-      },
+      [id]: { ...frequencyData[id], [type]: value },
     });
   };
 
@@ -455,13 +569,16 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
     setSelectedSubscriptions(newSet);
   };
 
+  const handleCustomSubAmount = (category: string, value: string) => {
+    setCustomSubAmounts({ ...customSubAmounts, [category]: parseFloat(value) || 0 });
+  };
+
   // Calculate totals
   const calculateTotals = () => {
     let needs = 0;
     let wants = 0;
     let savings = 0;
 
-    // Fixed expenses
     FIXED_EXPENSES.forEach(exp => {
       const amount = fixedExpenses[exp.id] || 0;
       if (exp.category === "needs") needs += amount;
@@ -469,7 +586,6 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
       else savings += amount;
     });
 
-    // Frequency-based expenses
     FREQUENCY_QUESTIONS.forEach(q => {
       const data = frequencyData[q.id];
       if (data) {
@@ -480,13 +596,15 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
       }
     });
 
-    // Subscriptions (all wants)
-    Object.values(SUBSCRIPTIONS).forEach(category => {
+    // Subscriptions (all wants) + custom amounts
+    Object.entries(SUBSCRIPTIONS).forEach(([catKey, category]) => {
       category.items.forEach(item => {
         if (selectedSubscriptions.has(item.id)) {
           wants += item.price;
         }
       });
+      // Add custom amount for this category
+      wants += customSubAmounts[catKey] || 0;
     });
 
     return { needs, wants, savings, total: needs + wants + savings };
@@ -498,96 +616,179 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   const savingsPercent = monthlyIncome > 0 ? (savings / monthlyIncome) * 100 : 0;
   const leftover = monthlyIncome - total;
 
-  // Calculate subscription total
-  const subscriptionTotal = Object.values(SUBSCRIPTIONS).reduce((sum, category) => {
-    return sum + category.items.reduce((catSum, item) => {
-      return catSum + (selectedSubscriptions.has(item.id) ? item.price : 0);
-    }, 0);
+  // Calculate subscription totals
+  const subscriptionTotal = Object.entries(SUBSCRIPTIONS).reduce((sum, [catKey, category]) => {
+    const catSum = category.items.reduce((s, item) => s + (selectedSubscriptions.has(item.id) ? item.price : 0), 0);
+    return sum + catSum + (customSubAmounts[catKey] || 0);
   }, 0);
+
+  // Count subscriptions by category for recommendations
+  const getSubCountByCategory = (catKey: string) => {
+    const category = SUBSCRIPTIONS[catKey as keyof typeof SUBSCRIPTIONS];
+    return category.items.filter(item => selectedSubscriptions.has(item.id)).length;
+  };
 
   const getRecommendations = () => {
     const recommendations: { type: "success" | "warning" | "danger"; message: string }[] = [];
 
+    // Housing check
     const housingPercent = monthlyIncome > 0 ? ((fixedExpenses.housing || 0) / monthlyIncome) * 100 : 0;
     if (housingPercent > 30) {
       recommendations.push({
         type: "danger",
-        message: `Housing is ${housingPercent.toFixed(0)}% of income - above the recommended 30%. Consider finding ways to reduce housing costs.`,
+        message: `Housing is ${housingPercent.toFixed(0)}% of income - above the recommended 30%. Consider ways to reduce housing costs or increase income.`,
       });
-    } else if (housingPercent > 0) {
+    } else if (housingPercent > 0 && housingPercent <= 30) {
       recommendations.push({
         type: "success",
         message: `Housing at ${housingPercent.toFixed(0)}% is within the recommended 30%.`,
       });
     }
 
-    if (subscriptionTotal > monthlyIncome * 0.05) {
+    // Multiple streaming services
+    const streamingCount = getSubCountByCategory("streaming");
+    if (streamingCount >= 4) {
       recommendations.push({
         type: "warning",
-        message: `Subscriptions total $${subscriptionTotal.toFixed(0)}/mo. Review which ones you actually use regularly.`,
+        message: `You have ${streamingCount} streaming services. Consider rotating subscriptions monthly or using free ad-supported tiers to save money.`,
       });
     }
 
+    // Multiple music services
+    const musicCount = getSubCountByCategory("music");
+    if (musicCount >= 2) {
+      const musicSubs = SUBSCRIPTIONS.music.items.filter(item => selectedSubscriptions.has(item.id));
+      const musicTotal = musicSubs.reduce((sum, item) => sum + item.price, 0);
+      recommendations.push({
+        type: "warning",
+        message: `You have ${musicCount} music services ($${musicTotal.toFixed(0)}/mo). Consider consolidating to just one - they all have similar libraries.`,
+      });
+    }
+
+    // Multiple AI subscriptions
+    const aiCount = getSubCountByCategory("ai");
+    if (aiCount >= 3) {
+      recommendations.push({
+        type: "warning",
+        message: `You have ${aiCount} AI subscriptions. Consider which ones you actually use weekly and cancel the rest.`,
+      });
+    }
+
+    // Multiple fitness subscriptions
+    const fitnessCount = getSubCountByCategory("fitness");
+    if (fitnessCount >= 2) {
+      recommendations.push({
+        type: "warning",
+        message: `Multiple fitness subscriptions detected. Make sure you're actively using each one - unused gym memberships are a common money leak.`,
+      });
+    }
+
+    // Meal kit services
+    const mealKits = ["hellofresh", "bluapron", "factor"].filter(id => selectedSubscriptions.has(id));
+    if (mealKits.length > 0) {
+      const mealKitTotal = mealKits.reduce((sum, id) => {
+        const item = SUBSCRIPTIONS.boxes.items.find(i => i.id === id);
+        return sum + (item?.price || 0);
+      }, 0);
+      recommendations.push({
+        type: "warning",
+        message: `Meal kits cost $${mealKitTotal.toFixed(0)}/mo. While convenient, you could save 50-70% by grocery shopping and meal prepping.`,
+      });
+    }
+
+    // Total subscriptions warning
+    if (subscriptionTotal > monthlyIncome * 0.05) {
+      recommendations.push({
+        type: "warning",
+        message: `Total subscriptions: $${subscriptionTotal.toFixed(0)}/mo ($${(subscriptionTotal * 12).toFixed(0)}/year). Do an annual audit - cancel anything you haven't used in 30 days.`,
+      });
+    }
+
+    // Coffee habit
     const coffeeData = frequencyData.coffee;
     if (coffeeData && coffeeData.frequency * coffeeData.amount > 100) {
       const coffeeTotal = coffeeData.frequency * coffeeData.amount;
       recommendations.push({
         type: "warning",
-        message: `Coffee habit costs $${coffeeTotal.toFixed(0)}/mo ($${(coffeeTotal * 12).toFixed(0)}/year). Making coffee at home could save significantly.`,
+        message: `Coffee habit: $${coffeeTotal.toFixed(0)}/mo ($${(coffeeTotal * 12).toFixed(0)}/year). Cutting in half could save $${(coffeeTotal * 6).toFixed(0)}/year.`,
       });
     }
 
+    // Dining out
     const diningData = frequencyData.dining;
     if (diningData && diningData.frequency * diningData.amount > monthlyIncome * 0.08) {
+      const diningTotal = diningData.frequency * diningData.amount;
       recommendations.push({
         type: "warning",
-        message: `Dining out is ${((diningData.frequency * diningData.amount / monthlyIncome) * 100).toFixed(0)}% of income. Cooking more meals at home could help.`,
+        message: `Dining out: ${((diningTotal / monthlyIncome) * 100).toFixed(0)}% of income. Cooking 2 more meals at home per week could save $${(diningData.amount * 8).toFixed(0)}/mo.`,
       });
     }
 
+    // 50/30/20 checks
     if (needsPercent > 50) {
       recommendations.push({
         type: "danger",
-        message: `Essential expenses are ${needsPercent.toFixed(0)}% of income (target: 50%). Look for areas to cut back.`,
+        message: `Essential expenses are ${needsPercent.toFixed(0)}% of income (target: 50%). Look for areas to reduce fixed costs.`,
+      });
+    } else if (needsPercent <= 50 && needsPercent > 0) {
+      recommendations.push({
+        type: "success",
+        message: `Needs at ${needsPercent.toFixed(0)}% - nicely within the 50% guideline!`,
       });
     }
 
     if (wantsPercent > 30) {
       recommendations.push({
         type: "warning",
-        message: `Wants/lifestyle spending is ${wantsPercent.toFixed(0)}% (target: 30%). Consider prioritizing what brings most value.`,
+        message: `Wants/lifestyle spending is ${wantsPercent.toFixed(0)}% (target: 30%). Prioritize what truly brings you joy.`,
       });
     }
 
-    if (savingsPercent < 10) {
+    if (savingsPercent < 10 && monthlyIncome > 0) {
       recommendations.push({
         type: "danger",
-        message: `Only saving ${savingsPercent.toFixed(0)}% of income. Aim for at least 20% for financial security.`,
+        message: `Only saving ${savingsPercent.toFixed(0)}%. Aim for 20% - even small increases help. Try automating savings on payday.`,
       });
     } else if (savingsPercent >= 20) {
       recommendations.push({
         type: "success",
-        message: `Great job saving ${savingsPercent.toFixed(0)}%! You're on track for financial independence.`,
+        message: `Excellent! Saving ${savingsPercent.toFixed(0)}% puts you on track for financial independence.`,
+      });
+    } else if (savingsPercent >= 10) {
+      recommendations.push({
+        type: "success",
+        message: `Saving ${savingsPercent.toFixed(0)}% - good start! Try to gradually increase to 20%.`,
       });
     }
 
+    // Leftover money
     if (leftover < 0) {
       recommendations.push({
         type: "danger",
-        message: `You're spending $${Math.abs(leftover).toFixed(0)} more than you earn! Immediate action needed.`,
+        message: `You're spending $${Math.abs(leftover).toFixed(0)} more than you earn! Review all categories and make cuts immediately.`,
       });
     } else if (leftover > monthlyIncome * 0.1) {
       recommendations.push({
         type: "success",
-        message: `You have $${leftover.toFixed(0)} unallocated. Consider putting this toward savings or debt payoff.`,
+        message: `$${leftover.toFixed(0)} unallocated each month. Consider increasing savings/investments or building a larger emergency fund.`,
       });
     }
 
+    // Credit card debt
     const ccPayment = fixedExpenses.credit_cards || 0;
     if (ccPayment > monthlyIncome * 0.1) {
       recommendations.push({
         type: "danger",
-        message: `Credit card payments are ${((ccPayment / monthlyIncome) * 100).toFixed(0)}% of income. Focus on paying down this high-interest debt.`,
+        message: `Credit card payments are ${((ccPayment / monthlyIncome) * 100).toFixed(0)}% of income. Consider the avalanche or snowball method to accelerate payoff.`,
+      });
+    }
+
+    // Personal cash spending
+    const personalCash = fixedExpenses.personal_cash || 0;
+    if (personalCash > monthlyIncome * 0.05) {
+      recommendations.push({
+        type: "warning",
+        message: `Untracked cash spending is ${((personalCash / monthlyIncome) * 100).toFixed(0)}% of income. Try tracking where this goes for one month.`,
       });
     }
 
@@ -595,18 +796,9 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   };
 
   const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -300 : 300,
-      opacity: 0,
-    }),
+    enter: (direction: number) => ({ x: direction > 0 ? 300 : -300, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({ x: direction > 0 ? -300 : 300, opacity: 0 }),
   };
 
   if (!isOpen) {
@@ -641,7 +833,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
             <Icon className="h-6 w-6 text-primary" />
           </div>
           <h3 className="text-xl font-bold mb-1">{exp.title}</h3>
-          <p className="text-muted-foreground mb-6">{exp.question}</p>
+          <p className="text-muted-foreground mb-4">{exp.question}</p>
 
           <div className="max-w-xs mx-auto">
             <div className="relative">
@@ -665,6 +857,14 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
                   (guideline: {(exp.guideline * 100).toFixed(0)}%)
                 </span>
               </div>
+            )}
+            {exp.optional && (
+              <button
+                onClick={handleSkip}
+                className="mt-3 text-sm text-muted-foreground hover:text-foreground underline"
+              >
+                Skip (I don't have this expense)
+              </button>
             )}
           </div>
         </div>
@@ -706,25 +906,27 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium block mb-2">{q.amountLabel}</label>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {q.amountOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => handleFrequencySelect(q.id, "amount", opt.value)}
-                    className={cn(
-                      "px-3 py-2 rounded-lg text-sm border transition-all",
-                      data.amount === opt.value
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-card hover:bg-muted border-border"
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+            {data.frequency > 0 && (
+              <div>
+                <label className="text-sm font-medium block mb-2">{q.amountLabel}</label>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {q.amountOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => handleFrequencySelect(q.id, "amount", opt.value)}
+                      className={cn(
+                        "px-3 py-2 rounded-lg text-sm border transition-all",
+                        data.amount === opt.value
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-card hover:bg-muted border-border"
+                      )}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {monthlyTotal > 0 && (
               <div className="p-3 rounded-lg bg-muted/50 text-center">
@@ -746,11 +948,14 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
     }
 
     if (currentStep.type === "subscriptions") {
-      const category = SUBSCRIPTIONS[currentStep.category];
+      const catKey = currentStep.category;
+      const category = SUBSCRIPTIONS[catKey];
       const Icon = category.icon;
-      const categoryTotal = category.items.reduce((sum, item) =>
+      const categoryItemTotal = category.items.reduce((sum, item) =>
         sum + (selectedSubscriptions.has(item.id) ? item.price : 0), 0
       );
+      const customAmount = customSubAmounts[catKey] || 0;
+      const categoryTotal = categoryItemTotal + customAmount;
 
       return (
         <div className="text-center">
@@ -760,31 +965,50 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <h3 className="text-xl font-bold mb-1">{category.title}</h3>
           <p className="text-muted-foreground mb-4">Select all that you subscribe to</p>
 
-          <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto">
+          <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto max-h-48 overflow-y-auto">
             {category.items.map((item) => (
               <button
                 key={item.id}
                 onClick={() => toggleSubscription(item.id)}
                 className={cn(
-                  "p-3 rounded-lg text-left border transition-all flex items-center justify-between",
+                  "p-2 rounded-lg text-left border transition-all flex items-center justify-between",
                   selectedSubscriptions.has(item.id)
                     ? "bg-primary/10 border-primary"
                     : "bg-card hover:bg-muted border-border"
                 )}
               >
                 <div>
-                  <div className="font-medium text-sm">{item.name}</div>
+                  <div className="font-medium text-xs">{item.name}</div>
                   <div className="text-xs text-muted-foreground">${item.price}/mo</div>
                 </div>
                 {selectedSubscriptions.has(item.id) && (
-                  <Check className="h-4 w-4 text-primary" />
+                  <Check className="h-4 w-4 text-primary shrink-0" />
                 )}
               </button>
             ))}
           </div>
 
+          {/* Custom/Other amount */}
+          <div className="mt-4 max-w-xs mx-auto">
+            <label className="text-sm text-muted-foreground flex items-center justify-center gap-1 mb-2">
+              <Plus className="h-3 w-3" />
+              Other {category.title.toLowerCase()} not listed
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={customAmount || ""}
+                onChange={(e) => handleCustomSubAmount(catKey, e.target.value.replace(/[^\d.]/g, ""))}
+                placeholder="0"
+                className="w-full h-10 pl-7 pr-4 text-center rounded-lg border bg-background font-mono text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none"
+              />
+            </div>
+          </div>
+
           {categoryTotal > 0 && (
-            <div className="mt-4 p-3 rounded-lg bg-muted/50">
+            <div className="mt-3 p-3 rounded-lg bg-muted/50">
               <span className="text-sm text-muted-foreground">Category total: </span>
               <span className="font-bold">${categoryTotal.toFixed(2)}/mo</span>
             </div>
@@ -821,7 +1045,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
             </div>
           </div>
 
-          <div className="mb-6 p-4 rounded-lg bg-muted/50 space-y-2">
+          <div className="mb-6 p-4 rounded-lg bg-muted/50 space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Monthly Income</span>
               <span className="font-bold">${monthlyIncome.toFixed(0)}</span>
@@ -830,9 +1054,9 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
               <span>Total Spending</span>
               <span className="font-bold">${total.toFixed(0)}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Subscriptions</span>
-              <span className="font-medium text-muted-foreground">${subscriptionTotal.toFixed(0)}</span>
+            <div className="flex justify-between text-muted-foreground">
+              <span className="pl-2">↳ Subscriptions</span>
+              <span>${subscriptionTotal.toFixed(0)}</span>
             </div>
             <div className="flex justify-between pt-2 border-t">
               <span>Leftover</span>
@@ -842,7 +1066,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
             </div>
           </div>
 
-          <div className="space-y-2 max-h-64 overflow-y-auto">
+          <div className="space-y-2 max-h-56 overflow-y-auto">
             <h4 className="font-semibold sticky top-0 bg-background py-1">Recommendations</h4>
             {getRecommendations().map((rec, i) => (
               <div
@@ -873,7 +1097,6 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   return (
     <Card className="border-primary/20 overflow-hidden">
       <CardContent className="p-0">
-        {/* Progress bar */}
         <div className="h-1 bg-muted">
           <motion.div
             className="h-full bg-primary"
@@ -883,15 +1106,11 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           />
         </div>
 
-        {/* Close button */}
         <div className="flex justify-between items-center px-4 pt-3">
           <span className="text-xs text-muted-foreground">
             Step {currentStepIndex + 1} of {totalSteps}
           </span>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-1 rounded hover:bg-muted"
-          >
+          <button onClick={() => setIsOpen(false)} className="p-1 rounded hover:bg-muted">
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
@@ -911,7 +1130,6 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Navigation */}
           <div className="flex gap-3 mt-6">
             <Button
               variant="outline"
