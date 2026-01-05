@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Moon,
-  Sun,
   Home,
   DollarSign,
   Calculator as CalcIcon,
@@ -24,7 +22,6 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -37,6 +34,9 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { FAQ, HOUSING_FAQ } from "@/components/faq";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { AmortizationChart, AnimatedNumber } from "@/components/charts";
 import { ExternalLink } from "lucide-react";
 
 // Housing-focused affiliate links
@@ -112,7 +112,6 @@ const BUY_TIPS = [
 ];
 
 function Housing() {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Income inputs
@@ -248,14 +247,7 @@ function Housing() {
                 <BookOpen className="h-4 w-4" />
               </Button>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
@@ -634,7 +626,10 @@ function Housing() {
                           "text-4xl font-bold mono-value",
                           isMortgageAffordable ? "text-primary neon-text" : "text-destructive"
                         )}>
-                          {formatCurrency(totalMortgagePayment)}
+                          <AnimatedNumber
+                            value={totalMortgagePayment}
+                            formatValue={(v) => formatCurrency(v)}
+                          />
                           <span className="text-lg font-normal text-muted-foreground">/mo</span>
                         </div>
                         <div className={cn(
@@ -700,6 +695,19 @@ function Housing() {
                           )}>{backEndDTI.toFixed(1)}%</div>
                         </div>
                       </div>
+
+                      {/* Amortization Chart */}
+                      {loanAmount > 0 && (
+                        <div className="mt-4 p-4 rounded-lg bg-card border border-border/50">
+                          <div className="text-sm font-medium mb-3">Loan Payoff Breakdown</div>
+                          <AmortizationChart
+                            principal={loanAmount}
+                            monthlyPayment={principalInterest}
+                            annualRate={rate}
+                            termMonths={mortgageTerm * 12}
+                          />
+                        </div>
+                      )}
 
                       {/* PMI Warning */}
                       {pmi > 0 && (
@@ -836,6 +844,9 @@ function Housing() {
             <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
+
+        {/* FAQ Section */}
+        <FAQ items={HOUSING_FAQ} className="mb-6" />
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3">

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Moon,
-  Sun,
   Wallet,
   DollarSign,
   Calculator as CalcIcon,
@@ -28,7 +26,6 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -41,7 +38,9 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
-import { PieChart, BarChart } from "@/components/charts";
+import { PieChart, BarChart, AnimatedNumber } from "@/components/charts";
+import { FAQ, BUDGET_PLANNER_FAQ } from "@/components/faq";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { ExternalLink } from "lucide-react";
 
 const STORAGE_KEY = "smart-money-state";
@@ -141,7 +140,6 @@ const MONEY_TIPS = [
 ];
 
 function SmartMoney() {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Income inputs
@@ -261,14 +259,7 @@ function SmartMoney() {
                 <BookOpen className="h-4 w-4" />
               </Button>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
@@ -361,7 +352,7 @@ function SmartMoney() {
                 <div className="hero-stat text-center mb-4">
                   <div className="text-sm text-muted-foreground mb-1">Take-Home Pay</div>
                   <div className="text-3xl font-bold mono-value text-primary neon-text">
-                    {formatCurrency(netMonthly)}/mo
+                    <AnimatedNumber value={netMonthly} formatValue={(v) => formatCurrency(v)} />/mo
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
                     {formatCurrency(netAnnual)}/year • {formatCurrency(netWeekly)}/week
@@ -677,6 +668,9 @@ function SmartMoney() {
             <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
+
+        {/* FAQ Section */}
+        <FAQ items={BUDGET_PLANNER_FAQ} className="mb-6" />
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3">

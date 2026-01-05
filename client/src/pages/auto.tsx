@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Moon,
-  Sun,
   Car,
   DollarSign,
   Calculator as CalcIcon,
@@ -24,7 +22,6 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-import { useTheme } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -37,6 +34,9 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { FAQ, AUTO_FAQ } from "@/components/faq";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { AnimatedNumber } from "@/components/charts";
 import { ExternalLink } from "lucide-react";
 
 const STORAGE_KEY = "auto-page-state";
@@ -128,7 +128,6 @@ const OWNERSHIP_COSTS = [
 ];
 
 function Auto() {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Calculator State
@@ -236,14 +235,7 @@ function Auto() {
                 <BookOpen className="h-4 w-4" />
               </Button>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            <ThemeToggle />
           </nav>
         </div>
       </header>
@@ -391,7 +383,7 @@ function Auto() {
                         <div className="hero-stat text-center">
                           <div className="text-sm text-muted-foreground mb-1">Max Vehicle Price</div>
                           <div className="text-3xl font-bold mono-value text-primary neon-text">
-                            {formatCurrency(maxVehiclePrice)}
+                            <AnimatedNumber value={maxVehiclePrice} formatValue={(v) => formatCurrency(v)} />
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
                             Based on {formatCurrency(availablePayment)}/mo payment
@@ -609,6 +601,9 @@ function Auto() {
             <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
+
+        {/* FAQ Section */}
+        <FAQ items={AUTO_FAQ} className="mb-6" />
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3">

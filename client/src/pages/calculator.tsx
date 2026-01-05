@@ -42,8 +42,9 @@ import { MoneyInput } from "@/components/money-input";
 import { DateInput } from "@/components/date-input";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { FAQ, INCOME_CALCULATOR_FAQ } from "@/components/faq";
-import { ExportButtons, ShareButtons } from "@/components/pdf-export";
-import { BarChart } from "@/components/charts";
+import { ExportButtons, ShareButtons, EmailCaptureModal } from "@/components/pdf-export";
+import { BarChart, AnimatedNumber } from "@/components/charts";
+import { ScenarioManager } from "@/components/scenarios";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -99,6 +100,9 @@ function Calculator() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [checkDate, setCheckDate] = useState<Date | undefined>();
   const [ytdIncome, setYtdIncome] = useState<string>("");
+
+  // Email capture state
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   // Payment Calculator State
   const [showPaymentCalc, setShowPaymentCalc] = useState(false);
@@ -205,6 +209,33 @@ function Calculator() {
     localStorage.removeItem(STORAGE_KEY);
   };
 
+  // Handle loading scenario data
+  const handleLoadScenario = (data: Record<string, unknown>) => {
+    if (data.startDate) setStartDate(new Date(data.startDate as string));
+    if (data.checkDate) setCheckDate(new Date(data.checkDate as string));
+    if (data.ytdIncome) setYtdIncome(data.ytdIncome as string);
+    if (data.vehiclePrice) {
+      setVehiclePrice(data.vehiclePrice as string);
+      setShowPaymentCalc(true);
+    }
+    if (data.downPayment) setDownPayment(data.downPayment as string);
+    if (data.tradeIn) setTradeIn(data.tradeIn as string);
+    if (data.creditTier) setCreditTier(data.creditTier as string);
+    if (data.selectedTerm) setSelectedTerm(data.selectedTerm as number);
+  };
+
+  // Current scenario data for saving
+  const currentScenarioData = {
+    startDate: startDate?.toISOString(),
+    checkDate: checkDate?.toISOString(),
+    ytdIncome,
+    vehiclePrice,
+    downPayment,
+    tradeIn,
+    creditTier,
+    selectedTerm,
+  };
+
   if (!mounted) return null;
 
   return (
@@ -271,15 +302,22 @@ function Calculator() {
                 <DollarSign className="h-5 w-5 text-primary" />
                 Income Calculator
               </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleReset}
-                className="h-8 px-2 text-muted-foreground hover:text-foreground"
-              >
-                <RotateCcw className="h-3.5 w-3.5 mr-1" />
-                Reset
-              </Button>
+              <div className="flex items-center gap-2">
+                <ScenarioManager
+                  storageKey="income-calc"
+                  currentData={currentScenarioData}
+                  onLoad={handleLoadScenario}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReset}
+                  className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                  Reset
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -352,7 +390,10 @@ function Calculator() {
                       <div className="stat-card text-center col-span-2 sm:col-span-1 sm:row-span-2 flex flex-col justify-center">
                         <div className="text-xs text-muted-foreground">Annual</div>
                         <div className="text-2xl sm:text-3xl font-bold mono-value text-primary mt-1">
-                          {formatCurrency(incomeResults.annual)}
+                          <AnimatedNumber
+                            value={incomeResults.annual}
+                            formatValue={(v) => formatCurrency(v)}
+                          />
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
                           {incomeResults.daysWorked} days
@@ -376,6 +417,23 @@ function Calculator() {
                           {formatCurrency(maxAffordablePayment || 0)}/mo
                         </div>
                       </div>
+                    </div>
+
+                    {/* Export/Email Actions */}
+                    <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowEmailModal(true)}
+                        className="gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Email Results
+                      </Button>
+                      <ShareButtons
+                        title="Income Calculator"
+                        text={`My projected annual income: ${formatCurrency(incomeResults.annual)}`}
+                      />
                     </div>
 
                     {/* CTA to Payment Calculator */}
@@ -712,6 +770,20 @@ function Calculator() {
         {/* FAQ Section */}
         <FAQ items={INCOME_CALCULATOR_FAQ} className="mt-8" />
       </main>
+
+      {/* Email Capture Modal */}
+      <EmailCaptureModal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        calculationType="Income Calculation"
+        results={incomeResults ? {
+          annual: formatCurrency(incomeResults.annual),
+          monthly: formatCurrency(incomeResults.monthly),
+          weekly: formatCurrency(incomeResults.weekly),
+          daysWorked: incomeResults.daysWorked,
+          maxAutoPayment: formatCurrency(maxAffordablePayment || 0),
+        } : {}}
+      />
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
