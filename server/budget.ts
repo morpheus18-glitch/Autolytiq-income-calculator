@@ -47,6 +47,35 @@ router.post("/save", (req: AuthRequest, res) => {
   }
 });
 
+// Get latest budget (most recent)
+router.get("/latest", (req: AuthRequest, res) => {
+  try {
+    const snapshot = budgetDb.findLatest.get(req.user!.id) as BudgetSnapshot | undefined;
+
+    if (!snapshot) {
+      return res.json({ budget: null });
+    }
+
+    res.json({
+      budget: {
+        id: snapshot.id,
+        name: snapshot.name,
+        fixedExpenses: JSON.parse(snapshot.fixed_expenses),
+        frequencyData: JSON.parse(snapshot.frequency_data),
+        selectedSubscriptions: JSON.parse(snapshot.selected_subscriptions),
+        customSubAmounts: snapshot.custom_sub_amounts
+          ? JSON.parse(snapshot.custom_sub_amounts)
+          : {},
+        monthlyIncome: snapshot.monthly_income,
+        createdAt: snapshot.created_at,
+      },
+    });
+  } catch (error) {
+    console.error("Get latest budget error:", error);
+    res.status(500).json({ error: "Failed to fetch latest budget" });
+  }
+});
+
 // Get budget history
 router.get("/history", (req: AuthRequest, res) => {
   try {

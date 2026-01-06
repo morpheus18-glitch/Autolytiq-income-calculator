@@ -211,6 +211,10 @@ export const budgetDb = {
     "SELECT * FROM budget_snapshots WHERE user_id = ? ORDER BY created_at DESC"
   ),
 
+  findLatest: db.prepare<[string]>(
+    "SELECT * FROM budget_snapshots WHERE user_id = ? ORDER BY created_at DESC LIMIT 1"
+  ),
+
   findById: db.prepare<[string, string]>(
     "SELECT * FROM budget_snapshots WHERE id = ? AND user_id = ?"
   ),
@@ -283,6 +287,15 @@ export const transactionDb = {
   countByUser: db.prepare<[string]>(
     "SELECT COUNT(*) as count FROM transactions WHERE user_id = ?"
   ),
+
+  getTopMerchants: db.prepare<[string, string, string, number]>(
+    `SELECT merchant, SUM(amount) as total, COUNT(*) as count
+     FROM transactions
+     WHERE user_id = ? AND transaction_date BETWEEN ? AND ? AND merchant IS NOT NULL
+     GROUP BY merchant
+     ORDER BY total DESC
+     LIMIT ?`
+  ),
 };
 
 // Merchant category mapping for auto-categorization
@@ -328,6 +341,19 @@ export const preferencesDb = {
     "SELECT * FROM user_preferences WHERE user_id = ?"
   ),
 
+  create: db.prepare<[string, number, number | null]>(
+    `INSERT INTO user_preferences (user_id, weekly_email_enabled, budget_alert_threshold)
+     VALUES (?, ?, ?)`
+  ),
+
+  update: db.prepare<[number, number | null, string]>(
+    `UPDATE user_preferences SET
+       weekly_email_enabled = ?,
+       budget_alert_threshold = ?,
+       updated_at = CURRENT_TIMESTAMP
+     WHERE user_id = ?`
+  ),
+
   upsert: db.prepare<[string, number, number, number]>(
     `INSERT INTO user_preferences (user_id, weekly_email_enabled, weekly_email_day, budget_alert_threshold)
      VALUES (?, ?, ?, ?)
@@ -336,6 +362,10 @@ export const preferencesDb = {
        weekly_email_day = excluded.weekly_email_day,
        budget_alert_threshold = excluded.budget_alert_threshold,
        updated_at = CURRENT_TIMESTAMP`
+  ),
+
+  getAllEnabled: db.prepare(
+    "SELECT user_id FROM user_preferences WHERE weekly_email_enabled = 1"
   ),
 
   getUsersForWeeklyEmail: db.prepare<[number]>(

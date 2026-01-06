@@ -6,6 +6,7 @@ import adminRoutes from "./admin";
 import budgetRoutes from "./budget";
 import transactionRoutes from "./transactions";
 import receiptRoutes from "./receipts";
+import emailRoutes from "./email-routes";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -31,6 +32,9 @@ export async function registerRoutes(
 
   // Receipt upload routes (requires auth)
   app.use("/api/receipts", receiptRoutes);
+
+  // Email preference and weekly summary routes
+  app.use("/api/email", emailRoutes);
 
   return httpServer;
 }

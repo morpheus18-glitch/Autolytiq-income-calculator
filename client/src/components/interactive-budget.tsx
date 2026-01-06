@@ -765,6 +765,37 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [savingBudget, setSavingBudget] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [loadingBudget, setLoadingBudget] = useState(false);
+  const [hasSavedBudget, setHasSavedBudget] = useState(false);
+
+  // Load saved budget on mount
+  useEffect(() => {
+    async function loadSavedBudget() {
+      if (!user) return;
+
+      setLoadingBudget(true);
+      try {
+        const { data, error } = await budgetApi.getLatest();
+        if (error || !data?.budget) {
+          setLoadingBudget(false);
+          return;
+        }
+
+        const budget = data.budget;
+        setFixedExpenses(budget.fixedExpenses || {});
+        setFrequencyData(budget.frequencyData || {});
+        setSelectedSubscriptions(new Set(budget.selectedSubscriptions || []));
+        setCustomSubAmounts(budget.customSubAmounts || {});
+        setHasSavedBudget(true);
+      } catch (err) {
+        console.error("Failed to load budget:", err);
+      } finally {
+        setLoadingBudget(false);
+      }
+    }
+
+    loadSavedBudget();
+  }, [user]);
 
   // Build step sequence
   const steps: Step[] = [
@@ -1284,6 +1315,12 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
     exit: (direction: number) => ({ x: direction > 0 ? -300 : 300, opacity: 0 }),
   };
 
+  // Open results directly with saved budget
+  const viewSavedBudget = () => {
+    setIsOpen(true);
+    setCurrentStepIndex(steps.length - 1); // Jump to results
+  };
+
   if (!isOpen) {
     return (
       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
@@ -1295,10 +1332,26 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <p className="text-muted-foreground mb-4">
             Answer easy questions about your spending habits to get personalized budget recommendations.
           </p>
-          <Button onClick={handleStart} className="gap-2 mb-4">
-            Start Interactive Budget
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+
+          {/* Show saved budget option if available */}
+          {hasSavedBudget && user ? (
+            <div className="space-y-3 mb-4">
+              <Button onClick={viewSavedBudget} className="gap-2 w-full sm:w-auto">
+                <History className="h-4 w-4" />
+                View Saved Budget
+              </Button>
+              <div className="flex gap-2 justify-center">
+                <Button variant="outline" onClick={handleStart} size="sm" className="gap-1">
+                  Start Fresh
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button onClick={handleStart} className="gap-2 mb-4">
+              Start Interactive Budget
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          )}
 
           <div className="border-t pt-4 mt-2">
             <p className="text-xs text-muted-foreground mb-3">Or quick start with a preset lifestyle:</p>

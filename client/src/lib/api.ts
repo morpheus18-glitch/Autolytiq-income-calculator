@@ -105,8 +105,45 @@ export const budgetApi = {
       monthlyIncome: number;
     }>(`/api/budget/${id}`),
 
+  getLatest: () =>
+    apiJson<{
+      budget: {
+        id: string;
+        name: string | null;
+        fixedExpenses: Record<string, number>;
+        frequencyData: Record<string, { frequency: number; amount: number }>;
+        selectedSubscriptions: string[];
+        customSubAmounts: Record<string, number>;
+        monthlyIncome: number;
+        createdAt: string;
+      } | null;
+    }>("/api/budget/latest"),
+
   delete: (id: string) =>
     apiJson<{ success: boolean }>(`/api/budget/${id}`, { method: "DELETE" }),
+};
+
+// Email preferences API
+export const emailApi = {
+  getPreferences: () =>
+    apiJson<{
+      weeklyEmailEnabled: boolean;
+      budgetAlertThreshold: number | null;
+    }>("/api/email/preferences"),
+
+  updatePreferences: (data: {
+    weeklyEmailEnabled: boolean;
+    budgetAlertThreshold?: number | null;
+  }) =>
+    apiJson<{ success: boolean }>("/api/email/preferences", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  sendTestWeeklySummary: () =>
+    apiJson<{ success: boolean; message: string }>("/api/email/test-weekly-summary", {
+      method: "POST",
+    }),
 };
 
 // Transaction API helpers
