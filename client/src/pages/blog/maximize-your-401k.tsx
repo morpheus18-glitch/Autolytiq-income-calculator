@@ -2,10 +2,37 @@ import { Link } from "wouter";
 import { ArrowLeft, Calendar, Clock, TrendingUp, Calculator, DollarSign, PiggyBank } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BlogFeedback } from "@/components/blog-feedback";
+import { SEO, createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
+import { ManageCookiesButton } from "@/components/cookie-consent";
+
+const ARTICLE_META = {
+  title: "401(k) Strategies: How to Maximize Your Employer Match",
+  description: "Learn how to maximize your 401(k) employer match and avoid leaving free money on the table. Includes contribution strategies and Roth vs Traditional comparison.",
+  datePublished: "2026-01-01",
+  url: "https://autolytiqs.com/blog/maximize-your-401k",
+  keywords: "401k employer match, maximize 401k, 401k contribution, retirement savings, Roth 401k vs traditional",
+};
 
 export default function MaximizeYour401k() {
+  const combinedSchema = [
+    createArticleSchema(ARTICLE_META.title, ARTICLE_META.description, ARTICLE_META.url, ARTICLE_META.datePublished),
+    createBreadcrumbSchema([
+      { name: "Home", url: "https://autolytiqs.com/" },
+      { name: "Blog", url: "https://autolytiqs.com/blog" },
+      { name: "401(k) Strategies", url: ARTICLE_META.url },
+    ]),
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={ARTICLE_META.title}
+        description={ARTICLE_META.description}
+        canonical={ARTICLE_META.url}
+        type="article"
+        keywords={ARTICLE_META.keywords}
+        structuredData={combinedSchema}
+      />
       {/* Header */}
       <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -192,6 +219,7 @@ export default function MaximizeYour401k() {
             <Link href="/terms">
               <a className="text-muted-foreground hover:text-foreground transition-colors">Terms</a>
             </Link>
+            <ManageCookiesButton />
           </div>
         </div>
       </footer>

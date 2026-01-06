@@ -32,10 +32,15 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { analytics } from "@/lib/analytics";
 import { PieChart, BarChart, AnimatedNumber } from "@/components/charts";
 import { FAQ, BUDGET_PLANNER_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProtectedInteractiveBudget } from "@/components/interactive-budget";
+import { IncomeBanner, NoIncomeCTA } from "@/components/income-banner";
+import { useIncome } from "@/lib/use-income";
+import { BudgetDashboard } from "@/components/budget-progress";
+import { SavingsGoals } from "@/components/savings-goals";
 
 const STORAGE_KEY = "smart-money-state";
 
@@ -135,6 +140,7 @@ const MONEY_TIPS = [
 
 function SmartMoney() {
   const [mounted, setMounted] = useState(false);
+  const { income: calculatorIncome, hasIncome: hasCalculatorIncome } = useIncome();
 
   // Income inputs
   const [annualIncome, setAnnualIncome] = useState("");
@@ -148,28 +154,14 @@ function SmartMoney() {
 
   useEffect(() => {
     setMounted(true);
-    // Try to get income from main calculator
-    try {
-      const mainCalcState = localStorage.getItem("income-calc-state");
-      if (mainCalcState) {
-        const parsed = JSON.parse(mainCalcState);
-        if (parsed.ytdIncome && parsed.startDate && parsed.checkDate) {
-          const start = new Date(parsed.startDate);
-          const check = new Date(parsed.checkDate);
-          const yearStart = new Date(check.getFullYear(), 0, 1);
-          const effectiveStart = start < yearStart ? yearStart : start;
-          const days = Math.floor((check.getTime() - effectiveStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-          if (days > 0) {
-            const daily = parseFloat(parsed.ytdIncome) / days;
-            const annual = daily * 365;
-            setAnnualIncome(Math.round(annual).toString());
-          }
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load income data", e);
-    }
   }, []);
+
+  // Auto-populate income from calculator when available
+  useEffect(() => {
+    if (hasCalculatorIncome && calculatorIncome && !annualIncome) {
+      setAnnualIncome(calculatorIncome.grossAnnual.toString());
+    }
+  }, [hasCalculatorIncome, calculatorIncome, annualIncome]);
 
   // Calculations
   const gross = parseFloat(annualIncome) || 0;
@@ -268,6 +260,17 @@ function SmartMoney() {
             See where your paycheck goes and plan your budget
           </p>
         </div>
+
+        {/* Income Detection Banner */}
+        {hasCalculatorIncome ? (
+          <IncomeBanner
+            className="mb-6"
+            variant="full"
+            showCTA={false}
+          />
+        ) : (
+          <NoIncomeCTA className="mb-6" />
+        )}
 
         {/* Income Input Card */}
         <Card className="glass-card border-none shadow-xl mb-6">
@@ -587,6 +590,28 @@ function SmartMoney() {
           </motion.div>
         )}
 
+        {/* Budget Progress Dashboard - Safe to Spend & Progress Bars */}
+        {netMonthly > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-6"
+          >
+            <BudgetDashboard monthlyIncome={netMonthly} />
+          </motion.div>
+        )}
+
+        {/* Savings Goals */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mb-6"
+        >
+          <SavingsGoals monthlyIncome={netMonthly} />
+        </motion.div>
+
         {/* Money Tips */}
         <Card className="glass-card border-none shadow-xl mb-6">
           <CardHeader className="pb-3">
@@ -658,6 +683,7 @@ function SmartMoney() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
+                  onClick={() => analytics.affiliateClick(link.name, "finance")}
                   className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
                 >
                   <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">

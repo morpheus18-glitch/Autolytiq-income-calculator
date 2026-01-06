@@ -3,10 +3,12 @@ import { v4 as uuidv4 } from "uuid";
 import {
   transactionDb,
   merchantDb,
+  statsDb,
   type Transaction,
   type MerchantCategory,
 } from "./db";
 import { requireAuth, type AuthRequest } from "./middleware/auth";
+import { recordTransaction, getUserStats, getUserBadges, BADGES } from "./gamification";
 
 const router = Router();
 router.use(requireAuth);
@@ -187,11 +189,23 @@ router.post("/", (req: AuthRequest, res) => {
       null
     );
 
+    // Update gamification stats
+    const { stats, newBadges } = recordTransaction(
+      req.user!.id,
+      parseFloat(amount),
+      transactionDate
+    );
+
     res.json({
       success: true,
       id,
       category: detected.category,
       subcategory: detected.subcategory,
+      stats: {
+        currentStreak: stats.current_streak,
+        totalTransactions: stats.total_transactions_logged,
+      },
+      newBadges: newBadges.map((id) => BADGES[id]),
     });
   } catch (error) {
     console.error("Create transaction error:", error);
@@ -329,6 +343,27 @@ router.post("/learn-category", (req: AuthRequest, res) => {
   } catch (error) {
     console.error("Learn category error:", error);
     res.status(500).json({ error: "Failed to save category mapping" });
+  }
+});
+
+// Get user gamification stats
+router.get("/stats/gamification", (req: AuthRequest, res) => {
+  try {
+    const stats = getUserStats(req.user!.id);
+    const badges = getUserBadges(req.user!.id);
+
+    res.json({
+      currentStreak: stats.current_streak,
+      longestStreak: stats.longest_streak,
+      totalTransactions: stats.total_transactions_logged,
+      totalDaysLogged: stats.total_days_logged,
+      weeksUnderBudget: stats.weeks_under_budget,
+      lastLogDate: stats.last_log_date,
+      badges,
+    });
+  } catch (error) {
+    console.error("Get gamification stats error:", error);
+    res.status(500).json({ error: "Failed to fetch gamification stats" });
   }
 });
 

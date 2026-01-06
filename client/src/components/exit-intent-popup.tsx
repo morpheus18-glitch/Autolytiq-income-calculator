@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, Gift, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { analytics } from "@/lib/analytics";
 
 interface ExitIntentPopupProps {
   onClose: () => void;
@@ -35,6 +36,7 @@ export function ExitIntentPopup({ onClose }: ExitIntentPopupProps) {
       if (res.ok) {
         setIsSuccess(true);
         localStorage.setItem("exitIntentShown", "true");
+        analytics.newsletterSignup("exit-intent");
         setTimeout(onClose, 2000);
       } else {
         setError("Something went wrong. Please try again.");

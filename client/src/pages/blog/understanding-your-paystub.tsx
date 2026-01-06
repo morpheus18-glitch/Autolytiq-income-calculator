@@ -2,10 +2,37 @@ import { Link } from "wouter";
 import { ArrowLeft, Calendar, Clock, FileText, Calculator, DollarSign, Percent, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BlogFeedback } from "@/components/blog-feedback";
+import { SEO, createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
+import { ManageCookiesButton } from "@/components/cookie-consent";
+
+const ARTICLE_META = {
+  title: "Understanding Your Paystub: A Complete Guide",
+  description: "Learn how to read your paystub, understand deductions, verify accuracy, and use YTD figures for financial planning. Complete breakdown of all paystub sections.",
+  datePublished: "2025-12-25",
+  url: "https://autolytiqs.com/blog/understanding-your-paystub",
+  keywords: "paystub explained, read paystub, gross vs net pay, YTD meaning, paycheck deductions explained",
+};
 
 export default function UnderstandingYourPaystub() {
+  const combinedSchema = [
+    createArticleSchema(ARTICLE_META.title, ARTICLE_META.description, ARTICLE_META.url, ARTICLE_META.datePublished),
+    createBreadcrumbSchema([
+      { name: "Home", url: "https://autolytiqs.com/" },
+      { name: "Blog", url: "https://autolytiqs.com/blog" },
+      { name: "Understanding Your Paystub", url: ARTICLE_META.url },
+    ]),
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={ARTICLE_META.title}
+        description={ARTICLE_META.description}
+        canonical={ARTICLE_META.url}
+        type="article"
+        keywords={ARTICLE_META.keywords}
+        structuredData={combinedSchema}
+      />
       {/* Header */}
       <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -274,6 +301,7 @@ export default function UnderstandingYourPaystub() {
             <Link href="/terms">
               <a className="text-muted-foreground hover:text-foreground transition-colors">Terms</a>
             </Link>
+            <ManageCookiesButton />
           </div>
         </div>
       </footer>

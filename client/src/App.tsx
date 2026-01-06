@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth";
+import { CookieConsentBanner } from "@/components/cookie-consent";
 
 // Lazy load all pages for code splitting
 const Calculator = lazy(() => import("@/pages/calculator"));
@@ -72,6 +73,7 @@ function App() {
           <Suspense fallback={<PageLoader />}>
             <Router />
           </Suspense>
+          <CookieConsentBanner />
         </TooltipProvider>
       </ThemeProvider>
     </AuthProvider>

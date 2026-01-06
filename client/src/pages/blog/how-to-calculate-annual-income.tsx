@@ -1,10 +1,37 @@
 import { Link } from "wouter";
 import { ArrowLeft, Calendar, Clock, TrendingUp, Calculator } from "lucide-react";
 import { BlogFeedback } from "@/components/blog-feedback";
+import { SEO, createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
+import { ManageCookiesButton } from "@/components/cookie-consent";
+
+const ARTICLE_META = {
+  title: "How to Calculate Your Annual Income from YTD Earnings",
+  description: "Learn the exact formula to calculate your projected annual income from year-to-date earnings. Includes factors affecting accuracy and free calculator.",
+  datePublished: "2026-01-02",
+  url: "https://autolytiqs.com/blog/how-to-calculate-annual-income",
+  keywords: "YTD income calculator, annual income calculation, salary projection, gross income, paystub YTD",
+};
 
 export default function HowToCalculateAnnualIncome() {
+  const combinedSchema = [
+    createArticleSchema(ARTICLE_META.title, ARTICLE_META.description, ARTICLE_META.url, ARTICLE_META.datePublished),
+    createBreadcrumbSchema([
+      { name: "Home", url: "https://autolytiqs.com/" },
+      { name: "Blog", url: "https://autolytiqs.com/blog" },
+      { name: "Calculate Annual Income", url: ARTICLE_META.url },
+    ]),
+  ];
+
   return (
     <div className="min-h-screen bg-[#09090b]">
+      <SEO
+        title={ARTICLE_META.title}
+        description={ARTICLE_META.description}
+        canonical={ARTICLE_META.url}
+        type="article"
+        keywords={ARTICLE_META.keywords}
+        structuredData={combinedSchema}
+      />
       {/* Header */}
       <header className="border-b border-[#1a1a1a] sticky top-0 bg-[#09090b]/95 backdrop-blur z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -174,6 +201,7 @@ export default function HowToCalculateAnnualIncome() {
             <Link href="/terms">
               <a className="text-neutral-400 hover:text-white transition-colors">Terms</a>
             </Link>
+            <ManageCookiesButton className="text-neutral-400 hover:text-white" />
           </div>
         </div>
       </footer>

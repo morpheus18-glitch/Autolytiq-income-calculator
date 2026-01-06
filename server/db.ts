@@ -89,6 +89,46 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_transactions_user ON transactions(user_id);
   CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(user_id, transaction_date);
   CREATE INDEX IF NOT EXISTS idx_merchant_categories_pattern ON merchant_categories(merchant_pattern);
+
+  -- User preferences for notifications and settings
+  CREATE TABLE IF NOT EXISTS user_preferences (
+    user_id TEXT PRIMARY KEY,
+    weekly_email_enabled INTEGER DEFAULT 1,
+    weekly_email_day INTEGER DEFAULT 0,
+    budget_alert_threshold REAL DEFAULT 0.8,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- Gamification: user stats and achievements
+  CREATE TABLE IF NOT EXISTS user_stats (
+    user_id TEXT PRIMARY KEY,
+    current_streak INTEGER DEFAULT 0,
+    longest_streak INTEGER DEFAULT 0,
+    total_transactions_logged INTEGER DEFAULT 0,
+    total_days_logged INTEGER DEFAULT 0,
+    last_log_date DATE,
+    weeks_under_budget INTEGER DEFAULT 0,
+    badges TEXT DEFAULT '[]',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- Daily activity log for streak tracking
+  CREATE TABLE IF NOT EXISTS daily_activity (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    activity_date DATE NOT NULL,
+    transactions_count INTEGER DEFAULT 0,
+    total_spent REAL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, activity_date),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_daily_activity_user_date ON daily_activity(user_id, activity_date);
 `);
 
 export interface User {
@@ -270,6 +310,138 @@ export const merchantDb = {
 
   findByUser: db.prepare<[string]>(
     "SELECT * FROM merchant_categories WHERE user_id = ? OR user_id IS NULL ORDER BY merchant_pattern"
+  ),
+};
+
+// User preferences
+export interface UserPreferences {
+  user_id: string;
+  weekly_email_enabled: number;
+  weekly_email_day: number;
+  budget_alert_threshold: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export const preferencesDb = {
+  get: db.prepare<[string]>(
+    "SELECT * FROM user_preferences WHERE user_id = ?"
+  ),
+
+  upsert: db.prepare<[string, number, number, number]>(
+    `INSERT INTO user_preferences (user_id, weekly_email_enabled, weekly_email_day, budget_alert_threshold)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET
+       weekly_email_enabled = excluded.weekly_email_enabled,
+       weekly_email_day = excluded.weekly_email_day,
+       budget_alert_threshold = excluded.budget_alert_threshold,
+       updated_at = CURRENT_TIMESTAMP`
+  ),
+
+  getUsersForWeeklyEmail: db.prepare<[number]>(
+    `SELECT u.id, u.email, u.name, p.weekly_email_day
+     FROM users u
+     LEFT JOIN user_preferences p ON u.id = p.user_id
+     WHERE p.weekly_email_enabled = 1 OR p.user_id IS NULL`
+  ),
+};
+
+// User stats for gamification
+export interface UserStats {
+  user_id: string;
+  current_streak: number;
+  longest_streak: number;
+  total_transactions_logged: number;
+  total_days_logged: number;
+  last_log_date: string | null;
+  weeks_under_budget: number;
+  badges: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const statsDb = {
+  get: db.prepare<[string]>(
+    "SELECT * FROM user_stats WHERE user_id = ?"
+  ),
+
+  upsert: db.prepare<[string, number, number, number, number, string | null, number, string]>(
+    `INSERT INTO user_stats (user_id, current_streak, longest_streak, total_transactions_logged, total_days_logged, last_log_date, weeks_under_budget, badges)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET
+       current_streak = excluded.current_streak,
+       longest_streak = excluded.longest_streak,
+       total_transactions_logged = excluded.total_transactions_logged,
+       total_days_logged = excluded.total_days_logged,
+       last_log_date = excluded.last_log_date,
+       weeks_under_budget = excluded.weeks_under_budget,
+       badges = excluded.badges,
+       updated_at = CURRENT_TIMESTAMP`
+  ),
+
+  incrementTransactions: db.prepare<[string]>(
+    `UPDATE user_stats SET
+       total_transactions_logged = total_transactions_logged + 1,
+       updated_at = CURRENT_TIMESTAMP
+     WHERE user_id = ?`
+  ),
+};
+
+// Daily activity tracking
+export interface DailyActivity {
+  id: string;
+  user_id: string;
+  activity_date: string;
+  transactions_count: number;
+  total_spent: number;
+  created_at: string;
+}
+
+export const activityDb = {
+  upsert: db.prepare<[string, string, string, number, number]>(
+    `INSERT INTO daily_activity (id, user_id, activity_date, transactions_count, total_spent)
+     VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(user_id, activity_date) DO UPDATE SET
+       transactions_count = transactions_count + excluded.transactions_count,
+       total_spent = total_spent + excluded.total_spent`
+  ),
+
+  getByDateRange: db.prepare<[string, string, string]>(
+    `SELECT * FROM daily_activity
+     WHERE user_id = ? AND activity_date BETWEEN ? AND ?
+     ORDER BY activity_date DESC`
+  ),
+
+  getStreakDays: db.prepare<[string, string]>(
+    `SELECT activity_date FROM daily_activity
+     WHERE user_id = ? AND activity_date <= ?
+     ORDER BY activity_date DESC
+     LIMIT 30`
+  ),
+};
+
+// Weekly summary data query
+export const summaryDb = {
+  getWeeklySummary: db.prepare<[string, string, string]>(
+    `SELECT
+       COUNT(*) as transaction_count,
+       SUM(amount) as total_spent,
+       category,
+       SUM(CASE WHEN category = 'needs' THEN amount ELSE 0 END) as needs_total,
+       SUM(CASE WHEN category = 'wants' THEN amount ELSE 0 END) as wants_total,
+       SUM(CASE WHEN category = 'savings' THEN amount ELSE 0 END) as savings_total
+     FROM transactions
+     WHERE user_id = ? AND transaction_date BETWEEN ? AND ?
+     GROUP BY category`
+  ),
+
+  getTopMerchants: db.prepare<[string, string, string]>(
+    `SELECT merchant, SUM(amount) as total, COUNT(*) as count
+     FROM transactions
+     WHERE user_id = ? AND transaction_date BETWEEN ? AND ? AND merchant IS NOT NULL
+     GROUP BY merchant
+     ORDER BY total DESC
+     LIMIT 5`
   ),
 };
 

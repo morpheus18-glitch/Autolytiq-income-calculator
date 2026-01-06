@@ -30,6 +30,7 @@ import { Link } from "wouter";
 
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { analytics } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +47,8 @@ import { FAQ, INCOME_CALCULATOR_FAQ } from "@/components/faq";
 import { ExportButtons, ShareButtons, EmailCaptureModal } from "@/components/pdf-export";
 import { BarChart, AnimatedNumber } from "@/components/charts";
 import { ScenarioManager } from "@/components/scenarios";
+import { SEO, createCalculatorSchema, createHowToSchema } from "@/components/seo";
+import { ManageCookiesButton } from "@/components/cookie-consent";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -180,6 +183,15 @@ function Calculator() {
   const incomeResults = calculateIncome();
   const maxAffordablePayment = incomeResults ? incomeResults.monthly * 0.12 : undefined;
 
+  // Track calculation completion (fire once per session)
+  const hasTrackedCalc = useRef(false);
+  useEffect(() => {
+    if (incomeResults && !hasTrackedCalc.current) {
+      analytics.calculationComplete(incomeResults.annual);
+      hasTrackedCalc.current = true;
+    }
+  }, [incomeResults]);
+
   // Calculate payment results
   const price = parseFloat(vehiclePrice) || 0;
   const down = parseFloat(downPayment) || 0;
@@ -239,8 +251,33 @@ function Calculator() {
 
   if (!mounted) return null;
 
+  const seoStructuredData = [
+    createCalculatorSchema(
+      "Income Calculator",
+      "Calculate your projected annual income from year-to-date earnings. Free salary calculator for W2 employees, hourly workers, and contractors.",
+      "https://autolytiqs.com/"
+    ),
+    createHowToSchema(
+      "How to Calculate Annual Income from YTD",
+      "Calculate your projected annual income using your YTD earnings",
+      [
+        { name: "Enter start date", text: "Enter the date you started your current job or January 1 if employed all year" },
+        { name: "Enter YTD income", text: "Find your year-to-date gross income on your most recent paystub" },
+        { name: "Enter last pay date", text: "Enter the date of your most recent paycheck" },
+        { name: "View results", text: "See your projected daily, weekly, monthly, and annual income" },
+      ]
+    ),
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
+      <SEO
+        title="Free Income Calculator 2026 | Calculate Annual Salary from YTD Pay"
+        description="Calculate your projected annual income from year-to-date earnings. Free salary calculator for W2 employees, hourly workers, and contractors. Estimate daily, weekly, monthly, and yearly income instantly."
+        canonical="https://autolytiqs.com/"
+        keywords="income calculator, salary calculator, annual income calculator, YTD calculator, year to date income, paycheck calculator, gross income calculator"
+        structuredData={seoStructuredData}
+      />
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
       {/* Header */}
@@ -437,13 +474,13 @@ function Calculator() {
                       />
                     </div>
 
-                    {/* CTA to Payment Calculator */}
-                    {!showPaymentCalc && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mt-4"
-                      >
+                    {/* CTAs - Next Steps */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 space-y-2"
+                    >
+                      {!showPaymentCalc && (
                         <Button
                           onClick={() => setShowPaymentCalc(true)}
                           className="w-full gap-2"
@@ -453,8 +490,22 @@ function Calculator() {
                           Calculate What You Can Afford
                           <ChevronRight className="h-4 w-4" />
                         </Button>
-                      </motion.div>
-                    )}
+                      )}
+                      <div className="grid grid-cols-2 gap-2">
+                        <Link href="/smart-money">
+                          <Button variant="outline" className="w-full gap-2" size="sm">
+                            <WalletIcon className="h-4 w-4" />
+                            Plan Budget
+                          </Button>
+                        </Link>
+                        <Link href="/housing">
+                          <Button variant="outline" className="w-full gap-2" size="sm">
+                            <HousingIcon className="h-4 w-4" />
+                            Housing
+                          </Button>
+                        </Link>
+                      </div>
+                    </motion.div>
                   </div>
                 </motion.div>
               )}
@@ -806,6 +857,7 @@ function Calculator() {
               <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
                 Terms
               </Link>
+              <ManageCookiesButton />
             </div>
           </div>
         </div>

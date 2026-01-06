@@ -35,9 +35,12 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { analytics } from "@/lib/analytics";
 import { FAQ, AUTO_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedNumber } from "@/components/charts";
+import { IncomeBanner, NoIncomeCTA } from "@/components/income-banner";
+import { useIncome } from "@/lib/use-income";
 
 const STORAGE_KEY = "auto-page-state";
 
@@ -129,6 +132,7 @@ const OWNERSHIP_COSTS = [
 
 function Auto() {
   const [mounted, setMounted] = useState(false);
+  const { income: calculatorIncome, hasIncome: hasCalculatorIncome } = useIncome();
 
   // Calculator State
   const [monthlyIncome, setMonthlyIncome] = useState("");
@@ -140,29 +144,14 @@ function Auto() {
 
   useEffect(() => {
     setMounted(true);
-    // Try to get income from main calculator
-    try {
-      const mainCalcState = localStorage.getItem("income-calc-state");
-      if (mainCalcState) {
-        const parsed = JSON.parse(mainCalcState);
-        if (parsed.ytdIncome && parsed.startDate && parsed.checkDate) {
-          // Calculate monthly income
-          const start = new Date(parsed.startDate);
-          const check = new Date(parsed.checkDate);
-          const yearStart = new Date(check.getFullYear(), 0, 1);
-          const effectiveStart = start < yearStart ? yearStart : start;
-          const days = Math.floor((check.getTime() - effectiveStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-          if (days > 0) {
-            const daily = parseFloat(parsed.ytdIncome) / days;
-            const monthly = (daily * 365) / 12;
-            setMonthlyIncome(Math.round(monthly).toString());
-          }
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load income data", e);
-    }
   }, []);
+
+  // Auto-populate income from calculator when available
+  useEffect(() => {
+    if (hasCalculatorIncome && calculatorIncome && !monthlyIncome) {
+      setMonthlyIncome(calculatorIncome.grossMonthly.toString());
+    }
+  }, [hasCalculatorIncome, calculatorIncome, monthlyIncome]);
 
   const income = parseFloat(monthlyIncome) || 0;
   const existingPayment = parseFloat(currentCarPayment) || 0;
@@ -250,6 +239,19 @@ function Auto() {
             Know what you can afford before you step on the lot
           </p>
         </div>
+
+        {/* Income Detection Banner */}
+        {hasCalculatorIncome ? (
+          <IncomeBanner
+            className="mb-6"
+            variant="compact"
+            showCTA={true}
+            ctaText="Plan Budget"
+            ctaHref="/smart-money"
+          />
+        ) : (
+          <NoIncomeCTA className="mb-6" />
+        )}
 
         {/* Affordability Calculator */}
         <Card className="glass-card border-none shadow-xl mb-6">
@@ -585,6 +587,7 @@ function Auto() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
+                  onClick={() => analytics.affiliateClick(link.name, "auto")}
                   className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
                 >
                   <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">

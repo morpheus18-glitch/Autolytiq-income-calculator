@@ -1,10 +1,20 @@
 import { Resend } from "resend";
+import { summaryDb, statsDb, type UserStats } from "./db";
 
 // Configure Resend
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const FROM_EMAIL = process.env.FROM_EMAIL || "onboarding@resend.dev";
 const APP_URL = process.env.APP_URL || "https://autolytiqs.com";
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
 
 export async function sendPasswordResetEmail(
   email: string,
@@ -247,5 +257,259 @@ ${APP_URL}
   } catch (error) {
     console.error("Failed to send newsletter welcome email:", error);
     return false;
+  }
+}
+
+export interface WeeklySummaryData {
+  userId: string;
+  email: string;
+  name?: string;
+  startDate: string;
+  endDate: string;
+  totalSpent: number;
+  needsTotal: number;
+  wantsTotal: number;
+  savingsTotal: number;
+  transactionCount: number;
+  topMerchants: Array<{ merchant: string; total: number; count: number }>;
+  stats: UserStats | null;
+  budgetGoal?: number;
+}
+
+export async function sendWeeklySummaryEmail(data: WeeklySummaryData): Promise<boolean> {
+  const greeting = data.name ? `Hi ${data.name},` : "Hi there,";
+
+  // Calculate percentages
+  const total = data.totalSpent || 1;
+  const needsPercent = Math.round((data.needsTotal / total) * 100);
+  const wantsPercent = Math.round((data.wantsTotal / total) * 100);
+  const savingsPercent = Math.round((data.savingsTotal / total) * 100);
+
+  // Determine if under budget
+  const isUnderBudget = data.budgetGoal ? data.totalSpent <= data.budgetGoal : false;
+  const budgetStatus = data.budgetGoal
+    ? isUnderBudget
+      ? `Under budget by ${formatCurrency(data.budgetGoal - data.totalSpent)}`
+      : `Over budget by ${formatCurrency(data.totalSpent - data.budgetGoal)}`
+    : "";
+
+  // Format top merchants
+  const topMerchantsHtml = data.topMerchants
+    .map(
+      (m, i) => `
+      <tr>
+        <td style="padding: 8px 0; border-bottom: 1px solid #262626; color: #a3a3a3;">${i + 1}. ${m.merchant}</td>
+        <td style="padding: 8px 0; border-bottom: 1px solid #262626; color: #e5e5e5; text-align: right; font-family: monospace;">${formatCurrency(m.total)}</td>
+        <td style="padding: 8px 0; border-bottom: 1px solid #262626; color: #737373; text-align: right;">${m.count}x</td>
+      </tr>
+    `
+    )
+    .join("");
+
+  // Gamification section
+  const streakEmoji = data.stats?.current_streak && data.stats.current_streak >= 7 ? "🔥" : "📊";
+  const streakHtml = data.stats
+    ? `
+    <div style="background-color: #171717; border-radius: 8px; padding: 16px; margin-top: 20px;">
+      <h3 style="color: #10b981; font-size: 14px; margin: 0 0 12px 0;">${streakEmoji} Your Stats</h3>
+      <div style="display: flex; gap: 16px;">
+        <div style="text-align: center;">
+          <div style="color: #10b981; font-size: 24px; font-weight: bold;">${data.stats.current_streak}</div>
+          <div style="color: #737373; font-size: 11px;">Day Streak</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="color: #3b82f6; font-size: 24px; font-weight: bold;">${data.stats.total_transactions_logged}</div>
+          <div style="color: #737373; font-size: 11px;">Total Logged</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="color: #f59e0b; font-size: 24px; font-weight: bold;">${data.stats.weeks_under_budget}</div>
+          <div style="color: #737373; font-size: 11px;">Weeks Under Budget</div>
+        </div>
+      </div>
+    </div>
+  `
+    : "";
+
+  try {
+    if (!resend) {
+      console.log("Resend not configured. Weekly summary would be sent to:", data.email);
+      return true;
+    }
+
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: data.email,
+      subject: `Your Week in Spending: ${formatCurrency(data.totalSpent)} spent`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: 'Segoe UI', Arial, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #0f0f0f; border: 1px solid #1a1a1a;">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700;">
+        Weekly Spending Summary
+      </h1>
+      <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">
+        ${data.startDate} - ${data.endDate}
+      </p>
+    </div>
+
+    <!-- Main Content -->
+    <div style="padding: 30px;">
+      <p style="color: #e5e5e5; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">
+        ${greeting}
+      </p>
+
+      <!-- Total Spent Hero -->
+      <div style="background-color: #171717; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+        <div style="color: #737373; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Total Spent This Week</div>
+        <div style="color: #10b981; font-size: 42px; font-weight: bold; font-family: monospace; margin: 8px 0;">
+          ${formatCurrency(data.totalSpent)}
+        </div>
+        <div style="color: #a3a3a3; font-size: 13px;">
+          ${data.transactionCount} transactions logged
+          ${budgetStatus ? `<br><span style="color: ${isUnderBudget ? "#10b981" : "#ef4444"};">${budgetStatus}</span>` : ""}
+        </div>
+      </div>
+
+      <!-- 50/30/20 Breakdown -->
+      <div style="background-color: #171717; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+        <h3 style="color: #e5e5e5; font-size: 14px; margin: 0 0 16px 0;">Spending Breakdown</h3>
+
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: #10b981; font-size: 13px;">Needs (${needsPercent}%)</span>
+            <span style="color: #e5e5e5; font-family: monospace;">${formatCurrency(data.needsTotal)}</span>
+          </div>
+          <div style="background-color: #262626; border-radius: 4px; height: 8px; overflow: hidden;">
+            <div style="background-color: #10b981; height: 100%; width: ${Math.min(needsPercent, 100)}%;"></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: #3b82f6; font-size: 13px;">Wants (${wantsPercent}%)</span>
+            <span style="color: #e5e5e5; font-family: monospace;">${formatCurrency(data.wantsTotal)}</span>
+          </div>
+          <div style="background-color: #262626; border-radius: 4px; height: 8px; overflow: hidden;">
+            <div style="background-color: #3b82f6; height: 100%; width: ${Math.min(wantsPercent, 100)}%;"></div>
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: #f59e0b; font-size: 13px;">Savings (${savingsPercent}%)</span>
+            <span style="color: #e5e5e5; font-family: monospace;">${formatCurrency(data.savingsTotal)}</span>
+          </div>
+          <div style="background-color: #262626; border-radius: 4px; height: 8px; overflow: hidden;">
+            <div style="background-color: #f59e0b; height: 100%; width: ${Math.min(savingsPercent, 100)}%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Merchants -->
+      ${
+        data.topMerchants.length > 0
+          ? `
+      <div style="background-color: #171717; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+        <h3 style="color: #e5e5e5; font-size: 14px; margin: 0 0 12px 0;">Top Spending</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          ${topMerchantsHtml}
+        </table>
+      </div>
+      `
+          : ""
+      }
+
+      <!-- Gamification Stats -->
+      ${streakHtml}
+
+      <!-- CTA Button -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${APP_URL}/smart-money"
+           style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+          View Full Budget
+        </a>
+      </div>
+
+      <!-- Tip of the Week -->
+      <div style="background-color: #171717; border-left: 3px solid #10b981; padding: 16px; margin-top: 20px;">
+        <h3 style="color: #e5e5e5; font-size: 13px; margin: 0 0 8px 0;">💡 Tip of the Week</h3>
+        <p style="color: #a3a3a3; font-size: 13px; line-height: 1.5; margin: 0;">
+          ${
+            wantsPercent > 35
+              ? "Your 'Wants' spending is above 30%. Try the 24-hour rule: wait a day before non-essential purchases over $50."
+              : needsPercent > 55
+                ? "Your 'Needs' are taking up more than 50%. Review subscriptions and utilities for potential savings."
+                : "Great job keeping your spending balanced! Consider increasing your savings rate by even 1%."
+          }
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #0a0a0a; padding: 24px; text-align: center; border-top: 1px solid #1a1a1a;">
+      <p style="color: #525252; font-size: 11px; margin: 0 0 8px 0;">
+        © ${new Date().getFullYear()} Autolytiq. Keep tracking, keep growing.
+      </p>
+      <p style="color: #404040; font-size: 10px; margin: 0;">
+        <a href="${APP_URL}/settings" style="color: #10b981; text-decoration: none;">Manage email preferences</a> |
+        <a href="${APP_URL}/privacy" style="color: #10b981; text-decoration: none;">Privacy Policy</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+      `,
+    });
+
+    console.log("Weekly summary email sent to:", data.email);
+    return true;
+  } catch (error) {
+    console.error("Failed to send weekly summary email:", error);
+    return false;
+  }
+}
+
+export function getWeeklyEmailData(
+  userId: string,
+  startDate: string,
+  endDate: string
+): { needsTotal: number; wantsTotal: number; savingsTotal: number; totalSpent: number; transactionCount: number } {
+  try {
+    const results = summaryDb.getWeeklySummary.all(userId, startDate, endDate) as Array<{
+      category: string;
+      transaction_count: number;
+      total_spent: number;
+    }>;
+
+    let needsTotal = 0;
+    let wantsTotal = 0;
+    let savingsTotal = 0;
+    let transactionCount = 0;
+
+    for (const row of results) {
+      transactionCount += row.transaction_count;
+      if (row.category === "needs") needsTotal = row.total_spent || 0;
+      if (row.category === "wants") wantsTotal = row.total_spent || 0;
+      if (row.category === "savings") savingsTotal = row.total_spent || 0;
+    }
+
+    return {
+      needsTotal,
+      wantsTotal,
+      savingsTotal,
+      totalSpent: needsTotal + wantsTotal + savingsTotal,
+      transactionCount,
+    };
+  } catch (error) {
+    console.error("Failed to get weekly email data:", error);
+    return { needsTotal: 0, wantsTotal: 0, savingsTotal: 0, totalSpent: 0, transactionCount: 0 };
   }
 }

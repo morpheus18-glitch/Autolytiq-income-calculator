@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Home, Car, CreditCard, ShoppingCart, Zap, Smartphone, Tv, Music, Sparkles, Shirt, Package, Coffee, Utensils, Dumbbell, Gamepad2, BookOpen, Scissors, Dog, Baby, Pill, PiggyBank, Check, AlertTriangle, X, Droplets, Wind, Wallet, Plane, Plus, Cigarette, Wine, Dice1, Scale, Briefcase, Banknote, Users, DollarSign, Train, Gift, Heart, GraduationCap, Ticket, Film, Save, History, Loader2, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { analytics } from "@/lib/analytics";
 import { AuthGuard } from "@/components/auth-guard";
 import { ReceiptUpload } from "@/components/receipt-upload";
 import { TransactionList } from "@/components/transaction-list";
@@ -976,6 +977,15 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   const wantsPercent = monthlyIncome > 0 ? (wants / monthlyIncome) * 100 : 0;
   const savingsPercent = monthlyIncome > 0 ? (savings / monthlyIncome) * 100 : 0;
   const leftover = monthlyIncome - total;
+
+  // Track budget completion when user reaches results
+  const hasTrackedBudget = useRef(false);
+  useEffect(() => {
+    if (currentStep?.type === "results" && !hasTrackedBudget.current && monthlyIncome > 0) {
+      analytics.budgetComplete(monthlyIncome, needs, wants, savings);
+      hasTrackedBudget.current = true;
+    }
+  }, [currentStep, monthlyIncome, needs, wants, savings]);
 
   // Calculate subscription totals
   const subscriptionTotal = Object.entries(SUBSCRIPTIONS).reduce((sum, [catKey, category]) => {

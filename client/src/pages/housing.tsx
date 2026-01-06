@@ -32,9 +32,13 @@ import {
 
 import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
+import { analytics } from "@/lib/analytics";
 import { FAQ, HOUSING_FAQ } from "@/components/faq";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AmortizationChart, AnimatedNumber } from "@/components/charts";
+import { IncomeBanner, NoIncomeCTA } from "@/components/income-banner";
+import { useIncome } from "@/lib/use-income";
+import { RentVsBuyCalculator } from "@/components/rent-vs-buy";
 
 // Housing-focused affiliate links
 const HOUSING_AFFILIATES = [
@@ -110,6 +114,7 @@ const BUY_TIPS = [
 
 function Housing() {
   const [mounted, setMounted] = useState(false);
+  const { income: calculatorIncome, hasIncome: hasCalculatorIncome } = useIncome();
 
   // Income inputs
   const [monthlyIncome, setMonthlyIncome] = useState("");
@@ -131,28 +136,14 @@ function Housing() {
 
   useEffect(() => {
     setMounted(true);
-    // Try to get income from main calculator
-    try {
-      const mainCalcState = localStorage.getItem("income-calc-state");
-      if (mainCalcState) {
-        const parsed = JSON.parse(mainCalcState);
-        if (parsed.ytdIncome && parsed.startDate && parsed.checkDate) {
-          const start = new Date(parsed.startDate);
-          const check = new Date(parsed.checkDate);
-          const yearStart = new Date(check.getFullYear(), 0, 1);
-          const effectiveStart = start < yearStart ? yearStart : start;
-          const days = Math.floor((check.getTime() - effectiveStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-          if (days > 0) {
-            const daily = parseFloat(parsed.ytdIncome) / days;
-            const monthly = (daily * 365) / 12;
-            setMonthlyIncome(Math.round(monthly).toString());
-          }
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load income data", e);
-    }
   }, []);
+
+  // Auto-populate income from calculator when available
+  useEffect(() => {
+    if (hasCalculatorIncome && calculatorIncome && !monthlyIncome) {
+      setMonthlyIncome(calculatorIncome.grossMonthly.toString());
+    }
+  }, [hasCalculatorIncome, calculatorIncome, monthlyIncome]);
 
   const income = parseFloat(monthlyIncome) || 0;
   const debts = parseFloat(monthlyDebts) || 0;
@@ -259,6 +250,19 @@ function Housing() {
             Find out what you can afford to rent or buy
           </p>
         </div>
+
+        {/* Income Detection Banner */}
+        {hasCalculatorIncome ? (
+          <IncomeBanner
+            className="mb-6"
+            variant="compact"
+            showCTA={true}
+            ctaText="Plan Budget"
+            ctaHref="/smart-money"
+          />
+        ) : (
+          <NoIncomeCTA className="mb-6" />
+        )}
 
         {/* Income Inputs */}
         <Card className="glass-card border-none shadow-xl mb-6">
@@ -825,6 +829,7 @@ function Housing() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
+                  onClick={() => analytics.affiliateClick(link.name, "housing")}
                   className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
                 >
                   <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
@@ -841,6 +846,15 @@ function Housing() {
             <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
+
+        {/* Rent vs Buy Breakeven Calculator */}
+        <RentVsBuyCalculator
+          className="mb-6"
+          initialRent={rent || 1500}
+          initialHomePrice={price || 350000}
+          initialDownPercent={parseFloat(downPaymentPercent) || 20}
+          initialRate={parseFloat(mortgageRate) || 6.5}
+        />
 
         {/* FAQ Section */}
         <FAQ items={HOUSING_FAQ} className="mb-6" />

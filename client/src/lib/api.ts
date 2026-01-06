@@ -179,6 +179,29 @@ export const transactionApi = {
   },
 };
 
+// Gamification API helpers
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+export interface GamificationStats {
+  currentStreak: number;
+  longestStreak: number;
+  totalTransactions: number;
+  totalDaysLogged: number;
+  weeksUnderBudget: number;
+  lastLogDate: string | null;
+  badges: Badge[];
+}
+
+export const gamificationApi = {
+  getStats: () =>
+    apiJson<GamificationStats>("/api/transactions/stats/gamification"),
+};
+
 // Receipt API helpers
 export interface ScanResult {
   success: boolean;

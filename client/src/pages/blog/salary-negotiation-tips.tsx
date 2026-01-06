@@ -1,10 +1,37 @@
 import { Link } from "wouter";
 import { ArrowLeft, Calendar, Clock, DollarSign } from "lucide-react";
 import { BlogFeedback } from "@/components/blog-feedback";
+import { SEO, createArticleSchema, createBreadcrumbSchema } from "@/components/seo";
+import { ManageCookiesButton } from "@/components/cookie-consent";
+
+const ARTICLE_META = {
+  title: "10 Salary Negotiation Tips That Actually Work",
+  description: "Learn 10 proven salary negotiation strategies backed by research. Get scripts and tactics to confidently negotiate a higher salary at your next job offer or raise.",
+  datePublished: "2025-12-28",
+  url: "https://autolytiqs.com/blog/salary-negotiation-tips",
+  keywords: "salary negotiation tips, how to negotiate salary, salary negotiation script, ask for raise, job offer negotiation",
+};
 
 export default function SalaryNegotiationTips() {
+  const combinedSchema = [
+    createArticleSchema(ARTICLE_META.title, ARTICLE_META.description, ARTICLE_META.url, ARTICLE_META.datePublished),
+    createBreadcrumbSchema([
+      { name: "Home", url: "https://autolytiqs.com/" },
+      { name: "Blog", url: "https://autolytiqs.com/blog" },
+      { name: "Salary Negotiation", url: ARTICLE_META.url },
+    ]),
+  ];
+
   return (
     <div className="min-h-screen bg-[#09090b]">
+      <SEO
+        title={ARTICLE_META.title}
+        description={ARTICLE_META.description}
+        canonical={ARTICLE_META.url}
+        type="article"
+        keywords={ARTICLE_META.keywords}
+        structuredData={combinedSchema}
+      />
       {/* Header */}
       <header className="border-b border-[#1a1a1a] sticky top-0 bg-[#09090b]/95 backdrop-blur z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -177,6 +204,7 @@ export default function SalaryNegotiationTips() {
             <Link href="/terms">
               <a className="text-neutral-400 hover:text-white transition-colors">Terms</a>
             </Link>
+            <ManageCookiesButton className="text-neutral-400 hover:text-white" />
           </div>
         </div>
       </footer>

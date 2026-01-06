@@ -177,13 +177,41 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) with Consent Mode v2 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LHXY6T7KSK"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+
+      // Default consent state - deny all until user accepts
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'wait_for_update': 500
+      });
+
       gtag('js', new Date());
-      gtag('config', 'G-LHXY6T7KSK');
+      gtag('config', 'G-LHXY6T7KSK', {
+        'anonymize_ip': true
+      });
+
+      // Check for existing consent and update
+      (function() {
+        var consent = localStorage.getItem('cookie-consent');
+        var prefs = localStorage.getItem('cookie-preferences');
+        if (consent === 'accepted' || (consent === 'customized' && prefs)) {
+          try {
+            var p = prefs ? JSON.parse(prefs) : { analytics: true };
+            if (p.analytics) {
+              gtag('consent', 'update', {
+                'analytics_storage': 'granted'
+              });
+            }
+          } catch(e) {}
+        }
+      })();
     </script>
 
     <!-- Service Worker Registration -->
