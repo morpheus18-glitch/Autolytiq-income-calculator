@@ -3,6 +3,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { securityHeaders, corsConfig, sanitizeInput, blockAttacks } from "./security/headers";
+import { apiRateLimiter } from "./security/rate-limiter";
 
 const app = express();
 const httpServer = createServer(app);
@@ -10,8 +12,22 @@ const httpServer = createServer(app);
 // Track server state for graceful shutdown
 let isShuttingDown = false;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Trust proxy for accurate IP detection (required for rate limiting behind reverse proxy)
+app.set("trust proxy", 1);
+
+// Security middleware - apply early in the chain
+app.use(corsConfig);
+app.use(securityHeaders);
+
+app.use(express.json({ limit: "10kb" })); // Limit body size to prevent DoS
+app.use(express.urlencoded({ extended: false, limit: "10kb" }));
+
+// Input sanitization and attack blocking
+app.use(sanitizeInput);
+app.use(blockAttacks);
+
+// Apply general API rate limiting
+app.use("/api", apiRateLimiter);
 
 // Reject new requests during shutdown
 app.use((req, res, next) => {

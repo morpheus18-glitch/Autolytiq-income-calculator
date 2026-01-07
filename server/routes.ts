@@ -7,6 +7,7 @@ import budgetRoutes from "./budget";
 import transactionRoutes from "./transactions";
 import receiptRoutes from "./receipts";
 import emailRoutes from "./email-routes";
+import { getCsrfTokenHandler, csrfProtection } from "./security/csrf";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -14,6 +15,12 @@ export async function registerRoutes(
 ): Promise<Server> {
   // Health check
   app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+
+  // CSRF token endpoint
+  app.get("/api/csrf-token", getCsrfTokenHandler);
+
+  // Apply CSRF protection to state-changing API routes
+  app.use("/api", csrfProtection);
 
   // Auth routes
   app.use("/api/auth", authRoutes);
