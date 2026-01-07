@@ -17,7 +17,11 @@ import {
   MailCheck,
   UserX,
   Shield,
-  RefreshCw
+  RefreshCw,
+  Key,
+  Power,
+  Copy,
+  Check
 } from "lucide-react";
 
 interface Lead {
@@ -246,6 +250,52 @@ export default function AdminDashboard() {
     setActionLoading(null);
   };
 
+  const [tempPassword, setTempPassword] = useState<{ email: string; password: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const resetUserPassword = async (id: string, email: string) => {
+    if (!confirm(`Reset password for ${email}? A new temporary password will be generated.`)) return;
+    setActionLoading(`reset-${id}`);
+    try {
+      const res = await fetch(`/api/admin/users/${id}/reset-password`, {
+        method: "POST",
+        headers: { "x-admin-key": adminKey }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTempPassword({ email: data.email, password: data.tempPassword });
+      }
+    } catch (e) {
+      console.error("Failed to reset password:", e);
+    }
+    setActionLoading(null);
+  };
+
+  const toggleUserActive = async (id: string) => {
+    setActionLoading(`toggle-${id}`);
+    try {
+      const res = await fetch(`/api/admin/users/${id}/toggle-active`, {
+        method: "PATCH",
+        headers: { "x-admin-key": adminKey }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(users.map(u => u.id === id ? { ...u, verified: data.active ? 1 : 0 } : u));
+      }
+    } catch (e) {
+      console.error("Failed to toggle active:", e);
+    }
+    setActionLoading(null);
+  };
+
+  const copyPassword = () => {
+    if (tempPassword) {
+      navigator.clipboard.writeText(tempPassword.password);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const handleLeadsSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setLeadsPage(1);
@@ -293,6 +343,40 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#09090b] p-4 md:p-8">
+      {/* Password Reset Modal */}
+      {tempPassword && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#0f0f0f] border border-[#262626] rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-white mb-2">Password Reset</h3>
+            <p className="text-neutral-400 text-sm mb-4">
+              New temporary password for <span className="text-white">{tempPassword.email}</span>
+            </p>
+            <div className="bg-[#171717] border border-[#262626] rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between">
+                <code className="text-emerald-400 font-mono text-lg">{tempPassword.password}</code>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={copyPassword}
+                  className="border-[#262626] text-neutral-300 h-8"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+            <p className="text-yellow-400 text-xs mb-4">
+              Share this password securely. The user should change it after logging in.
+            </p>
+            <Button
+              onClick={() => setTempPassword(null)}
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
+            >
+              Done
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
@@ -604,26 +688,51 @@ export default function AdminDashboard() {
                           <td className="p-4">
                             {user.verified ? (
                               <span className="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded text-xs flex items-center gap-1 w-fit">
-                                <Shield className="w-3 h-3" /> Verified
+                                <Shield className="w-3 h-3" /> Active
                               </span>
                             ) : (
-                              <span className="px-2 py-1 bg-yellow-500/10 text-yellow-400 rounded text-xs">Pending</span>
+                              <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded text-xs">Inactive</span>
                             )}
                           </td>
                           <td className="p-4 text-neutral-400 text-sm">
                             {new Date(user.created_at).toLocaleDateString()}
                           </td>
                           <td className="p-4">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => deleteUser(user.id)}
-                              disabled={actionLoading === `user-${user.id}`}
-                              className="border-red-900 text-red-400 hover:bg-red-900/20 h-8 px-2"
-                              title="Delete User"
-                            >
-                              <UserX className="w-4 h-4" />
-                            </Button>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => toggleUserActive(user.id)}
+                                disabled={actionLoading === `toggle-${user.id}`}
+                                className={user.verified
+                                  ? "border-yellow-900 text-yellow-400 hover:bg-yellow-900/20 h-8 px-2"
+                                  : "border-emerald-900 text-emerald-400 hover:bg-emerald-900/20 h-8 px-2"
+                                }
+                                title={user.verified ? "Deactivate User" : "Activate User"}
+                              >
+                                <Power className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => resetUserPassword(user.id, user.email)}
+                                disabled={actionLoading === `reset-${user.id}`}
+                                className="border-blue-900 text-blue-400 hover:bg-blue-900/20 h-8 px-2"
+                                title="Reset Password"
+                              >
+                                <Key className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => deleteUser(user.id)}
+                                disabled={actionLoading === `user-${user.id}`}
+                                className="border-red-900 text-red-400 hover:bg-red-900/20 h-8 px-2"
+                                title="Delete User"
+                              >
+                                <UserX className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))

@@ -1,6 +1,8 @@
 import { Router } from "express";
 import Database from "better-sqlite3";
 import path from "path";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const router = Router();
 
@@ -311,6 +313,56 @@ router.patch("/users/:id", requireAdmin, (req, res) => {
   } catch (error) {
     console.error("Update user error:", error);
     res.status(500).json({ message: "Failed to update user" });
+  }
+});
+
+// POST /api/admin/users/:id/reset-password - Reset user password
+router.post("/users/:id/reset-password", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = usersDb.prepare("SELECT * FROM users WHERE id = ?").get(id) as { id: string; email: string } | undefined;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate a random password
+    const newPassword = crypto.randomBytes(8).toString("hex"); // 16 char password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    usersDb.prepare("UPDATE users SET password = ? WHERE id = ?").run(hashedPassword, id);
+
+    res.json({
+      message: "Password reset successfully",
+      tempPassword: newPassword,
+      email: user.email
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Failed to reset password" });
+  }
+});
+
+// PATCH /api/admin/users/:id/toggle-active - Activate/deactivate user
+router.patch("/users/:id/toggle-active", requireAdmin, (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = usersDb.prepare("SELECT verified FROM users WHERE id = ?").get(id) as { verified: number } | undefined;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const newStatus = user.verified ? 0 : 1;
+    usersDb.prepare("UPDATE users SET verified = ? WHERE id = ?").run(newStatus, id);
+
+    res.json({
+      message: newStatus ? "User activated" : "User deactivated",
+      active: newStatus === 1
+    });
+  } catch (error) {
+    console.error("Toggle active error:", error);
+    res.status(500).json({ message: "Failed to update user status" });
   }
 });
 
