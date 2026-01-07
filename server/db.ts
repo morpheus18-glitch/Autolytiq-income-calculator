@@ -129,6 +129,49 @@ db.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS idx_daily_activity_user_date ON daily_activity(user_id, activity_date);
+
+  -- Plaid: connected bank items (institutions)
+  CREATE TABLE IF NOT EXISTS plaid_items (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    access_token TEXT NOT NULL,
+    item_id TEXT UNIQUE NOT NULL,
+    institution_id TEXT,
+    institution_name TEXT,
+    cursor TEXT,
+    last_synced_at DATETIME,
+    error_code TEXT,
+    status TEXT DEFAULT 'active',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  -- Plaid: individual bank accounts
+  CREATE TABLE IF NOT EXISTS plaid_accounts (
+    id TEXT PRIMARY KEY,
+    plaid_item_id TEXT NOT NULL,
+    account_id TEXT UNIQUE NOT NULL,
+    name TEXT,
+    official_name TEXT,
+    type TEXT,
+    subtype TEXT,
+    mask TEXT,
+    current_balance REAL,
+    available_balance REAL,
+    iso_currency_code TEXT DEFAULT 'USD',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (plaid_item_id) REFERENCES plaid_items(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_plaid_items_user ON plaid_items(user_id);
+  CREATE INDEX IF NOT EXISTS idx_plaid_items_item_id ON plaid_items(item_id);
+  CREATE INDEX IF NOT EXISTS idx_plaid_accounts_item ON plaid_accounts(plaid_item_id);
+  CREATE INDEX IF NOT EXISTS idx_plaid_accounts_account_id ON plaid_accounts(account_id);
+
+  -- Add plaid_transaction_id to transactions if not exists
+  -- (used to link Plaid transactions to our transactions table)
 `);
 
 export interface User {
@@ -151,7 +194,7 @@ export interface PasswordReset {
 
 export const userDb = {
   create: db.prepare<[string, string, string, string | null]>(
-    "INSERT INTO users (id, email, password, name) VALUES (?, ?, ?, ?)"
+    "INSERT INTO users (id, email, password, name, verified) VALUES (?, ?, ?, ?, 1)"
   ),
 
   findByEmail: db.prepare<[string]>(
@@ -472,6 +515,105 @@ export const summaryDb = {
      GROUP BY merchant
      ORDER BY total DESC
      LIMIT 5`
+  ),
+};
+
+// Plaid items (connected bank accounts)
+export interface PlaidItem {
+  id: string;
+  user_id: string;
+  access_token: string;
+  item_id: string;
+  institution_id: string | null;
+  institution_name: string | null;
+  cursor: string | null;
+  last_synced_at: string | null;
+  error_code: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PlaidAccount {
+  id: string;
+  plaid_item_id: string;
+  account_id: string;
+  name: string | null;
+  official_name: string | null;
+  type: string | null;
+  subtype: string | null;
+  mask: string | null;
+  current_balance: number | null;
+  available_balance: number | null;
+  iso_currency_code: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const plaidItemDb = {
+  create: db.prepare<[string, string, string, string, string | null, string | null]>(
+    `INSERT INTO plaid_items (id, user_id, access_token, item_id, institution_id, institution_name)
+     VALUES (?, ?, ?, ?, ?, ?)`
+  ),
+
+  findByUser: db.prepare<[string]>(
+    "SELECT * FROM plaid_items WHERE user_id = ? AND status = 'active' ORDER BY created_at DESC"
+  ),
+
+  findByItemId: db.prepare<[string]>(
+    "SELECT * FROM plaid_items WHERE item_id = ?"
+  ),
+
+  findById: db.prepare<[string, string]>(
+    "SELECT * FROM plaid_items WHERE id = ? AND user_id = ?"
+  ),
+
+  updateCursor: db.prepare<[string, string]>(
+    `UPDATE plaid_items SET cursor = ?, last_synced_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+     WHERE item_id = ?`
+  ),
+
+  updateError: db.prepare<[string, string]>(
+    `UPDATE plaid_items SET error_code = ?, status = 'error', updated_at = CURRENT_TIMESTAMP
+     WHERE item_id = ?`
+  ),
+
+  clearError: db.prepare<[string]>(
+    `UPDATE plaid_items SET error_code = NULL, status = 'active', updated_at = CURRENT_TIMESTAMP
+     WHERE item_id = ?`
+  ),
+
+  delete: db.prepare<[string, string]>(
+    "DELETE FROM plaid_items WHERE id = ? AND user_id = ?"
+  ),
+
+  deleteByItemId: db.prepare<[string]>(
+    "DELETE FROM plaid_items WHERE item_id = ?"
+  ),
+};
+
+export const plaidAccountDb = {
+  upsert: db.prepare<[string, string, string, string | null, string | null, string | null, string | null, string | null, number | null, number | null, string]>(
+    `INSERT INTO plaid_accounts (id, plaid_item_id, account_id, name, official_name, type, subtype, mask, current_balance, available_balance, iso_currency_code)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(account_id) DO UPDATE SET
+       name = excluded.name,
+       official_name = excluded.official_name,
+       current_balance = excluded.current_balance,
+       available_balance = excluded.available_balance,
+       updated_at = CURRENT_TIMESTAMP`
+  ),
+
+  findByItem: db.prepare<[string]>(
+    "SELECT * FROM plaid_accounts WHERE plaid_item_id = ?"
+  ),
+
+  findByAccountId: db.prepare<[string]>(
+    "SELECT * FROM plaid_accounts WHERE account_id = ?"
+  ),
+
+  deleteByItem: db.prepare<[string]>(
+    "DELETE FROM plaid_accounts WHERE plaid_item_id = ?"
   ),
 };
 
