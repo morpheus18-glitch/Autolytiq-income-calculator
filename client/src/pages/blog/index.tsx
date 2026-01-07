@@ -1,6 +1,86 @@
+import { useState } from "react";
 import { Link } from "wouter";
-import { Calendar, Clock, ArrowRight, Calculator as CalcIcon } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Calculator as CalcIcon, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { analytics } from "@/lib/analytics";
+
+function NewsletterSection() {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "blog-newsletter" })
+      });
+
+      if (res.ok) {
+        setIsSuccess(true);
+        analytics.newsletterSignup("blog");
+        localStorage.setItem("newsletterSubscribed", "true");
+      } else {
+        const data = await res.json();
+        setError(data.message || "Something went wrong");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    }
+
+    setIsSubmitting(false);
+  };
+
+  if (isSuccess) {
+    return (
+      <section className="py-16 px-4 border-t border-border">
+        <div className="max-w-2xl mx-auto text-center">
+          <CheckCircle className="w-12 h-12 text-primary mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-foreground mb-2">You're Subscribed!</h2>
+          <p className="text-muted-foreground">
+            Check your inbox for your welcome email with tips to get started.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-16 px-4 border-t border-border">
+      <div className="max-w-2xl mx-auto text-center">
+        <h2 className="text-2xl font-bold text-foreground mb-4">Get Weekly Financial Tips</h2>
+        <p className="text-muted-foreground mb-6">
+          Join 10,000+ subscribers getting actionable income-boosting strategies every week.
+        </p>
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="flex-1"
+          />
+          <Button type="submit" disabled={isSubmitting || !email} className="gap-2">
+            {isSubmitting ? "Subscribing..." : "Subscribe Free"}
+            {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+          </Button>
+        </form>
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        <p className="text-muted-foreground text-xs mt-4">No spam. Unsubscribe anytime.</p>
+      </div>
+    </section>
+  );
+}
 
 const blogPosts = [
   {
@@ -134,20 +214,7 @@ export default function BlogIndex() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="py-16 px-4 border-t border-border">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Get Weekly Financial Tips</h2>
-          <p className="text-muted-foreground mb-6">
-            Join 10,000+ subscribers getting actionable income-boosting strategies every week.
-          </p>
-          <Link href="/">
-            <Button size="lg" className="gap-2">
-              Subscribe Free
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
-        </div>
-      </section>
+      <NewsletterSection />
 
       {/* Footer */}
       <footer className="border-t border-border py-8 px-4">
