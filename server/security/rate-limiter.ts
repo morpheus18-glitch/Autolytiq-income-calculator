@@ -1,43 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-
-interface RateLimitEntry {
-  count: number;
-  resetTime: number;
-}
+import redis from "../lib/redis";
 
 interface RateLimitConfig {
   windowMs: number; // Time window in milliseconds
   maxRequests: number; // Max requests per window
   message?: string;
   keyGenerator?: (req: Request) => string;
-  skipSuccessfulRequests?: boolean;
-  skipFailedRequests?: boolean;
 }
-
-// In-memory store (use Redis in production for multi-instance)
-const stores: Map<string, Map<string, RateLimitEntry>> = new Map();
-
-function getStore(name: string): Map<string, RateLimitEntry> {
-  if (!stores.has(name)) {
-    stores.set(name, new Map());
-  }
-  return stores.get(name)!;
-}
-
-// Cleanup old entries periodically
-setInterval(() => {
-  const now = Date.now();
-  stores.forEach((store) => {
-    store.forEach((entry, key) => {
-      if (entry.resetTime < now) {
-        store.delete(key);
-      }
-    });
-  });
-}, 60000); // Cleanup every minute
 
 /**
- * Create a rate limiter middleware
+ * Create a rate limiter middleware using Redis
  */
 export function createRateLimiter(name: string, config: RateLimitConfig) {
   const {
@@ -47,38 +19,43 @@ export function createRateLimiter(name: string, config: RateLimitConfig) {
     keyGenerator = (req: Request) => req.ip || req.socket.remoteAddress || "unknown",
   } = config;
 
-  const store = getStore(name);
+  const windowSeconds = Math.ceil(windowMs / 1000);
 
-  return (req: Request, res: Response, next: NextFunction) => {
-    const key = keyGenerator(req);
-    const now = Date.now();
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const clientKey = keyGenerator(req);
+    const redisKey = `ratelimit:${name}:${clientKey}`;
 
-    let entry = store.get(key);
+    try {
+      const current = await redis.incr(redisKey);
 
-    if (!entry || entry.resetTime < now) {
-      entry = {
-        count: 0,
-        resetTime: now + windowMs,
-      };
-      store.set(key, entry);
+      // Set expiry on first request
+      if (current === 1) {
+        await redis.expire(redisKey, windowSeconds);
+      }
+
+      // Get TTL for headers
+      const ttl = await redis.ttl(redisKey);
+      const resetTime = Math.ceil(Date.now() / 1000) + ttl;
+
+      // Set rate limit headers
+      res.setHeader("X-RateLimit-Limit", maxRequests);
+      res.setHeader("X-RateLimit-Remaining", Math.max(0, maxRequests - current));
+      res.setHeader("X-RateLimit-Reset", resetTime);
+
+      if (current > maxRequests) {
+        res.setHeader("Retry-After", ttl);
+        return res.status(429).json({
+          error: message,
+          retryAfter: ttl,
+        });
+      }
+
+      next();
+    } catch (err) {
+      // If Redis fails, allow the request (fail open) but log it
+      console.error("Rate limiter Redis error:", err);
+      next();
     }
-
-    entry.count++;
-
-    // Set rate limit headers
-    res.setHeader("X-RateLimit-Limit", maxRequests);
-    res.setHeader("X-RateLimit-Remaining", Math.max(0, maxRequests - entry.count));
-    res.setHeader("X-RateLimit-Reset", Math.ceil(entry.resetTime / 1000));
-
-    if (entry.count > maxRequests) {
-      res.setHeader("Retry-After", Math.ceil((entry.resetTime - now) / 1000));
-      return res.status(429).json({
-        error: message,
-        retryAfter: Math.ceil((entry.resetTime - now) / 1000),
-      });
-    }
-
-    next();
   };
 }
 
@@ -135,43 +112,65 @@ export const uploadRateLimiter = createRateLimiter("upload", {
 });
 
 /**
- * Brute force protection - tracks failed attempts
+ * Brute force protection - tracks failed attempts using Redis
  */
-const failedAttempts: Map<string, { count: number; lockUntil: number }> = new Map();
+const LOCKOUT_DURATION = 30 * 60; // 30 minutes in seconds
+const MAX_FAILED_ATTEMPTS = 5;
 
-export function recordFailedAttempt(key: string): boolean {
-  const now = Date.now();
-  let entry = failedAttempts.get(key);
+export async function recordFailedAttempt(key: string): Promise<boolean> {
+  const redisKey = `bruteforce:${key}`;
 
-  if (!entry || entry.lockUntil < now) {
-    entry = { count: 0, lockUntil: 0 };
-    failedAttempts.set(key, entry);
+  try {
+    const current = await redis.incr(redisKey);
+
+    if (current === 1) {
+      // First failure, set initial expiry
+      await redis.expire(redisKey, LOCKOUT_DURATION);
+    }
+
+    if (current >= MAX_FAILED_ATTEMPTS) {
+      // Lock the account - reset TTL to full lockout duration
+      await redis.expire(redisKey, LOCKOUT_DURATION);
+      return true; // Account is now locked
+    }
+
+    return false;
+  } catch (err) {
+    console.error("Brute force Redis error:", err);
+    return false;
   }
+}
 
-  entry.count++;
+export async function isLocked(key: string): Promise<boolean> {
+  const redisKey = `bruteforce:${key}`;
 
-  // Lock after 5 failed attempts for 30 minutes
-  if (entry.count >= 5) {
-    entry.lockUntil = now + 30 * 60 * 1000;
-    return true; // Account is now locked
+  try {
+    const count = await redis.get(redisKey);
+    return count !== null && parseInt(count) >= MAX_FAILED_ATTEMPTS;
+  } catch (err) {
+    console.error("Brute force check Redis error:", err);
+    return false;
   }
-
-  return false;
 }
 
-export function isLocked(key: string): boolean {
-  const entry = failedAttempts.get(key);
-  if (!entry) return false;
-  return entry.lockUntil > Date.now();
+export async function clearFailedAttempts(key: string): Promise<void> {
+  const redisKey = `bruteforce:${key}`;
+
+  try {
+    await redis.del(redisKey);
+  } catch (err) {
+    console.error("Clear failed attempts Redis error:", err);
+  }
 }
 
-export function clearFailedAttempts(key: string): void {
-  failedAttempts.delete(key);
-}
+export async function getLockTimeRemaining(key: string): Promise<number> {
+  const redisKey = `bruteforce:${key}`;
 
-export function getLockTimeRemaining(key: string): number {
-  const entry = failedAttempts.get(key);
-  if (!entry) return 0;
-  const remaining = entry.lockUntil - Date.now();
-  return remaining > 0 ? Math.ceil(remaining / 1000) : 0;
+  try {
+    const ttl = await redis.ttl(redisKey);
+    return ttl > 0 ? ttl : 0;
+  } catch (err) {
+    console.error("Get lock time Redis error:", err);
+    return 0;
+  }
 }

@@ -102,8 +102,8 @@ router.post("/login", authRateLimiter, async (req, res) => {
     const normalizedEmail = email.toLowerCase();
 
     // Check if account is locked due to brute force
-    if (isLocked(normalizedEmail)) {
-      const remaining = getLockTimeRemaining(normalizedEmail);
+    if (await isLocked(normalizedEmail)) {
+      const remaining = await getLockTimeRemaining(normalizedEmail);
       return res.status(429).json({
         error: `Account temporarily locked. Try again in ${Math.ceil(remaining / 60)} minutes.`,
       });
@@ -112,13 +112,13 @@ router.post("/login", authRateLimiter, async (req, res) => {
     const user = userDb.findByEmail.get(normalizedEmail) as User | undefined;
     if (!user) {
       // Record failed attempt even for non-existent users (prevents enumeration)
-      recordFailedAttempt(normalizedEmail);
+      await recordFailedAttempt(normalizedEmail);
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      const locked = recordFailedAttempt(normalizedEmail);
+      const locked = await recordFailedAttempt(normalizedEmail);
       if (locked) {
         return res.status(429).json({
           error: "Too many failed attempts. Account locked for 30 minutes.",
@@ -128,7 +128,7 @@ router.post("/login", authRateLimiter, async (req, res) => {
     }
 
     // Clear failed attempts on successful login
-    clearFailedAttempts(normalizedEmail);
+    await clearFailedAttempts(normalizedEmail);
 
     res.json({
       success: true,
@@ -202,7 +202,7 @@ router.post("/reset-password", authRateLimiter, async (req, res) => {
     // Clear any failed login attempts for this user
     const user = userDb.findById?.get(reset.user_id) as User | undefined;
     if (user) {
-      clearFailedAttempts(user.email);
+      await clearFailedAttempts(user.email);
     }
 
     res.json({ success: true });
