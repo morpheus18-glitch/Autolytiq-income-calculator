@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Autolytiq Income Calculator",
-  "version": "1.1.0",
+  "name": "Income Calculator Pro",
+  "version": "1.0.0",
   "description": "Calculate your projected annual income from YTD earnings. Includes vehicle payment calculator with tax, fees, and trade-in.",
   "author": "Autolytiq",
   "homepage_url": "https://autolytiqs.com",
@@ -17,7 +17,7 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Autolytiq Income Calculator"
+    "default_title": "Income Calculator Pro"
   },
   "permissions": ["storage"],
   "offline_enabled": true

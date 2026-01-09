@@ -7,16 +7,15 @@
 
 :root {
   --bg: #050505;
-  --bg-card: transparent;
-  --bg-input: transparent;
+  --bg-card: #0a0a0a;
+  --bg-input: #0d0d0d;
   --text: #f0f0f0;
   --text-muted: #888;
   --text-hint: #555;
   --primary: #21ff1e;
-  --primary-dim: rgba(33, 255, 30, 0.08);
+  --primary-dim: rgba(33, 255, 30, 0.15);
   --primary-glow: 0 0 20px rgba(33, 255, 30, 0.4);
-  --border: #2a2a2a;
-  --border-focus: rgba(33, 255, 30, 0.5);
+  --border: #1a1a1a;
   --yellow: #fbbf24;
   --red: #ef4444;
 }
@@ -61,33 +60,17 @@ body {
   margin-bottom: 16px;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.logo {
-  filter: drop-shadow(0 0 8px rgba(33, 255, 30, 0.5));
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
 .title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  color: var(--text);
-  line-height: 1.1;
+  color: var(--primary);
+  text-shadow: var(--primary-glow);
 }
 
 .subtitle {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin-top: 2px;
 }
 
 .header-right {
@@ -99,8 +82,8 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
+  border: none;
+  background: var(--bg-card);
   color: var(--text-muted);
   cursor: pointer;
   display: flex;
@@ -110,8 +93,8 @@ body {
 }
 
 .icon-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  background: var(--border);
+  color: var(--text);
 }
 
 /* Tabs */
@@ -126,7 +109,7 @@ body {
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: transparent;
+  background: var(--bg-card);
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 500;
@@ -155,7 +138,7 @@ body {
 
 /* Card */
 .card {
-  background: transparent;
+  background: linear-gradient(145deg, #0a0a0a, #070707);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px;
@@ -194,29 +177,21 @@ label {
 
 .input {
   width: 100%;
-  height: 44px;
+  height: 40px;
   padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: transparent;
+  background: var(--bg-input);
   color: var(--text);
-  font-size: 15px;
+  font-size: 14px;
   font-family: 'SF Mono', 'Consolas', monospace;
   transition: all 0.2s;
 }
 
-.input::placeholder {
-  color: var(--text-hint);
-}
-
-.input:hover {
-  border-color: #444;
-}
-
 .input:focus {
   outline: none;
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(33, 255, 30, 0.1);
+  border-color: rgba(33, 255, 30, 0.5);
+  box-shadow: 0 0 0 2px rgba(33, 255, 30, 0.1), var(--primary-glow);
 }
 
 .input.has-prefix {
@@ -225,11 +200,6 @@ label {
 
 .input.has-suffix {
   padding-right: 28px;
-}
-
-/* Date input specific */
-.input.date-input {
-  letter-spacing: 1px;
 }
 
 .input-prefix,
@@ -265,10 +235,10 @@ label {
 
 .term-btn {
   flex: 1;
-  padding: 10px 4px;
+  padding: 8px 4px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: transparent;
+  background: var(--bg-card);
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
@@ -278,7 +248,7 @@ label {
 
 .term-btn:hover {
   border-color: rgba(33, 255, 30, 0.3);
-  color: var(--text);
+  background: rgba(33, 255, 30, 0.05);
 }
 
 .term-btn.active {
@@ -290,7 +260,7 @@ label {
 
 /* Results */
 .results {
-  background: transparent;
+  background: linear-gradient(145deg, #0a0a0a, #070707);
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
@@ -324,18 +294,17 @@ label {
   background: rgba(33, 255, 30, 0.1);
   padding: 4px 8px;
   border-radius: 6px;
-  border: 1px solid rgba(33, 255, 30, 0.2);
 }
 
 /* Hero Stat */
 .hero-stat {
   text-align: center;
   padding: 20px 16px;
-  background: linear-gradient(135deg, rgba(33, 255, 30, 0.1), rgba(33, 255, 30, 0.02));
+  background: linear-gradient(135deg, rgba(33, 255, 30, 0.15), rgba(33, 255, 30, 0.05));
   border: 1px solid rgba(33, 255, 30, 0.3);
   border-radius: 12px;
   margin: 16px;
-  box-shadow: 0 0 40px rgba(33, 255, 30, 0.08);
+  box-shadow: 0 0 40px rgba(33, 255, 30, 0.1);
 }
 
 .hero-label {
@@ -386,7 +355,7 @@ label {
 }
 
 .stat-card {
-  background: transparent;
+  background: linear-gradient(145deg, #111, #0a0a0a);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px;
@@ -401,7 +370,7 @@ label {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(33, 255, 30, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(33, 255, 30, 0.3), transparent);
 }
 
 .stat-card.full-width {
@@ -433,6 +402,7 @@ label {
   gap: 8px;
   padding: 16px;
   border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .btn {
@@ -457,7 +427,6 @@ label {
 
 .btn-outline:hover {
   border-color: var(--primary);
-  color: var(--primary);
   background: rgba(33, 255, 30, 0.05);
 }
 
@@ -485,10 +454,6 @@ label {
 
 .empty-state svg {
   margin-bottom: 12px;
-}
-
-.empty-logo {
-  filter: drop-shadow(0 0 8px rgba(33, 255, 30, 0.2));
 }
 
 .empty-state p {

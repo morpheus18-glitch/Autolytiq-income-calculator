@@ -47,72 +47,13 @@ function formatCurrency(amount) {
   }).format(amount);
 }
 
-// Format date for display (e.g., "Jan 15, 2025")
+// Format date for display
 function formatDate(date) {
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
   }).format(date);
-}
-
-// Parse MMDDYYYY string to Date object
-function parseDateString(str) {
-  if (!str) return null;
-
-  // Remove any non-numeric characters
-  const cleaned = str.replace(/\D/g, '');
-
-  if (cleaned.length !== 8) return null;
-
-  const month = parseInt(cleaned.substring(0, 2), 10);
-  const day = parseInt(cleaned.substring(2, 4), 10);
-  const year = parseInt(cleaned.substring(4, 8), 10);
-
-  // Validate ranges
-  if (month < 1 || month > 12) return null;
-  if (day < 1 || day > 31) return null;
-  if (year < 1900 || year > 2100) return null;
-
-  // Create date (month is 0-indexed)
-  const date = new Date(year, month - 1, day);
-
-  // Verify the date is valid (handles invalid days like Feb 30)
-  if (date.getMonth() !== month - 1 || date.getDate() !== day) {
-    return null;
-  }
-
-  return date;
-}
-
-// Format Date object to MMDDYYYY string
-function dateToString(date) {
-  if (!date) return '';
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const year = String(date.getFullYear());
-  return `${month}${day}${year}`;
-}
-
-// Format date input as user types (just keep digits)
-function formatDateInput(input) {
-  const cursorPos = input.selectionStart;
-  const oldLength = input.value.length;
-
-  // Keep only digits
-  let value = input.value.replace(/\D/g, '');
-
-  // Limit to 8 digits
-  if (value.length > 8) {
-    value = value.substring(0, 8);
-  }
-
-  input.value = value;
-
-  // Restore cursor position
-  const newLength = input.value.length;
-  const newPos = cursorPos - (oldLength - newLength);
-  input.setSelectionRange(newPos, newPos);
 }
 
 // Parse money input
@@ -135,8 +76,8 @@ function formatMoneyInput(input) {
 
 // Calculate income
 function calculateIncome() {
-  const startDate = parseDateString(startDateInput.value);
-  const checkDate = parseDateString(checkDateInput.value);
+  const startDate = startDateInput.value ? new Date(startDateInput.value + 'T00:00:00') : null;
+  const checkDate = checkDateInput.value ? new Date(checkDateInput.value + 'T00:00:00') : null;
   const ytdIncome = parseMoney(ytdIncomeInput.value);
 
   if (!startDate || !checkDate || !ytdIncome) {
@@ -319,7 +260,7 @@ function loadState() {
       calculateIncome();
     } else {
       // Set default check date to today
-      checkDateInput.value = dateToString(new Date());
+      checkDateInput.value = new Date().toISOString().split('T')[0];
     }
 
     // Load payment state
@@ -350,7 +291,7 @@ function loadState() {
 function reset() {
   startDateInput.value = '';
   ytdIncomeInput.value = '';
-  checkDateInput.value = dateToString(new Date());
+  checkDateInput.value = new Date().toISOString().split('T')[0];
 
   vehiclePriceInput.value = '';
   downPaymentInput.value = '';
@@ -385,7 +326,7 @@ Weekly: ${formatCurrency(calculatedResults.weekly)}
 Monthly: ${formatCurrency(calculatedResults.monthly)}
 Annual: ${formatCurrency(calculatedResults.annual)}
 
-Calculated via Autolytiq Income Calculator`;
+Calculated via Income Calculator Pro`;
 
   navigator.clipboard.writeText(text).then(() => {
     const originalText = copyBtn.innerHTML;
@@ -401,17 +342,9 @@ Calculated via Autolytiq Income Calculator`;
   });
 }
 
-// Event Listeners - Income (date inputs)
-startDateInput.addEventListener('input', () => {
-  formatDateInput(startDateInput);
-  calculateIncome();
-});
-
-checkDateInput.addEventListener('input', () => {
-  formatDateInput(checkDateInput);
-  calculateIncome();
-});
-
+// Event Listeners - Income
+startDateInput.addEventListener('change', calculateIncome);
+checkDateInput.addEventListener('change', calculateIncome);
 ytdIncomeInput.addEventListener('input', () => {
   formatMoneyInput(ytdIncomeInput);
   calculateIncome();

@@ -162,22 +162,31 @@ export function EmailCaptureModal({
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    setError("");
 
     try {
-      await fetch("/api/email-results", {
+      const response = await fetch("/api/email-results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, calculationType, results }),
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to send email");
+      }
+
       setSent(true);
     } catch (err) {
       console.error("Failed to send email:", err);
+      setError(err instanceof Error ? err.message : "Failed to send email. Please try again.");
     } finally {
       setSending(false);
     }
@@ -210,6 +219,9 @@ export function EmailCaptureModal({
                 required
                 className="w-full px-4 py-3 rounded-lg border bg-background focus:ring-2 focus:ring-primary/30 outline-none"
               />
+              {error && (
+                <p className="text-sm text-red-500">{error}</p>
+              )}
               <div className="flex gap-2">
                 <Button type="button" variant="outline" onClick={onClose} className="flex-1">
                   Cancel

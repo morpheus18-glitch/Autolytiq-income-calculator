@@ -19,31 +19,30 @@ export function FAQ({ items, title = "Frequently Asked Questions", className }: 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <Card className={cn("glass-card border-none shadow-xl", className)}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <HelpCircle className="h-5 w-5 text-primary" />
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
+    <div className={cn("", className)}>
+      <div className="flex items-center gap-2 mb-4">
+        <HelpCircle className="h-5 w-5 text-primary" />
+        <h3 className="text-lg font-semibold">{title}</h3>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item, index) => (
           <div
             key={index}
-            className="border border-border/50 rounded-lg overflow-hidden"
+            className={cn(
+              "p-4 rounded-xl bg-card border border-border/50 transition-all cursor-pointer hover:border-primary/30 hover:shadow-md",
+              openIndex === index && "border-primary/50 bg-card/80"
+            )}
+            onClick={() => setOpenIndex(openIndex === index ? null : index)}
           >
-            <button
-              onClick={() => setOpenIndex(openIndex === index ? null : index)}
-              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-secondary/30 transition-colors"
-            >
-              <span className="font-medium text-sm">{item.question}</span>
+            <div className="flex items-start justify-between gap-2">
+              <span className="font-medium text-sm leading-tight">{item.question}</span>
               <ChevronDown
                 className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform shrink-0 ml-2",
-                  openIndex === index && "rotate-180"
+                  "h-4 w-4 text-muted-foreground transition-transform shrink-0 mt-0.5",
+                  openIndex === index && "rotate-180 text-primary"
                 )}
               />
-            </button>
+            </div>
             <AnimatePresence>
               {openIndex === index && (
                 <motion.div
@@ -53,7 +52,7 @@ export function FAQ({ items, title = "Frequently Asked Questions", className }: 
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <div className="mt-3 pt-3 border-t border-border/50 text-sm text-muted-foreground leading-relaxed">
                     {item.answer}
                   </div>
                 </motion.div>
@@ -61,8 +60,8 @@ export function FAQ({ items, title = "Frequently Asked Questions", className }: 
             </AnimatePresence>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

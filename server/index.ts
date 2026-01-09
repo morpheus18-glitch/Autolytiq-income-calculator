@@ -5,6 +5,17 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { securityHeaders, corsConfig, sanitizeInput, blockAttacks } from "./security/headers";
 import { apiRateLimiter } from "./security/rate-limiter";
+import { initSentry, captureError, sentryRequestHandler, sentryErrorHandler } from "./lib/sentry";
+import { logger, logRequest, logError } from "./lib/logger";
+import { initializeDatabase } from "./db-postgres";
+
+// Initialize Sentry early
+initSentry();
+
+// Initialize PostgreSQL
+initializeDatabase().catch((err) => {
+  logger.error({ err }, "Failed to initialize PostgreSQL");
+});
 
 const app = express();
 const httpServer = createServer(app);
@@ -39,13 +50,7 @@ app.use((req, res, next) => {
 });
 
 export function log(message: string, source = "express") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
-  console.log(`${formattedTime} [${source}] ${message}`);
+  logger.info({ source }, message);
 }
 
 app.use((req, res, next) => {
@@ -76,9 +81,19 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
+  // Sentry error handler (must be before other error handlers)
+  app.use(sentryErrorHandler);
+
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     const status = (err as { status?: number }).status || 500;
     const message = err.message || "Internal Server Error";
+
+    // Log and capture error
+    logError(err, { status, url: _req.url, method: _req.method });
+    if (status >= 500) {
+      captureError(err, { url: _req.url, method: _req.method });
+    }
+
     res.status(status).json({ message });
   });
 
@@ -125,13 +140,16 @@ app.use((req, res, next) => {
 
   // Uncaught exception handlers
   process.on("uncaughtException", (err) => {
-    log(`Uncaught Exception: ${err.message}`, "error");
-    console.error(err.stack);
-    // Give time to log, then exit (PM2 will restart)
+    logger.fatal({ err }, "Uncaught Exception");
+    captureError(err, { type: "uncaughtException" });
+    // Give time to log and send to Sentry, then exit (PM2 will restart)
     setTimeout(() => process.exit(1), 1000);
   });
 
   process.on("unhandledRejection", (reason, promise) => {
-    log(`Unhandled Rejection at: ${promise}, reason: ${reason}`, "error");
+    logger.error({ reason, promise }, "Unhandled Rejection");
+    if (reason instanceof Error) {
+      captureError(reason, { type: "unhandledRejection" });
+    }
   });
 })();

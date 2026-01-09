@@ -1,12 +1,14 @@
-import { Suspense, lazy } from "react";
-import { Switch, Route } from "wouter";
+import { Suspense, lazy, useEffect } from "react";
+import { Switch, Route, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth";
 import { CookieConsentBanner } from "@/components/cookie-consent";
+import { analytics } from "@/lib/analytics";
 
 // Lazy load all pages for code splitting
+const Home = lazy(() => import("@/pages/home"));
 const Calculator = lazy(() => import("@/pages/calculator"));
 const Desk = lazy(() => import("@/pages/desk"));
 const Login = lazy(() => import("@/pages/login"));
@@ -27,6 +29,7 @@ const BlogMaximize401k = lazy(() => import("@/pages/blog/maximize-your-401k"));
 const BlogUnderstandingPaystub = lazy(() => import("@/pages/blog/understanding-your-paystub"));
 const BlogSideHustleIdeas = lazy(() => import("@/pages/blog/side-hustle-income-ideas"));
 const BlogTaxDeductions = lazy(() => import("@/pages/blog/tax-deductions-you-might-be-missing"));
+const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
 
 // Minimal loading fallback
 function PageLoader() {
@@ -37,10 +40,24 @@ function PageLoader() {
   );
 }
 
+// Track page views for SPA navigation
+function PageViewTracker() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    // Get page title from document or derive from path
+    const pageTitle = document.title || location;
+    analytics.pageView(location, pageTitle);
+  }, [location]);
+
+  return null;
+}
+
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Calculator} />
+      <Route path="/" component={Home} />
+      <Route path="/calculator" component={Calculator} />
       <Route path="/desk" component={Desk} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
@@ -59,6 +76,7 @@ function Router() {
       <Route path="/blog/understanding-your-paystub" component={BlogUnderstandingPaystub} />
       <Route path="/blog/side-hustle-income-ideas" component={BlogSideHustleIdeas} />
       <Route path="/blog/tax-deductions-you-might-be-missing" component={BlogTaxDeductions} />
+      <Route path="/unsubscribe" component={Unsubscribe} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -67,8 +85,9 @@ function Router() {
 function App() {
   return (
     <AuthProvider>
-      <ThemeProvider defaultTheme="dark" storageKey="income-calc-theme">
+      <ThemeProvider defaultTheme="system" storageKey="income-calc-theme">
         <TooltipProvider>
+          <PageViewTracker />
           <Toaster />
           <Suspense fallback={<PageLoader />}>
             <Router />

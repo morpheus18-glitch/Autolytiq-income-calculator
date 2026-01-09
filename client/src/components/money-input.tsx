@@ -7,9 +7,10 @@ interface MoneyInputProps {
   value: string;
   onChange: (val: string) => void;
   className?: string;
+  placeholder?: string;
 }
 
-export function MoneyInput({ value, onChange, className }: MoneyInputProps) {
+export function MoneyInput({ value, onChange, className, placeholder = "0.00" }: MoneyInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Allow digits and one decimal point
     const val = e.target.value.replace(/[^0-9.]/g, "");
@@ -34,7 +35,7 @@ export function MoneyInput({ value, onChange, className }: MoneyInputProps) {
         value={formatDisplay(value)}
         onChange={handleChange}
         className={cn("pl-9 font-mono text-lg", className)}
-        placeholder="0.00"
+        placeholder={placeholder}
         data-testid="input-ytd"
       />
     </div>

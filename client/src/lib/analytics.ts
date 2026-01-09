@@ -13,12 +13,27 @@ declare global {
   }
 }
 
+// GA4 Measurement ID
+const GA_MEASUREMENT_ID = "G-LHXY6T7KSK";
+
 export function trackEvent(
   eventName: string,
   params?: Record<string, unknown>
 ): void {
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", eventName, params);
+  }
+}
+
+// Track page view for SPA - sends to GA4 properly
+export function trackPageView(pagePath: string, pageTitle: string): void {
+  if (typeof window !== "undefined" && window.gtag) {
+    // Update the page path and title for GA4
+    window.gtag("config", GA_MEASUREMENT_ID, {
+      page_path: pagePath,
+      page_title: pageTitle,
+      page_location: window.location.origin + pagePath,
+    });
   }
 }
 
@@ -49,13 +64,10 @@ export const analytics = {
       source: source,
     }),
 
-  // Page view tracking
-  pageView: (pagePath: string, pageTitle: string) =>
-    trackEvent("page_view", {
-      page_path: pagePath,
-      page_title: pageTitle,
-      page_location: window.location.href,
-    }),
+  // Page view tracking - uses gtag config for proper GA4 page view attribution
+  pageView: (pagePath: string, pageTitle: string) => {
+    trackPageView(pagePath, pageTitle);
+  },
 
   // Tool usage tracking
   toolUsage: (toolName: string, action: string) =>

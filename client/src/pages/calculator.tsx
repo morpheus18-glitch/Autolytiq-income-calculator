@@ -8,6 +8,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
+  ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import {
   AutolytiqLogo,
@@ -25,6 +27,11 @@ import {
   CheckIcon,
   DownloadIcon,
   InfoIcon,
+  LightbulbIcon,
+  HelpIcon,
+  ShieldIcon,
+  ChartIcon,
+  TargetIcon,
 } from "@/components/icons";
 import { Link } from "wouter";
 
@@ -47,7 +54,7 @@ import { FAQ, INCOME_CALCULATOR_FAQ } from "@/components/faq";
 import { ExportButtons, ShareButtons, EmailCaptureModal } from "@/components/pdf-export";
 import { BarChart, AnimatedNumber } from "@/components/charts";
 import { ScenarioManager } from "@/components/scenarios";
-import { SEO, createCalculatorSchema, createHowToSchema } from "@/components/seo";
+import { SEO, createCalculatorSchema, createHowToSchema, createFAQSchema } from "@/components/seo";
 import { ManageCookiesButton } from "@/components/cookie-consent";
 
 const STORAGE_KEY = "income-calc-state";
@@ -108,6 +115,10 @@ function Calculator() {
   // Email capture state
   const [showEmailModal, setShowEmailModal] = useState(false);
 
+  // First-time user and help states
+  const [showYtdHelp, setShowYtdHelp] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+
   // Payment Calculator State
   const [showPaymentCalc, setShowPaymentCalc] = useState(false);
   const [vehiclePrice, setVehiclePrice] = useState("");
@@ -131,10 +142,17 @@ function Calculator() {
     ? parseFloat(customApr)
     : getAprForTierAndTerm(creditTier, selectedTerm);
 
-  // Load from local storage
+  // Load from local storage and check first visit
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem(STORAGE_KEY);
+    const hasVisited = localStorage.getItem("income-calc-visited");
+
+    if (!hasVisited) {
+      setIsFirstVisit(true);
+      localStorage.setItem("income-calc-visited", "true");
+    }
+
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -251,30 +269,34 @@ function Calculator() {
 
   if (!mounted) return null;
 
-  const seoStructuredData = [
-    createCalculatorSchema(
-      "Income Calculator",
-      "Calculate your projected annual income from year-to-date earnings. Free salary calculator for W2 employees, hourly workers, and contractors.",
-      "https://autolytiqs.com/"
-    ),
-    createHowToSchema(
-      "How to Calculate Annual Income from YTD",
-      "Calculate your projected annual income using your YTD earnings",
-      [
-        { name: "Enter start date", text: "Enter the date you started your current job or January 1 if employed all year" },
+  const seoStructuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      createCalculatorSchema(
+        "Income Calculator",
+        "Calculate your projected annual income from year-to-date earnings. Free salary calculator for W2 employees, hourly workers, and contractors.",
+        "https://autolytiqs.com/calculator"
+      ),
+      createHowToSchema(
+        "How to Calculate Annual Income from YTD",
+        "Calculate your projected annual income using your YTD earnings",
+        [
+          { name: "Enter start date", text: "Enter the date you started your current job or January 1 if employed all year" },
         { name: "Enter YTD income", text: "Find your year-to-date gross income on your most recent paystub" },
         { name: "Enter last pay date", text: "Enter the date of your most recent paycheck" },
         { name: "View results", text: "See your projected daily, weekly, monthly, and annual income" },
       ]
     ),
-  ];
+      createFAQSchema(INCOME_CALCULATOR_FAQ),
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <SEO
         title="Free Income Calculator 2026 | Calculate Annual Salary from YTD Pay"
         description="Calculate your projected annual income from year-to-date earnings. Free salary calculator for W2 employees, hourly workers, and contractors. Estimate daily, weekly, monthly, and yearly income instantly."
-        canonical="https://autolytiqs.com/"
+        canonical="https://autolytiqs.com/calculator"
         keywords="income calculator, salary calculator, annual income calculator, YTD calculator, year to date income, paycheck calculator, gross income calculator"
         structuredData={seoStructuredData}
       />
@@ -282,7 +304,7 @@ function Calculator() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 h-14 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
               <AutolytiqLogo className="h-5 w-5 text-primary" />
@@ -291,7 +313,8 @@ function Calculator() {
           </div>
           <nav className="flex items-center gap-1">
             <Link href="/desk">
-              <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5 text-xs">
+              <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5 text-xs" title="Advanced calculators with more options">
+                <ChartIcon className="h-4 w-4" />
                 Pro Mode
               </Button>
             </Link>
@@ -321,7 +344,7 @@ function Calculator() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 py-8">
+      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-8">
         {/* Hero Section */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-2">
@@ -332,8 +355,123 @@ function Calculator() {
           </p>
         </div>
 
+        {/* 3-Column Desktop Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_240px] xl:grid-cols-[300px_minmax(0,1fr)_300px] 2xl:grid-cols-[340px_minmax(0,1fr)_340px] gap-4 lg:gap-6 xl:gap-8">
+
+          {/* Left Sidebar - Getting Started Guide (Desktop Only) */}
+          <aside className="hidden lg:block space-y-4">
+            <div className="sticky top-20">
+              {/* First Time Welcome */}
+              {isFirstVisit && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 p-4 rounded-xl bg-primary/10 border border-primary/30"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">Welcome!</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Get your projected annual income in 3 easy steps. No signup required.
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Getting Started Card */}
+              <div className="p-4 rounded-xl bg-card border border-border">
+                <div className="flex items-center gap-2 mb-3">
+                  <LightbulbIcon className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">Getting Started</span>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">1</div>
+                    <div>
+                      <div className="text-sm font-medium">Enter job start date</div>
+                      <div className="text-xs text-muted-foreground">When you started this job (or Jan 1 if working all year)</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">2</div>
+                    <div>
+                      <div className="text-sm font-medium">Enter YTD gross income</div>
+                      <div className="text-xs text-muted-foreground">Find this on your latest paystub</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">3</div>
+                    <div>
+                      <div className="text-sm font-medium">Enter paystub date</div>
+                      <div className="text-xs text-muted-foreground">The date on your most recent pay</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Where to Find YTD Help */}
+              <div className="mt-4 p-4 rounded-xl bg-card border border-border">
+                <button
+                  onClick={() => setShowYtdHelp(!showYtdHelp)}
+                  className="w-full flex items-center justify-between text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <HelpIcon className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">Where do I find YTD?</span>
+                  </div>
+                  <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", showYtdHelp && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {showYtdHelp && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 pt-3 border-t border-border/50 space-y-3 text-xs text-muted-foreground">
+                        <p>Look for <strong className="text-foreground">"YTD Gross"</strong> or <strong className="text-foreground">"Year-to-Date Earnings"</strong> on your paystub.</p>
+                        <div className="p-3 rounded-lg bg-secondary/30">
+                          <div className="font-mono text-[10px] space-y-1">
+                            <div className="flex justify-between">
+                              <span>Current Gross:</span>
+                              <span>$2,500.00</span>
+                            </div>
+                            <div className="flex justify-between text-primary font-semibold">
+                              <span>YTD Gross:</span>
+                              <span>$15,000.00</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>YTD Taxes:</span>
+                              <span>$2,850.00</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p>Use the <strong className="text-foreground">YTD Gross</strong> amount - this is your total earnings before taxes since January 1st.</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Data Security Note */}
+              <div className="mt-4 p-3 rounded-xl bg-secondary/30 border border-border/50">
+                <div className="flex items-start gap-2">
+                  <ShieldIcon className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-xs font-medium">Your data stays private</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">All calculations happen in your browser. Nothing is sent to our servers.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Center Content - Calculator */}
+          <div className="space-y-6">
+
         {/* Income Calculator */}
-        <Card className="glass-card border-none shadow-xl mb-6">
+        <Card className="glass-card border-none shadow-xl">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -383,12 +521,29 @@ function Calculator() {
 
               {/* YTD Income */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">YTD Gross Income</Label>
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  YTD Gross Income
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-[220px]">
+                      <p>Year-to-date gross income from your paystub. Look for "YTD Gross" or "YTD Earnings" - it's your total pre-tax earnings since Jan 1.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </Label>
                 <MoneyInput
                   value={ytdIncome}
                   onChange={setYtdIncome}
                   className="h-11"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowYtdHelp(true)}
+                  className="text-xs text-primary hover:underline lg:hidden"
+                >
+                  Where do I find this?
+                </button>
               </div>
 
               {/* Check Date */}
@@ -450,10 +605,21 @@ function Calculator() {
                         </div>
                       </div>
                       <div className="stat-card text-center col-span-2 sm:col-span-1">
-                        <div className="text-xs text-muted-foreground">Max Auto Payment</div>
+                        <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                          Max Auto Payment
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <InfoIcon className="h-3 w-3 text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-[200px]">
+                              <p>Based on the 12% rule: keep car payments at or below 12% of gross monthly income to stay within budget.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
                         <div className="text-lg font-bold mono-value mt-1 text-primary">
                           {formatCurrency(maxAffordablePayment || 0)}/mo
                         </div>
+                        <div className="text-[10px] text-muted-foreground mt-0.5">12% of monthly</div>
                       </div>
                     </div>
 
@@ -521,7 +687,7 @@ function Calculator() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <Card className="glass-card border-none shadow-xl mb-6">
+              <Card className="glass-card border-none shadow-xl">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <AutoIcon className="h-5 w-5 text-primary" />
@@ -534,6 +700,14 @@ function Calculator() {
                     <Label className="text-sm font-medium flex items-center gap-2">
                       <CreditScoreIcon className="h-4 w-4 text-muted-foreground" />
                       Your Credit Score Range
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[220px]">
+                          <p>Your credit score determines your loan interest rate. Higher scores get lower rates, saving you money over the life of the loan.</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </Label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {CREDIT_TIERS.map((tier) => (
@@ -794,32 +968,153 @@ function Calculator() {
           )}
         </AnimatePresence>
 
-        {/* Quick Links */}
-        <div className="grid grid-cols-3 gap-3 mt-8">
-          <Link href="/auto">
-            <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-              <AutoIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-              <div className="text-sm font-medium">Auto Guide</div>
-              <div className="text-xs text-muted-foreground">Shopping tips</div>
+            {/* Quick Links - Mobile Only (Desktop shows in sidebar) */}
+            <div className="grid grid-cols-3 gap-3 lg:hidden">
+              <Link href="/auto">
+                <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
+                  <AutoIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <div className="text-sm font-medium">Auto Guide</div>
+                  <div className="text-xs text-muted-foreground">Shopping tips</div>
+                </div>
+              </Link>
+              <Link href="/smart-money">
+                <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
+                  <WalletIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <div className="text-sm font-medium">Smart Money</div>
+                  <div className="text-xs text-muted-foreground">Budget planner</div>
+                </div>
+              </Link>
+              <Link href="/housing">
+                <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
+                  <HousingIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <div className="text-sm font-medium">Housing</div>
+                  <div className="text-xs text-muted-foreground">Rent & mortgage</div>
+                </div>
+              </Link>
             </div>
-          </Link>
-          <Link href="/smart-money">
-            <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-              <WalletIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-              <div className="text-sm font-medium">Smart Money</div>
-              <div className="text-xs text-muted-foreground">Budget planner</div>
-            </div>
-          </Link>
-          <Link href="/housing">
-            <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-              <HousingIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-              <div className="text-sm font-medium">Housing</div>
-              <div className="text-xs text-muted-foreground">Rent & mortgage</div>
-            </div>
-          </Link>
-        </div>
+          </div>
+          {/* End Center Content */}
 
-        {/* FAQ Section */}
+          {/* Right Sidebar - Quick Tools & Benefits (Desktop Only) */}
+          <aside className="hidden lg:block space-y-4">
+            <div className="sticky top-20">
+              {/* Quick Tools */}
+              <div className="p-4 rounded-xl bg-card border border-border">
+                <div className="flex items-center gap-2 mb-3">
+                  <TargetIcon className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">More Tools</span>
+                </div>
+                <div className="space-y-2">
+                  <Link href="/auto">
+                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer group">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <AutoIcon className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Auto Guide</div>
+                        <div className="text-xs text-muted-foreground">Car shopping tips</div>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link href="/smart-money">
+                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer group">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <WalletIcon className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Smart Money</div>
+                        <div className="text-xs text-muted-foreground">50/30/20 budget planner</div>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link href="/housing">
+                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer group">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <HousingIcon className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Housing</div>
+                        <div className="text-xs text-muted-foreground">Rent vs buy calculator</div>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link href="/desk">
+                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer group">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <ChartIcon className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">Pro Mode</div>
+                        <div className="text-xs text-muted-foreground">Advanced options</div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Account Benefits */}
+              {!user && (
+                <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <LoginIcon className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">Create Free Account</span>
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-muted-foreground mb-3">
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-3 w-3 text-primary" />
+                      Save your calculations
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-3 w-3 text-primary" />
+                      Compare scenarios
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-3 w-3 text-primary" />
+                      Email results to yourself
+                    </li>
+                  </ul>
+                  <Link href="/signup">
+                    <Button size="sm" className="w-full">
+                      Sign Up Free
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              {/* Blog Teaser */}
+              <div className="mt-4 p-4 rounded-xl bg-card border border-border">
+                <div className="flex items-center gap-2 mb-3">
+                  <BlogIcon className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">From the Blog</span>
+                </div>
+                <div className="space-y-3">
+                  <Link href="/blog/understanding-your-paystub">
+                    <div className="group cursor-pointer">
+                      <div className="text-sm font-medium group-hover:text-primary transition-colors">Understanding Your Paystub</div>
+                      <div className="text-xs text-muted-foreground">Find YTD, deductions & more</div>
+                    </div>
+                  </Link>
+                  <Link href="/blog/how-to-calculate-annual-income">
+                    <div className="group cursor-pointer">
+                      <div className="text-sm font-medium group-hover:text-primary transition-colors">Calculate Annual Income</div>
+                      <div className="text-xs text-muted-foreground">Project your yearly earnings</div>
+                    </div>
+                  </Link>
+                </div>
+                <Link href="/blog">
+                  <Button variant="ghost" size="sm" className="w-full mt-3 text-xs">
+                    View All Articles
+                    <ChevronRight className="h-3 w-3 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+        {/* End 3-Column Grid */}
+
+        {/* FAQ Section - Full Width Below Grid */}
         <FAQ items={INCOME_CALCULATOR_FAQ} className="mt-8" />
       </main>
 
@@ -827,19 +1122,81 @@ function Calculator() {
       <EmailCaptureModal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
-        calculationType="Income Calculation"
+        calculationType="income"
         results={incomeResults ? {
-          annual: formatCurrency(incomeResults.annual),
-          monthly: formatCurrency(incomeResults.monthly),
-          weekly: formatCurrency(incomeResults.weekly),
+          annualIncome: incomeResults.annual,
+          monthlyIncome: incomeResults.monthly,
+          weeklyIncome: incomeResults.weekly,
+          dailyIncome: incomeResults.daily,
           daysWorked: incomeResults.daysWorked,
-          maxAutoPayment: formatCurrency(maxAffordablePayment || 0),
+          maxAutoPayment: maxAffordablePayment || 0,
         } : {}}
       />
 
+      {/* Mobile YTD Help Modal */}
+      <AnimatePresence>
+        {showYtdHelp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm lg:hidden"
+            onClick={() => setShowYtdHelp(false)}
+          >
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl p-6 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <HelpIcon className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">Where do I find YTD?</h3>
+                </div>
+                <button
+                  onClick={() => setShowYtdHelp(false)}
+                  className="p-1 rounded-full hover:bg-secondary/50"
+                >
+                  <ChevronDown className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="space-y-4 text-sm text-muted-foreground">
+                <p>Look for <strong className="text-foreground">"YTD Gross"</strong> or <strong className="text-foreground">"Year-to-Date Earnings"</strong> on your paystub.</p>
+                <div className="p-4 rounded-xl bg-secondary/30 border border-border">
+                  <div className="text-xs text-muted-foreground mb-2">Sample paystub section:</div>
+                  <div className="font-mono text-xs space-y-1.5">
+                    <div className="flex justify-between">
+                      <span>Current Gross:</span>
+                      <span>$2,500.00</span>
+                    </div>
+                    <div className="flex justify-between text-primary font-semibold bg-primary/10 -mx-2 px-2 py-1 rounded">
+                      <span>YTD Gross:</span>
+                      <span>$15,000.00</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>YTD Taxes:</span>
+                      <span>$2,850.00</span>
+                    </div>
+                  </div>
+                </div>
+                <p>Use the <strong className="text-foreground">YTD Gross</strong> amount - this is your total earnings before taxes since January 1st.</p>
+              </div>
+              <Button
+                onClick={() => setShowYtdHelp(false)}
+                className="w-full mt-4"
+              >
+                Got it
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 py-6">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. For estimation purposes only.

@@ -206,7 +206,7 @@ function Auto() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 h-14 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link href="/">
               <Button variant="ghost" size="icon" className="mr-1">
@@ -229,7 +229,7 @@ function Auto() {
         </div>
       </header>
 
-      <main className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 py-8">
+      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 py-8">
         {/* Hero */}
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-2">
@@ -628,7 +628,7 @@ function Auto() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-4xl lg:max-w-6xl mx-auto px-4 lg:px-8 py-6">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. For estimation purposes only.
