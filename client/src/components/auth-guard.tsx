@@ -1,5 +1,5 @@
 import { useAuth } from "@/lib/auth";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LogIn, UserPlus, Loader2 } from "lucide-react";
@@ -8,6 +8,11 @@ interface AuthGuardProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
+
+// Save current URL so we can return after login
+const saveReturnUrl = () => {
+  sessionStorage.setItem("auth-return-url", window.location.pathname);
+};
 
 /**
  * Wrapper component that requires authentication.
@@ -41,13 +46,13 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
               receipt scanning.
             </p>
             <div className="flex gap-3 justify-center flex-wrap">
-              <Link href="/login">
+              <Link href="/login" onClick={saveReturnUrl}>
                 <Button variant="outline" className="gap-2">
                   <LogIn className="h-4 w-4" />
                   Sign In
                 </Button>
               </Link>
-              <Link href="/signup">
+              <Link href="/signup" onClick={saveReturnUrl}>
                 <Button className="gap-2">
                   <UserPlus className="h-4 w-4" />
                   Create Account

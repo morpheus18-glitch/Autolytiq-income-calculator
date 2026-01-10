@@ -74,14 +74,14 @@ export default function Unsubscribe() {
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <header className="site-header">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
+            <div className="flex items-center gap-2">
+              <div className="header-logo">
                 <AutolytiqLogo className="h-5 w-5 text-primary" />
               </div>
-              <span className="text-lg font-bold tracking-tight dark:neon-text">Autolytiq</span>
+              <span className="header-title">Autolytiq</span>
             </div>
           </Link>
           <ThemeToggle />

@@ -24,13 +24,16 @@ export function FAQ({ items, title = "Frequently Asked Questions", className }: 
         <HelpCircle className="h-5 w-5 text-primary" />
         <h3 className="text-lg font-semibold">{title}</h3>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item, index) => (
+      <div className="grid gap-3 sm:grid-cols-2">
+        {items.map((item, index) => {
+          const isLastOdd = items.length % 2 === 1 && index === items.length - 1;
+          return (
           <div
             key={index}
             className={cn(
               "p-4 rounded-xl bg-card border border-border/50 transition-all cursor-pointer hover:border-primary/30 hover:shadow-md",
-              openIndex === index && "border-primary/50 bg-card/80"
+              openIndex === index && "border-primary/50 bg-card/80",
+              isLastOdd && "sm:col-span-2"
             )}
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
           >
@@ -59,7 +62,8 @@ export function FAQ({ items, title = "Frequently Asked Questions", className }: 
               )}
             </AnimatePresence>
           </div>
-        ))}
+        );
+        })}
       </div>
     </div>
   );

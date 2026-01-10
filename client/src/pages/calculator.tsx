@@ -56,6 +56,7 @@ import { BarChart, AnimatedNumber } from "@/components/charts";
 import { ScenarioManager } from "@/components/scenarios";
 import { SEO, createCalculatorSchema, createHowToSchema, createFAQSchema } from "@/components/seo";
 import { ManageCookiesButton } from "@/components/cookie-consent";
+import { FirstTimeGuide, CALCULATOR_GUIDE_STEPS } from "@/components/first-time-guide";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -292,7 +293,7 @@ function Calculator() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
       <SEO
         title="Free Income Calculator 2026 | Calculate Annual Salary from YTD Pay"
         description="Calculate your projected annual income from year-to-date earnings. Free salary calculator for W2 employees, hourly workers, and contractors. Estimate daily, weekly, monthly, and yearly income instantly."
@@ -300,60 +301,69 @@ function Calculator() {
         keywords="income calculator, salary calculator, annual income calculator, YTD calculator, year to date income, paycheck calculator, gross income calculator"
         structuredData={seoStructuredData}
       />
+      {/* Background */}
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
-              <AutolytiqLogo className="h-5 w-5 text-primary" />
+      {/* Gradient orbs - like homepage */}
+      <div className="fixed top-0 left-1/4 w-[400px] h-[400px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="fixed bottom-1/4 right-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+
+      {/* Header - Homepage style */}
+      <header className="site-header sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+          <Link href="/">
+            <div className="flex items-center gap-3">
+              <div className="header-logo p-2 rounded-xl bg-primary/10">
+                <AutolytiqLogo className="h-6 w-6 text-primary" />
+              </div>
+              <span className="header-title text-xl font-bold tracking-tight">Autolytiq</span>
             </div>
-            <h1 className="text-lg font-bold tracking-tight dark:neon-text">Autolytiq</h1>
-          </div>
-          <nav className="flex items-center gap-1">
-            <Link href="/desk">
-              <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5 text-xs" title="Advanced calculators with more options">
-                <ChartIcon className="h-4 w-4" />
-                Pro Mode
-              </Button>
-            </Link>
-            <Link href="/blog">
-              <Button variant="ghost" size="icon" className="sm:hidden" aria-label="Read blog articles">
-                <BlogIcon className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5">
-                <BlogIcon className="h-4 w-4" />
-                Blog
-              </Button>
-            </Link>
+          </Link>
+          <nav className="hidden md:flex items-center gap-6">
+            <span className="text-sm font-medium text-primary">Calculator</span>
+            <Link href="/smart-money" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Budget Planner</Link>
+            <Link href="/housing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Housing</Link>
+            <Link href="/auto" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Auto</Link>
+            <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+          </nav>
+          <div className="flex items-center gap-3">
             <ThemeToggle />
             {user ? (
-              <Button variant="ghost" size="icon" onClick={logout} aria-label="Log out">
+              <Button variant="ghost" size="sm" onClick={logout} className="gap-2">
                 <LogoutIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Log Out</span>
               </Button>
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="icon" aria-label="Log in">
+                <Button variant="outline" size="sm" className="gap-2">
                   <LoginIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">Sign In</span>
                 </Button>
               </Link>
             )}
-          </nav>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-8">
         {/* Hero Section */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-            Know Your <span className="text-primary">Income</span>, Know Your <span className="text-primary">Budget</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-10"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Free Calculator - No Signup Required</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Know Your <span className="text-primary">True Income</span>
           </h2>
-          <p className="text-muted-foreground">
-            Calculate your projected annual income and see what you can afford
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Calculate your projected annual salary from your year-to-date earnings and discover what you can truly afford
           </p>
-        </div>
+        </motion.div>
 
         {/* 3-Column Desktop Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_240px] xl:grid-cols-[300px_minmax(0,1fr)_300px] 2xl:grid-cols-[340px_minmax(0,1fr)_340px] gap-4 lg:gap-6 xl:gap-8">
@@ -644,31 +654,73 @@ function Calculator() {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-4 space-y-2"
+                      className="mt-6 space-y-4"
                     >
+                      {/* Primary CTA - Calculate Affordability */}
                       {!showPaymentCalc && (
-                        <Button
+                        <button
                           onClick={() => setShowPaymentCalc(true)}
-                          className="w-full gap-2"
-                          size="lg"
+                          className="w-full group p-5 rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 hover:border-primary hover:shadow-lg hover:shadow-primary/20 transition-all text-left"
                         >
-                          <AutoIcon className="h-5 w-5" />
-                          Calculate What You Can Afford
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
+                          <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-xl bg-primary/20 group-hover:bg-primary/30 transition-colors">
+                              <AutoIcon className="h-7 w-7 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-bold text-lg group-hover:text-primary transition-colors flex items-center gap-2">
+                                Calculate What You Can Afford
+                                <ChevronRight className="h-5 w-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                See your maximum car payment based on the 12% rule
+                              </p>
+                            </div>
+                          </div>
+                        </button>
                       )}
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link href="/smart-money">
-                          <Button variant="outline" className="w-full gap-2" size="sm">
-                            <WalletIcon className="h-4 w-4" />
-                            Plan Budget
-                          </Button>
+
+                      {/* Secondary CTAs Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {/* Auto Affordability */}
+                        <Link href="/auto">
+                          <div className="group p-4 rounded-xl border border-border bg-card hover:border-blue-500/50 hover:shadow-md transition-all cursor-pointer h-full">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                                <AutoIcon className="h-5 w-5 text-blue-500" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                            </div>
+                            <h4 className="font-semibold text-sm group-hover:text-blue-500 transition-colors">Auto Affordability</h4>
+                            <p className="text-xs text-muted-foreground mt-1">Full car buying guide & calculator</p>
+                          </div>
                         </Link>
+
+                        {/* Budget Planner */}
+                        <Link href="/smart-money">
+                          <div className="group p-4 rounded-xl border border-border bg-card hover:border-emerald-500/50 hover:shadow-md transition-all cursor-pointer h-full">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="p-2 rounded-lg bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
+                                <WalletIcon className="h-5 w-5 text-emerald-500" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                            </div>
+                            <h4 className="font-semibold text-sm group-hover:text-emerald-500 transition-colors">Smart Money Planner</h4>
+                            <p className="text-xs text-muted-foreground mt-1">50/30/20 budget breakdown</p>
+                          </div>
+                        </Link>
+
+                        {/* Housing */}
                         <Link href="/housing">
-                          <Button variant="outline" className="w-full gap-2" size="sm">
-                            <HousingIcon className="h-4 w-4" />
-                            Housing
-                          </Button>
+                          <div className="group p-4 rounded-xl border border-border bg-card hover:border-purple-500/50 hover:shadow-md transition-all cursor-pointer h-full">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
+                                <HousingIcon className="h-5 w-5 text-purple-500" />
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                            </div>
+                            <h4 className="font-semibold text-sm group-hover:text-purple-500 transition-colors">Housing Calculator</h4>
+                            <p className="text-xs text-muted-foreground mt-1">Rent vs buy affordability</p>
+                          </div>
                         </Link>
                       </div>
                     </motion.div>
@@ -1193,6 +1245,14 @@ function Calculator() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* First Time User Guide */}
+      <FirstTimeGuide
+        storageKey="income-calculator"
+        title="Welcome to the Income Calculator"
+        subtitle="Get your projected annual income in 4 simple steps"
+        steps={CALCULATOR_GUIDE_STEPS}
+      />
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">

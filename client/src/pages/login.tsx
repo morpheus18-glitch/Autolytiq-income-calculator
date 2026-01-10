@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, Eye, EyeOff } from "lucide-react";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Login() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -18,6 +18,13 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Get return URL from sessionStorage (set before navigating to login)
+  const getReturnUrl = () => {
+    const returnUrl = sessionStorage.getItem("auth-return-url");
+    sessionStorage.removeItem("auth-return-url"); // Clear it after reading
+    return returnUrl || "/";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +34,7 @@ export default function Login() {
     const result = await login(email, password);
 
     if (result.success) {
-      setLocation("/");
+      setLocation(getReturnUrl());
     } else {
       setError(result.error || "Login failed");
     }

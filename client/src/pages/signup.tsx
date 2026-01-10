@@ -21,6 +21,13 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Get return URL from sessionStorage (set before navigating to login)
+  const getReturnUrl = () => {
+    const returnUrl = sessionStorage.getItem("auth-return-url");
+    sessionStorage.removeItem("auth-return-url"); // Clear it after reading
+    return returnUrl || "/";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -40,7 +47,7 @@ export default function Signup() {
     const result = await signup(email, password, name || undefined);
 
     if (result.success) {
-      setLocation("/");
+      setLocation(getReturnUrl());
     } else {
       setError(result.error || "Signup failed");
     }

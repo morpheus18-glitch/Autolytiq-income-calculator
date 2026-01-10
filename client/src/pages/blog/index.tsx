@@ -137,22 +137,22 @@ export default function BlogIndex() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border/40 bg-background/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="site-header">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/">
             <a className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-              <div className="p-1.5 rounded-lg bg-primary/10">
+              <div className="header-logo">
                 <CalcIcon className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-bold text-lg">Autolytiq</span>
+              <span className="header-title">Autolytiq</span>
             </a>
           </Link>
           <nav className="flex items-center gap-4">
             <Link href="/">
-              <Button variant="ghost" size="sm">Calculator</Button>
+              <Button variant="ghost" size="sm" className="header-nav-btn">Calculator</Button>
             </Link>
             <Link href="/blog">
-              <Button variant="ghost" size="sm" className="text-primary">Blog</Button>
+              <Button variant="ghost" size="sm" className="header-nav-btn text-primary">Blog</Button>
             </Link>
           </nav>
         </div>

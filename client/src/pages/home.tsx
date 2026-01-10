@@ -78,19 +78,21 @@ export default function HomePage() {
       <div className="fixed bottom-0 right-1/4 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <header className="site-header">
         <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary/10 dark:bg-primary/20">
-              <AutolytiqLogo className="h-6 w-6 text-primary" />
+          <Link href="/">
+            <div className="flex items-center gap-3">
+              <div className="header-logo p-2 rounded-xl">
+                <AutolytiqLogo className="h-6 w-6 text-primary" />
+              </div>
+              <span className="header-title text-xl">Autolytiq</span>
             </div>
-            <span className="text-xl font-bold tracking-tight dark:neon-text">Autolytiq</span>
-          </div>
+          </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/calculator" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Calculator</Link>
-            <Link href="/smart-money" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Budget Planner</Link>
-            <Link href="/housing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Housing</Link>
-            <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+            <Link href="/calculator" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Calculator</Link>
+            <Link href="/smart-money" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Budget Planner</Link>
+            <Link href="/housing" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Housing</Link>
+            <Link href="/blog" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Blog</Link>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />

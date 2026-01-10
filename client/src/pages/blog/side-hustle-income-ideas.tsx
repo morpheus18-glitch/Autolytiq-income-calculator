@@ -34,10 +34,10 @@ export default function SideHustleIncomeIdeas() {
         structuredData={combinedSchema}
       />
       {/* Header */}
-      <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur z-10">
+      <header className="site-header">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <Link href="/blog">
-            <a className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <a className="header-nav-btn flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </a>

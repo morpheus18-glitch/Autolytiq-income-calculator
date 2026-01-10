@@ -303,6 +303,85 @@
   .mono-value {
     @apply font-mono tracking-tight tabular-nums;
   }
+
+  /* Site Header - Light Mode */
+  .site-header {
+    @apply sticky top-0 z-50 w-full backdrop-blur-xl transition-all duration-300;
+    background: linear-gradient(
+      180deg,
+      hsl(0 0% 100%) 0%,
+      hsl(0 0% 98%) 100%
+    );
+    border-bottom: 2px solid hsl(142 76% 36% / 0.2);
+    box-shadow:
+      0 1px 3px hsl(0 0% 0% / 0.08),
+      0 4px 12px hsl(142 76% 36% / 0.08);
+  }
+
+  /* Site Header - Dark Mode */
+  .dark .site-header {
+    background: linear-gradient(
+      180deg,
+      hsl(0 0% 6%) 0%,
+      hsl(0 0% 4%) 100%
+    );
+    border-bottom: 2px solid hsl(142 100% 50% / 0.25);
+    box-shadow:
+      0 1px 0 0 hsl(0 0% 100% / 0.05),
+      0 4px 20px hsl(0 0% 0% / 0.4),
+      0 0 40px hsl(142 100% 50% / 0.1);
+  }
+
+  /* Header Logo Container - Light Mode */
+  .header-logo {
+    @apply p-1.5 rounded-lg transition-all duration-300;
+    background: hsl(142 76% 36% / 0.12);
+    border: 1px solid hsl(142 76% 36% / 0.15);
+  }
+
+  .header-logo:hover {
+    background: hsl(142 76% 36% / 0.18);
+    border-color: hsl(142 76% 36% / 0.25);
+  }
+
+  /* Header Logo Container - Dark Mode */
+  .dark .header-logo {
+    background: hsl(142 100% 50% / 0.15);
+    border: 1px solid hsl(142 100% 50% / 0.2);
+    box-shadow: 0 0 12px hsl(142 100% 50% / 0.15);
+  }
+
+  .dark .header-logo:hover {
+    background: hsl(142 100% 50% / 0.22);
+    border-color: hsl(142 100% 50% / 0.3);
+    box-shadow: 0 0 18px hsl(142 100% 50% / 0.25);
+  }
+
+  /* Header Title - Light Mode */
+  .header-title {
+    @apply text-lg font-bold tracking-tight;
+    color: hsl(240 10% 10%);
+  }
+
+  /* Header Title - Dark Mode */
+  .dark .header-title {
+    color: hsl(0 0% 98%);
+    text-shadow: 0 0 25px hsl(142 100% 50% / 0.5);
+  }
+
+  /* Header Nav Button - Light Mode */
+  .header-nav-btn {
+    @apply transition-all duration-200;
+  }
+
+  .header-nav-btn:hover {
+    background: hsl(142 76% 36% / 0.08);
+  }
+
+  /* Header Nav Button - Dark Mode */
+  .dark .header-nav-btn:hover {
+    background: hsl(142 100% 50% / 0.12);
+  }
 }
 
 /* Print Styles */

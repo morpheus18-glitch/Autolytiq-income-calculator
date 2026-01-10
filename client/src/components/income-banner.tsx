@@ -52,9 +52,9 @@ export function IncomeBanner({
         </div>
         {showCTA && (
           <Link href={ctaHref}>
-            <Button size="sm" variant="ghost" className="gap-1 text-xs h-7">
+            <Button size="sm" className="gap-1 text-xs h-7 bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 shadow-sm hover:shadow-md transition-all group">
               {ctaText}
-              <ArrowRightIcon className="h-3 w-3" />
+              <ArrowRightIcon className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
             </Button>
           </Link>
         )}
@@ -118,9 +118,9 @@ export function IncomeBanner({
       {showCTA && (
         <div className="mt-3 pt-3 border-t border-primary/10">
           <Link href={ctaHref}>
-            <Button size="sm" className="w-full gap-2">
+            <Button size="sm" className="w-full gap-2 bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 shadow-md shadow-primary/20 hover:shadow-lg transition-all group">
               {ctaText}
-              <ArrowRightIcon className="h-4 w-4" />
+              <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
         </div>
@@ -160,19 +160,24 @@ export function NoIncomeCTA({ className }: { className?: string }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "flex items-center justify-between gap-3 p-3 rounded-lg",
-        "bg-secondary/50 border border-border/50",
+        "flex items-center justify-between gap-3 p-4 rounded-xl",
+        "bg-gradient-to-r from-primary/5 to-emerald-500/5 border border-primary/20",
         className
       )}
     >
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <IncomeIcon className="h-4 w-4" />
-        Calculate your income for personalized results
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-primary/10">
+          <IncomeIcon className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <div className="text-sm font-medium">Get Personalized Results</div>
+          <div className="text-xs text-muted-foreground">Calculate your income first</div>
+        </div>
       </div>
       <Link href="/">
-        <Button size="sm" variant="outline" className="gap-1 text-xs h-7">
-          Calculate Income
-          <ArrowRightIcon className="h-3 w-3" />
+        <Button size="sm" className="gap-1 bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 shadow-sm hover:shadow-md transition-all group">
+          Calculate Now
+          <ArrowRightIcon className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
         </Button>
       </Link>
     </motion.div>

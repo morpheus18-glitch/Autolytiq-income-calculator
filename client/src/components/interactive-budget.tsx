@@ -768,7 +768,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   const [loadingBudget, setLoadingBudget] = useState(false);
   const [hasSavedBudget, setHasSavedBudget] = useState(false);
 
-  // Load saved budget on mount
+  // Load saved budget on mount and auto-open with results
   useEffect(() => {
     async function loadSavedBudget() {
       if (!user) return;
@@ -787,6 +787,10 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
         setSelectedSubscriptions(new Set(budget.selectedSubscriptions || []));
         setCustomSubAmounts(budget.customSubAmounts || {});
         setHasSavedBudget(true);
+
+        // Auto-open to results when saved budget exists
+        setIsOpen(true);
+        setCurrentStepIndex(steps.length - 1); // Jump to results
       } catch (err) {
         console.error("Failed to load budget:", err);
       } finally {
@@ -1323,60 +1327,80 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
 
   if (!isOpen) {
     return (
-      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-        <CardContent className="p-6 text-center">
-          <div className="p-3 rounded-full bg-primary/10 w-fit mx-auto mb-4">
-            <PiggyBank className="h-8 w-8 text-primary" />
-          </div>
-          <h3 className="text-xl font-bold mb-2">Interactive Budget Builder</h3>
-          <p className="text-muted-foreground mb-4">
-            Answer easy questions about your spending habits to get personalized budget recommendations.
-          </p>
-
-          {/* Show saved budget option if available */}
-          {hasSavedBudget && user ? (
-            <div className="space-y-3 mb-4">
-              <Button onClick={viewSavedBudget} className="gap-2 w-full sm:w-auto">
-                <History className="h-4 w-4" />
-                View Saved Budget
-              </Button>
-              <div className="flex gap-2 justify-center">
-                <Button variant="outline" onClick={handleStart} size="sm" className="gap-1">
-                  Start Fresh
-                </Button>
+      <Card className="border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent shadow-lg">
+        <CardContent className="p-6 lg:p-8">
+          {/* Header with icon */}
+          <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+            <div className="flex-1 text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-primary/20">
+                  <PiggyBank className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold">Interactive Budget Builder</h3>
+                  <p className="text-sm text-primary/70">Your Personal Financial Command Center</p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <Button onClick={handleStart} className="gap-2 mb-4">
-              Start Interactive Budget
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          )}
 
-          <div className="border-t pt-4 mt-2">
-            <p className="text-xs text-muted-foreground mb-3">Or quick start with a preset lifestyle:</p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <button
-                onClick={() => applyPreset("minimal")}
-                className="px-3 py-1.5 text-xs rounded-full border border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400 hover:bg-green-500/20 transition-colors"
-                aria-label="Apply minimal spending preset"
-              >
-                Minimal Spender
-              </button>
-              <button
-                onClick={() => applyPreset("moderate")}
-                className="px-3 py-1.5 text-xs rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors"
-                aria-label="Apply moderate lifestyle preset"
-              >
-                Moderate Lifestyle
-              </button>
-              <button
-                onClick={() => applyPreset("comfortable")}
-                className="px-3 py-1.5 text-xs rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors"
-                aria-label="Apply comfortable living preset"
-              >
-                Comfortable Living
-              </button>
+              <p className="text-muted-foreground mb-6 max-w-xl mx-auto lg:mx-0">
+                Get a complete picture of where your money goes. Answer simple questions about your spending
+                habits and receive personalized recommendations based on the 50/30/20 budget rule.
+              </p>
+
+              {/* Key Benefits */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-card/50 border border-border/50">
+                  <Check className="h-5 w-5 text-green-500 shrink-0" />
+                  <span className="text-sm">Track subscriptions</span>
+                </div>
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-card/50 border border-border/50">
+                  <Check className="h-5 w-5 text-green-500 shrink-0" />
+                  <span className="text-sm">Scan receipts</span>
+                </div>
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-card/50 border border-border/50">
+                  <Check className="h-5 w-5 text-green-500 shrink-0" />
+                  <span className="text-sm">Smart insights</span>
+                </div>
+              </div>
+
+              <Button onClick={handleStart} size="lg" className="gap-2 mb-4 shadow-lg shadow-primary/20">
+                Build Your Budget Now
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Quick Start Presets */}
+            <div className="lg:w-64 p-4 rounded-xl bg-card/50 border border-border/50">
+              <p className="text-sm font-medium mb-3 text-center lg:text-left">Quick Start Presets</p>
+              <p className="text-xs text-muted-foreground mb-4 text-center lg:text-left">
+                Skip the questions and start with a lifestyle template
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => applyPreset("minimal")}
+                  className="w-full px-4 py-3 text-left text-sm rounded-lg border border-green-500/30 bg-green-500/10 hover:bg-green-500/20 transition-colors"
+                  aria-label="Apply minimal spending preset"
+                >
+                  <span className="font-medium text-green-600 dark:text-green-400">Minimal Spender</span>
+                  <span className="block text-xs text-muted-foreground mt-0.5">Essential expenses only</span>
+                </button>
+                <button
+                  onClick={() => applyPreset("moderate")}
+                  className="w-full px-4 py-3 text-left text-sm rounded-lg border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 transition-colors"
+                  aria-label="Apply moderate lifestyle preset"
+                >
+                  <span className="font-medium text-blue-600 dark:text-blue-400">Moderate Lifestyle</span>
+                  <span className="block text-xs text-muted-foreground mt-0.5">Balanced spending & saving</span>
+                </button>
+                <button
+                  onClick={() => applyPreset("comfortable")}
+                  className="w-full px-4 py-3 text-left text-sm rounded-lg border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 transition-colors"
+                  aria-label="Apply comfortable living preset"
+                >
+                  <span className="font-medium text-purple-600 dark:text-purple-400">Comfortable Living</span>
+                  <span className="block text-xs text-muted-foreground mt-0.5">Full lifestyle tracking</span>
+                </button>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -1727,13 +1751,9 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
           <span className="text-xs text-muted-foreground">
             Step {currentStepIndex + 1} of {totalSteps}
           </span>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="p-1 rounded hover:bg-muted"
-            aria-label="Close budget builder"
-          >
-            <X className="h-4 w-4 text-muted-foreground" />
-          </button>
+          <span className="text-xs font-medium text-primary">
+            Interactive Budget Builder
+          </span>
         </div>
 
         <div className="p-6 lg:p-8 pt-2">
@@ -1762,8 +1782,9 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
               Back
             </Button>
             {currentStep.type === "results" ? (
-              <Button onClick={() => setIsOpen(false)} className="flex-1">
-                Done
+              <Button onClick={handleStart} variant="outline" className="flex-1 gap-2">
+                <ChevronLeft className="h-4 w-4" />
+                Edit Budget
               </Button>
             ) : (
               <Button onClick={handleNext} className="flex-1">

@@ -37,6 +37,7 @@ import { MoneyInput } from "@/components/money-input";
 import { SEO, createCalculatorSchema, createBreadcrumbSchema } from "@/components/seo";
 import { analytics } from "@/lib/analytics";
 import { FAQ, AUTO_FAQ } from "@/components/faq";
+import { FirstTimeGuide, AUTO_GUIDE_STEPS } from "@/components/first-time-guide";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { AnimatedNumber } from "@/components/charts";
 import { IncomeBanner, NoIncomeCTA } from "@/components/income-banner";
@@ -194,7 +195,7 @@ function Auto() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
       <SEO
         title="Auto Affordability Calculator 2026 - How Much Car Can I Afford?"
         description="Free auto affordability calculator. Calculate maximum vehicle price based on income, compare auto loan rates, and understand true ownership costs including insurance, fuel, and maintenance."
@@ -202,43 +203,61 @@ function Auto() {
         keywords="auto affordability calculator, how much car can I afford, car payment calculator, auto loan calculator, car buying guide, vehicle budget calculator 2026"
         structuredData={{ "@graph": [seoData.calculator, seoData.breadcrumbs] }}
       />
+      {/* Background */}
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
+      {/* Gradient orbs */}
+      <div className="fixed top-0 left-1/4 w-[400px] h-[400px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="fixed bottom-1/4 right-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/">
-              <Button variant="ghost" size="icon" className="mr-1">
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
-              <AutoIcon className="h-5 w-5 text-primary" />
+      <header className="site-header">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+          <Link href="/">
+            <div className="flex items-center gap-3">
+              <div className="header-logo p-2 rounded-xl">
+                <AutolytiqLogo className="h-6 w-6 text-primary" />
+              </div>
+              <span className="header-title text-xl">Autolytiq</span>
             </div>
-            <h1 className="text-lg font-bold tracking-tight dark:neon-text">Auto Guide</h1>
-          </div>
-          <nav className="flex items-center gap-1">
-            <Link href="/blog">
-              <Button variant="ghost" size="icon">
-                <BlogIcon className="h-4 w-4" />
+          </Link>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/calculator" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Calculator</Link>
+            <Link href="/smart-money" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Budget Planner</Link>
+            <Link href="/housing" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Housing</Link>
+            <span className="text-sm font-medium text-primary">Auto</span>
+            <Link href="/blog" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Blog</Link>
+          </nav>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link href="/calculator">
+              <Button size="sm" className="hidden sm:flex">
+                Open Calculator
+                <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </Link>
-            <ThemeToggle />
-          </nav>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 py-8">
+      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-8">
         {/* Hero */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-10"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <Search className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">12% Rule Calculator</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
             Smart <span className="text-primary">Auto</span> Shopping
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Know what you can afford before you step on the lot
           </p>
-        </div>
+        </motion.div>
 
         {/* Income Detection Banner */}
         {hasCalculatorIncome ? (
@@ -608,23 +627,137 @@ function Auto() {
         {/* FAQ Section */}
         <FAQ items={AUTO_FAQ} className="mb-6" />
 
-        {/* CTA */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link href="/" className="flex-1">
-            <Button variant="outline" className="w-full gap-2">
-              <IncomeIcon className="h-4 w-4" />
-              Income Calculator
-            </Button>
-          </Link>
-          <Link href="/desk" className="flex-1">
-            <Button className="w-full gap-2">
-              <AutoIcon className="h-4 w-4" />
-              Payment Calculator
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
+        {/* Enhanced CTAs with Explanations */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="space-y-4"
+        >
+          <div className="text-center mb-6">
+            <h3 className="text-lg font-semibold mb-1">Ready to Take the Next Step?</h3>
+            <p className="text-sm text-muted-foreground">Use our other tools to complete your financial picture</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            {/* Income Calculator CTA */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <Link href="/">
+                <div className="group p-5 rounded-xl border-2 border-border/50 bg-card hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2.5 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <IncomeIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold group-hover:text-primary transition-colors">Income Calculator</h4>
+                      <span className="text-xs text-muted-foreground">Unlock accurate results</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Don't guess your income. Calculate your exact annual earnings from your paystub for precise affordability numbers.
+                  </p>
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="px-2 py-1 rounded-full bg-secondary/50 text-muted-foreground">Quick & Easy</span>
+                    <span className="px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500">Powers all calculators</span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Payment Calculator CTA */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <Link href="/desk">
+                <div className="group p-5 rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2.5 rounded-xl bg-primary/20 group-hover:bg-primary/30 transition-colors">
+                      <AutoIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold group-hover:text-primary transition-colors">Pro Payment Calculator</h4>
+                      <span className="text-xs text-primary/70">Advanced features</span>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-primary ml-auto opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Enter a specific vehicle price to calculate exact monthly payments, compare loan terms, and see total cost breakdown.
+                  </p>
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="px-2 py-1 rounded-full bg-primary/20 text-primary">Compare Terms</span>
+                    <span className="px-2 py-1 rounded-full bg-primary/20 text-primary">Interest Breakdown</span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Additional tools row */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="grid sm:grid-cols-2 gap-4"
+          >
+            <Link href="/housing">
+              <div className="group p-4 rounded-xl border border-border/50 bg-card hover:border-primary/30 transition-all cursor-pointer flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <HousingIcon className="h-5 w-5 text-blue-500" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-sm group-hover:text-primary transition-colors">Housing Calculator</h4>
+                  <p className="text-xs text-muted-foreground">Rent & mortgage affordability</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+            </Link>
+            <Link href="/smart-money">
+              <div className="group p-4 rounded-xl border border-border/50 bg-card hover:border-primary/30 transition-all cursor-pointer flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-emerald-500/10">
+                  <WalletIcon className="h-5 w-5 text-emerald-500" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-sm group-hover:text-primary transition-colors">Budget Planner</h4>
+                  <p className="text-xs text-muted-foreground">50/30/20 money allocation</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+            </Link>
+          </motion.div>
+
+          {/* Quick tip */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+            className="text-center pt-4"
+          >
+            <p className="text-xs text-muted-foreground">
+              <LightbulbIcon className="h-3 w-3 inline mr-1" />
+              Pro tip: Use the Income Calculator first to auto-fill your income across all tools
+            </p>
+          </motion.div>
+        </motion.div>
       </main>
+
+      {/* First Time User Guide */}
+      <FirstTimeGuide
+        storageKey="auto-calculator"
+        title="Auto Affordability Guide"
+        subtitle="Know what you can afford before you shop"
+        steps={AUTO_GUIDE_STEPS}
+      />
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">

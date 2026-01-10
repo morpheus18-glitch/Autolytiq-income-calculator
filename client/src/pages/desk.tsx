@@ -203,28 +203,28 @@ function Desk() {
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <header className="site-header">
         <div className="max-w-7xl mx-auto px-4 lg:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/">
               <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <div className="p-1.5 rounded-lg bg-primary/10 dark:bg-primary/20">
+                <div className="header-logo">
                   <CalcIcon className="h-5 w-5 text-primary" />
                 </div>
-                <h1 className="text-lg font-bold tracking-tight dark:neon-text">Autolytiq</h1>
+                <h1 className="header-title">Autolytiq</h1>
               </div>
             </Link>
             <span className="text-xs px-2 py-0.5 rounded bg-primary/20 text-primary font-medium">DESK</span>
           </div>
           <nav className="flex items-center gap-1">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="gap-1.5">
+              <Button variant="ghost" size="sm" className="header-nav-btn gap-1.5">
                 <HomeIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Home</span>
               </Button>
             </Link>
             <Link href="/blog">
-              <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5">
+              <Button variant="ghost" size="sm" className="header-nav-btn hidden sm:flex gap-1.5">
                 <BookOpen className="h-4 w-4" />
                 Blog
               </Button>
@@ -233,18 +233,18 @@ function Desk() {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full"
+              className="header-nav-btn rounded-full"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
             {user ? (
-              <Button variant="ghost" size="sm" onClick={logout} className="gap-1.5">
+              <Button variant="ghost" size="sm" onClick={logout} className="header-nav-btn gap-1.5">
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Logout</span>
               </Button>
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="gap-1.5">
+                <Button variant="ghost" size="sm" className="header-nav-btn gap-1.5">
                   <LogIn className="h-4 w-4" />
                   <span className="hidden sm:inline">Sign In</span>
                 </Button>

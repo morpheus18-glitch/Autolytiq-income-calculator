@@ -33,10 +33,10 @@ export default function HowToCalculateAnnualIncome() {
         structuredData={combinedSchema}
       />
       {/* Header */}
-      <header className="border-b border-[#1a1a1a] sticky top-0 bg-[#09090b]/95 backdrop-blur z-10">
+      <header className="site-header">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <Link href="/blog">
-            <a className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
+            <a className="header-nav-btn flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </a>
