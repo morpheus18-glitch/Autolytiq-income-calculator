@@ -229,13 +229,13 @@ function SmartMoney() {
       {/* Background */}
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
-      {/* Gradient orbs */}
-      <div className="fixed top-0 left-1/4 w-[400px] h-[400px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="fixed bottom-1/4 right-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+      {/* Gradient orbs - responsive sizing */}
+      <div className="fixed top-0 left-1/4 w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px] bg-primary/15 rounded-full blur-[60px] sm:blur-[80px] lg:blur-[100px] pointer-events-none" />
+      <div className="fixed bottom-1/4 right-1/4 w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] lg:w-[300px] lg:h-[300px] bg-primary/10 rounded-full blur-[50px] sm:blur-[60px] lg:blur-[80px] pointer-events-none" />
 
       {/* Header */}
       <header className="site-header">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3">
               <div className="header-logo p-2 rounded-xl">
@@ -263,7 +263,7 @@ function SmartMoney() {
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-8">
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 py-8">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -294,7 +294,7 @@ function SmartMoney() {
         )}
 
         {/* Income Input Card */}
-        <Card className="glass-card border-none shadow-xl mb-6">
+        <Card className="glass-card border-none shadow-xl mb-6 max-w-4xl mx-auto">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <DollarIcon className="h-5 w-5 text-primary" />
@@ -302,7 +302,7 @@ function SmartMoney() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Annual Gross Income</Label>
                 <MoneyInput
@@ -394,26 +394,26 @@ function SmartMoney() {
                 {/* Deduction Breakdown */}
                 <div className="space-y-2">
                   <div className="text-sm font-medium text-muted-foreground">Deductions Breakdown</div>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                     <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
                       <div className="text-xs text-muted-foreground">Federal Tax</div>
-                      <div className="font-mono font-bold text-red-400">{formatCurrency(federalTax)}</div>
+                      <div className="font-mono font-bold text-red-400 text-sm">{formatCurrency(federalTax)}</div>
                     </div>
                     <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
                       <div className="text-xs text-muted-foreground">FICA</div>
-                      <div className="font-mono font-bold text-orange-400">{formatCurrency(ficaTax)}</div>
+                      <div className="font-mono font-bold text-orange-400 text-sm">{formatCurrency(ficaTax)}</div>
                     </div>
                     <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
                       <div className="text-xs text-muted-foreground">State Tax</div>
-                      <div className="font-mono font-bold text-yellow-400">{formatCurrency(stateTaxAmount)}</div>
+                      <div className="font-mono font-bold text-yellow-400 text-sm">{formatCurrency(stateTaxAmount)}</div>
                     </div>
                     <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                       <div className="text-xs text-muted-foreground">401k</div>
-                      <div className="font-mono font-bold text-emerald-400">{formatCurrency(retirement401kAmount)}</div>
+                      <div className="font-mono font-bold text-emerald-400 text-sm">{formatCurrency(retirement401kAmount)}</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 col-span-2 sm:col-span-1">
                       <div className="text-xs text-muted-foreground">Health Ins.</div>
-                      <div className="font-mono font-bold text-blue-400">{formatCurrency(healthAnnual)}</div>
+                      <div className="font-mono font-bold text-blue-400 text-sm">{formatCurrency(healthAnnual)}</div>
                     </div>
                   </div>
                 </div>
@@ -846,7 +846,7 @@ function SmartMoney() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. Tax estimates are approximate.

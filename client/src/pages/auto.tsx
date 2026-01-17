@@ -131,6 +131,11 @@ const OWNERSHIP_COSTS = [
   { icon: FileText, label: "Registration", monthly: "$10-50", note: "Annual fee divided monthly" },
 ];
 
+// Tax and fee constants
+const SALES_TAX_RATE = 0.07; // 7% average sales tax
+const DEALER_FEES = 500; // Registration, doc fees, etc.
+const TITLE_FEES = 150;
+
 function Auto() {
   const [mounted, setMounted] = useState(false);
   const { income: calculatorIncome, hasIncome: hasCalculatorIncome } = useIncome();
@@ -139,6 +144,7 @@ function Auto() {
   const [monthlyIncome, setMonthlyIncome] = useState("");
   const [currentCarPayment, setCurrentCarPayment] = useState("");
   const [downPayment, setDownPayment] = useState("");
+  const [estimatedInsurance, setEstimatedInsurance] = useState("200");
   const [creditTier, setCreditTier] = useState("good");
   const [selectedTerm, setSelectedTerm] = useState(60);
   const [showCalculator, setShowCalculator] = useState(true);
@@ -157,28 +163,42 @@ function Auto() {
   const income = parseFloat(monthlyIncome) || 0;
   const existingPayment = parseFloat(currentCarPayment) || 0;
   const down = parseFloat(downPayment) || 0;
+  const insurance = parseFloat(estimatedInsurance) || 200;
 
-  // Affordability calculations
-  const maxPayment = income * 0.12; // 12% of income rule
-  const availablePayment = Math.max(0, maxPayment - existingPayment);
+  // Affordability calculations - including insurance in the 12% rule
+  const maxTotalAutoPayment = income * 0.12; // 12% of income rule (payment + insurance)
+  const availableForPaymentAndInsurance = Math.max(0, maxTotalAutoPayment - existingPayment);
+  const availableLoanPayment = Math.max(0, availableForPaymentAndInsurance - insurance);
+
   const tier = CREDIT_TIERS.find(t => t.id === creditTier);
   const apr = (tier?.baseApr || 7.99) + (TERM_ADJUSTMENTS[selectedTerm] || 0);
 
-  // Calculate max loan amount based on available payment
+  // Calculate max loan amount based on available payment (after insurance)
   const calculateMaxLoan = (payment: number, rate: number, term: number): number => {
     const monthlyRate = rate / 100 / 12;
     if (monthlyRate === 0) return payment * term;
     return payment * (Math.pow(1 + monthlyRate, term) - 1) / (monthlyRate * Math.pow(1 + monthlyRate, term));
   };
 
-  const maxLoan = calculateMaxLoan(availablePayment, apr, selectedTerm);
-  const maxVehiclePrice = maxLoan + down;
+  // Max loan = what you can finance based on available monthly payment
+  const maxLoanAmount = calculateMaxLoan(availableLoanPayment, apr, selectedTerm);
+
+  // Total purchase budget = loan + down payment
+  const totalPurchaseBudget = maxLoanAmount + down;
+
+  // Vehicle price (pre-tax) = Total / (1 + tax rate) - fees
+  // Rearranged: VehiclePrice * (1 + taxRate) + fees = TotalPurchaseBudget
+  const maxVehiclePrice = Math.max(0, (totalPurchaseBudget - DEALER_FEES - TITLE_FEES) / (1 + SALES_TAX_RATE));
+
+  // Calculate what the actual loan would be for display
+  const estimatedTax = maxVehiclePrice * SALES_TAX_RATE;
+  const estimatedFees = DEALER_FEES + TITLE_FEES;
+  const totalOutTheDoor = maxVehiclePrice + estimatedTax + estimatedFees;
 
   // Estimated ownership costs
-  const estInsurance = 200;
   const estFuel = 180;
   const estMaintenance = 75;
-  const totalMonthlyOwnership = availablePayment + estInsurance + estFuel + estMaintenance;
+  const totalMonthlyOwnership = availableLoanPayment + insurance + estFuel + estMaintenance;
 
   if (!mounted) return null;
 
@@ -206,13 +226,13 @@ function Auto() {
       {/* Background */}
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
-      {/* Gradient orbs */}
-      <div className="fixed top-0 left-1/4 w-[400px] h-[400px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="fixed bottom-1/4 right-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+      {/* Gradient orbs - responsive sizing */}
+      <div className="fixed top-0 left-1/4 w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px] bg-primary/15 rounded-full blur-[60px] sm:blur-[80px] lg:blur-[100px] pointer-events-none" />
+      <div className="fixed bottom-1/4 right-1/4 w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] lg:w-[300px] lg:h-[300px] bg-primary/10 rounded-full blur-[50px] sm:blur-[60px] lg:blur-[80px] pointer-events-none" />
 
       {/* Header */}
       <header className="site-header">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3">
               <div className="header-logo p-2 rounded-xl">
@@ -240,7 +260,7 @@ function Auto() {
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-8">
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 py-8">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -297,7 +317,7 @@ function Auto() {
                 exit={{ height: 0, opacity: 0 }}
               >
                 <CardContent className="space-y-4">
-                  <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium flex items-center gap-2">
                         Monthly Income
@@ -317,7 +337,17 @@ function Auto() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Current Car Payment</Label>
+                      <Label className="text-sm font-medium flex items-center gap-2">
+                        Current Car Payment
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Existing monthly car payment (if any)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </Label>
                       <MoneyInput
                         value={currentCarPayment}
                         onChange={setCurrentCarPayment}
@@ -325,10 +355,38 @@ function Auto() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Down Payment</Label>
+                      <Label className="text-sm font-medium flex items-center gap-2">
+                        Down Payment
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Cash you'll put down upfront</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </Label>
                       <MoneyInput
                         value={downPayment}
                         onChange={setDownPayment}
+                        className="h-11"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium flex items-center gap-2">
+                        Est. Insurance
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Monthly insurance cost (included in 12% affordability rule)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </Label>
+                      <MoneyInput
+                        value={estimatedInsurance}
+                        onChange={setEstimatedInsurance}
                         className="h-11"
                       />
                     </div>
@@ -399,53 +457,133 @@ function Auto() {
                       animate={{ opacity: 1, y: 0 }}
                       className="pt-4 border-t border-border/50"
                     >
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        {/* Max Vehicle Price */}
-                        <div className="hero-stat text-center">
-                          <div className="text-sm text-muted-foreground mb-1">Max Vehicle Price</div>
+                      {/* Main Results - Vehicle Price vs Total Loan */}
+                      <div className="grid sm:grid-cols-2 gap-4 mb-4">
+                        {/* Max Vehicle Price (Pre-Tax) */}
+                        <div className="hero-stat text-center p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                            Max Vehicle Price
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-3 w-3" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Pre-tax sticker price you can afford</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
                           <div className="text-3xl font-bold mono-value text-primary neon-text">
                             <AnimatedNumber value={maxVehiclePrice} formatValue={(v) => formatCurrency(v)} />
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
-                            Based on {formatCurrency(availablePayment)}/mo payment
+                            Pre-tax / Pre-fees
                           </div>
                         </div>
 
-                        {/* Payment Budget */}
-                        <div className="stat-card text-center">
-                          <div className="text-sm text-muted-foreground mb-1">Payment Budget (12% rule)</div>
+                        {/* Total Out-the-Door / Loan Amount */}
+                        <div className="stat-card text-center p-4 rounded-xl">
+                          <div className="text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                            Max Loan Amount
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <InfoIcon className="h-3 w-3" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Total financed after tax, fees, minus down payment</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
                           <div className="text-2xl font-bold mono-value">
-                            {formatCurrency(availablePayment)}/mo
+                            <AnimatedNumber value={maxLoanAmount} formatValue={(v) => formatCurrency(v)} />
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
-                            Max: {formatCurrency(maxPayment)}/mo
-                            {existingPayment > 0 && ` - ${formatCurrency(existingPayment)} existing`}
+                            After {formatCurrency(down)} down
                           </div>
                         </div>
                       </div>
 
-                      {/* Loan Details */}
-                      <div className="grid grid-cols-3 gap-3 mt-4">
-                        <div className="stat-card text-center">
-                          <div className="text-xs text-muted-foreground">Max Loan</div>
-                          <div className="text-sm font-bold mono-value mt-1">{formatCurrency(maxLoan)}</div>
+                      {/* Price Breakdown */}
+                      <div className="p-4 rounded-xl bg-secondary/30 border border-border/50 mb-4">
+                        <div className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Price Breakdown</div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Vehicle Price</span>
+                            <span className="font-medium mono-value">{formatCurrency(maxVehiclePrice)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Est. Sales Tax (~7%)</span>
+                            <span className="font-medium mono-value">+{formatCurrency(estimatedTax)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Title, Reg & Doc Fees</span>
+                            <span className="font-medium mono-value">+{formatCurrency(estimatedFees)}</span>
+                          </div>
+                          <div className="border-t border-border/50 pt-2 flex justify-between font-semibold">
+                            <span>Total Out-the-Door</span>
+                            <span className="mono-value text-primary">{formatCurrency(totalOutTheDoor)}</span>
+                          </div>
+                          <div className="flex justify-between text-muted-foreground">
+                            <span>– Down Payment</span>
+                            <span className="mono-value">–{formatCurrency(down)}</span>
+                          </div>
+                          <div className="border-t border-border/50 pt-2 flex justify-between font-semibold">
+                            <span>Amount Financed</span>
+                            <span className="mono-value">{formatCurrency(maxLoanAmount)}</span>
+                          </div>
                         </div>
-                        <div className="stat-card text-center">
-                          <div className="text-xs text-muted-foreground">Down Payment</div>
-                          <div className="text-sm font-bold mono-value mt-1">{formatCurrency(down)}</div>
+                      </div>
+
+                      {/* Payment Details */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="stat-card text-center p-3">
+                          <div className="text-xs text-muted-foreground">Loan Payment</div>
+                          <div className="text-sm font-bold mono-value mt-1">{formatCurrency(availableLoanPayment)}/mo</div>
                         </div>
-                        <div className="stat-card text-center">
+                        <div className="stat-card text-center p-3">
+                          <div className="text-xs text-muted-foreground">+ Insurance</div>
+                          <div className="text-sm font-bold mono-value mt-1">{formatCurrency(insurance)}/mo</div>
+                        </div>
+                        <div className="stat-card text-center p-3">
+                          <div className="text-xs text-muted-foreground">Total Auto</div>
+                          <div className="text-sm font-bold mono-value mt-1 text-primary">{formatCurrency(availableLoanPayment + insurance)}/mo</div>
+                        </div>
+                        <div className="stat-card text-center p-3">
                           <div className="text-xs text-muted-foreground">APR</div>
                           <div className="text-sm font-bold mono-value mt-1">{apr.toFixed(2)}%</div>
                         </div>
                       </div>
 
-                      {/* Warning for short terms */}
-                      {selectedTerm <= 48 && maxVehiclePrice < 15000 && (
+                      {/* 12% Rule Info */}
+                      <div className="mt-4 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                        <div className="flex items-start gap-2">
+                          <ShieldIcon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                          <div className="text-sm">
+                            <span className="font-medium text-primary">12% Rule:</span>{" "}
+                            <span className="text-muted-foreground">
+                              Your total auto costs (payment + insurance) of {formatCurrency(availableLoanPayment + insurance)}/mo
+                              stays within {formatCurrency(maxTotalAutoPayment)}/mo (12% of {formatCurrency(income)} income)
+                              {existingPayment > 0 && `, accounting for your existing ${formatCurrency(existingPayment)}/mo payment`}.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Warning for low affordability */}
+                      {availableLoanPayment < 100 && (
                         <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 flex items-start gap-2">
                           <WarningIcon className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />
-                          <p className="text-sm text-yellow-200/80">
-                            Consider a longer term for more flexibility, or increase your down payment.
+                          <p className="text-sm text-yellow-600 dark:text-yellow-200/80">
+                            Your available loan payment is low. Consider reducing insurance coverage, increasing your down payment, or waiting until your income increases.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Warning for short terms with low budget */}
+                      {selectedTerm <= 48 && maxVehiclePrice < 15000 && maxVehiclePrice > 0 && (
+                        <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-start gap-2">
+                          <InfoIcon className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                          <p className="text-sm text-blue-600 dark:text-blue-200/80">
+                            A longer loan term could increase your buying power, though you'll pay more in interest over time.
                           </p>
                         </div>
                       )}
@@ -470,26 +608,64 @@ function Auto() {
               Your car payment is just the beginning. Factor in these ongoing costs:
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {OWNERSHIP_COSTS.map((cost) => (
-                <div key={cost.label} className="stat-card text-center">
-                  <cost.icon className="h-5 w-5 text-primary mx-auto mb-2" />
-                  <div className="font-semibold text-sm">{cost.label}</div>
-                  <div className="text-primary font-mono text-sm">{cost.monthly}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{cost.note}</div>
-                </div>
-              ))}
+              <div className="stat-card text-center p-3 border-primary/30 bg-primary/5">
+                <Shield className="h-5 w-5 text-primary mx-auto mb-2" />
+                <div className="font-semibold text-sm">Insurance</div>
+                <div className="text-primary font-mono text-sm">{formatCurrency(insurance)}/mo</div>
+                <div className="text-xs text-emerald-500 mt-1">Included in 12% rule</div>
+              </div>
+              <div className="stat-card text-center p-3">
+                <Fuel className="h-5 w-5 text-primary mx-auto mb-2" />
+                <div className="font-semibold text-sm">Fuel</div>
+                <div className="text-primary font-mono text-sm">$150-250</div>
+                <div className="text-xs text-muted-foreground mt-1">Based on 12k mi/year</div>
+              </div>
+              <div className="stat-card text-center p-3">
+                <Wrench className="h-5 w-5 text-primary mx-auto mb-2" />
+                <div className="font-semibold text-sm">Maintenance</div>
+                <div className="text-primary font-mono text-sm">$50-100</div>
+                <div className="text-xs text-muted-foreground mt-1">Oil, tires, brakes</div>
+              </div>
+              <div className="stat-card text-center p-3">
+                <FileText className="h-5 w-5 text-primary mx-auto mb-2" />
+                <div className="font-semibold text-sm">Registration</div>
+                <div className="text-primary font-mono text-sm">$10-50</div>
+                <div className="text-xs text-muted-foreground mt-1">Annual fee / month</div>
+              </div>
             </div>
 
-            {income > 0 && availablePayment > 0 && (
-              <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Est. Total Monthly Cost</span>
-                  <span className="text-lg font-bold mono-value text-primary">
-                    {formatCurrency(totalMonthlyOwnership)}/mo
-                  </span>
+            {income > 0 && availableLoanPayment > 0 && (
+              <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span className="text-sm font-medium">Estimated Total Monthly Cost</span>
+                    <div className="text-xs text-muted-foreground">
+                      Payment + Insurance + Fuel + Maintenance
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-2xl font-bold mono-value text-primary">
+                      {formatCurrency(totalMonthlyOwnership)}/mo
+                    </span>
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Payment ({formatCurrency(availablePayment)}) + Insurance + Fuel + Maintenance
+                <div className="mt-3 pt-3 border-t border-primary/20 grid grid-cols-4 gap-2 text-xs text-center">
+                  <div>
+                    <div className="text-muted-foreground">Payment</div>
+                    <div className="font-medium mono-value">{formatCurrency(availableLoanPayment)}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Insurance</div>
+                    <div className="font-medium mono-value">{formatCurrency(insurance)}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Fuel</div>
+                    <div className="font-medium mono-value">{formatCurrency(estFuel)}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Maint.</div>
+                    <div className="font-medium mono-value">{formatCurrency(estMaintenance)}</div>
+                  </div>
                 </div>
               </div>
             )}
@@ -761,7 +937,7 @@ function Auto() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. For estimation purposes only.

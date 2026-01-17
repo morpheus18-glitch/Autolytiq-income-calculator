@@ -218,13 +218,13 @@ function Housing() {
       {/* Background */}
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
-      {/* Gradient orbs */}
-      <div className="fixed top-0 left-1/4 w-[400px] h-[400px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="fixed bottom-1/4 right-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+      {/* Gradient orbs - responsive sizing */}
+      <div className="fixed top-0 left-1/4 w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px] bg-primary/15 rounded-full blur-[60px] sm:blur-[80px] lg:blur-[100px] pointer-events-none" />
+      <div className="fixed bottom-1/4 right-1/4 w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] lg:w-[300px] lg:h-[300px] bg-primary/10 rounded-full blur-[50px] sm:blur-[60px] lg:blur-[80px] pointer-events-none" />
 
       {/* Header */}
       <header className="site-header">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3">
               <div className="header-logo p-2 rounded-xl">
@@ -252,7 +252,7 @@ function Housing() {
         </div>
       </header>
 
-      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-8">
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 py-8">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -285,7 +285,7 @@ function Housing() {
         )}
 
         {/* Income Inputs */}
-        <Card className="glass-card border-none shadow-xl mb-6">
+        <Card className="glass-card border-none shadow-xl mb-6 max-w-3xl mx-auto">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <DollarIcon className="h-5 w-5 text-primary" />
@@ -979,7 +979,7 @@ function Housing() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. For estimation purposes only.

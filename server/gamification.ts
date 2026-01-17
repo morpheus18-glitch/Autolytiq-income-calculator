@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { statsDb, activityDb, type UserStats } from "./db";
+import { statsDb, activityDb, type UserStats } from "./db-postgres";
 
 // Badge definitions
 export const BADGES = {
@@ -58,8 +58,8 @@ export type BadgeId = keyof typeof BADGES;
 /**
  * Get or create user stats
  */
-export function getUserStats(userId: string): UserStats {
-  const existing = statsDb.get.get(userId) as UserStats | undefined;
+export async function getUserStats(userId: string): Promise<UserStats> {
+  const existing = await statsDb.get(userId);
 
   if (existing) {
     return existing;
@@ -79,7 +79,7 @@ export function getUserStats(userId: string): UserStats {
     updated_at: new Date().toISOString(),
   };
 
-  statsDb.upsert.run(
+  await statsDb.upsert(
     userId,
     0,
     0,
@@ -96,20 +96,20 @@ export function getUserStats(userId: string): UserStats {
 /**
  * Record a transaction and update gamification stats
  */
-export function recordTransaction(
+export async function recordTransaction(
   userId: string,
   amount: number,
   transactionDate: string
-): { stats: UserStats; newBadges: BadgeId[] } {
+): Promise<{ stats: UserStats; newBadges: BadgeId[] }> {
   const today = new Date().toISOString().split("T")[0];
   const newBadges: BadgeId[] = [];
 
   // Get current stats
-  let stats = getUserStats(userId);
+  let stats = await getUserStats(userId);
   const currentBadges: BadgeId[] = JSON.parse(stats.badges || "[]");
 
   // Update daily activity
-  activityDb.upsert.run(uuidv4(), userId, transactionDate, 1, amount);
+  await activityDb.upsert(uuidv4(), userId, transactionDate, 1, amount);
 
   // Update transaction count
   stats.total_transactions_logged += 1;
@@ -176,7 +176,7 @@ export function recordTransaction(
 
   // Save updated stats
   stats.badges = JSON.stringify(currentBadges);
-  statsDb.upsert.run(
+  await statsDb.upsert(
     userId,
     stats.current_streak,
     stats.longest_streak,
@@ -193,8 +193,8 @@ export function recordTransaction(
 /**
  * Record a week under budget
  */
-export function recordWeekUnderBudget(userId: string): BadgeId[] {
-  const stats = getUserStats(userId);
+export async function recordWeekUnderBudget(userId: string): Promise<BadgeId[]> {
+  const stats = await getUserStats(userId);
   const currentBadges: BadgeId[] = JSON.parse(stats.badges || "[]");
   const newBadges: BadgeId[] = [];
 
@@ -211,7 +211,7 @@ export function recordWeekUnderBudget(userId: string): BadgeId[] {
   }
 
   // Save updated stats
-  statsDb.upsert.run(
+  await statsDb.upsert(
     userId,
     stats.current_streak,
     stats.longest_streak,
@@ -228,8 +228,8 @@ export function recordWeekUnderBudget(userId: string): BadgeId[] {
 /**
  * Get user's badges with details
  */
-export function getUserBadges(userId: string): Array<typeof BADGES[BadgeId]> {
-  const stats = getUserStats(userId);
+export async function getUserBadges(userId: string): Promise<Array<typeof BADGES[BadgeId]>> {
+  const stats = await getUserStats(userId);
   const badgeIds: BadgeId[] = JSON.parse(stats.badges || "[]");
   return badgeIds.map((id) => BADGES[id]).filter(Boolean);
 }
@@ -237,11 +237,9 @@ export function getUserBadges(userId: string): Array<typeof BADGES[BadgeId]> {
 /**
  * Calculate current streak from activity log
  */
-export function calculateStreak(userId: string): number {
+export async function calculateStreak(userId: string): Promise<number> {
   const today = new Date().toISOString().split("T")[0];
-  const activities = activityDb.getStreakDays.all(userId, today) as Array<{
-    activity_date: string;
-  }>;
+  const activities = await activityDb.getStreakDays(userId, today);
 
   if (activities.length === 0) return 0;
 

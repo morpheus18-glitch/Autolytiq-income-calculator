@@ -73,13 +73,13 @@ export default function HomePage() {
       {/* Background */}
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
-      {/* Gradient orbs */}
-      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-0 right-1/4 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Gradient orbs - responsive sizing */}
+      <div className="fixed top-0 left-1/4 w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[500px] lg:h-[500px] bg-primary/20 rounded-full blur-[80px] sm:blur-[100px] lg:blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-0 right-1/4 w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px] bg-primary/10 rounded-full blur-[60px] sm:blur-[80px] lg:blur-[100px] pointer-events-none" />
 
       {/* Header */}
       <header className="site-header">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3">
               <div className="header-logo p-2 rounded-xl">
@@ -108,7 +108,7 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-32">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left: Copy */}
             <motion.div
@@ -217,7 +217,7 @@ export default function HomePage() {
 
       {/* Trust Bar */}
       <section className="py-8 border-y border-border/40 bg-secondary/30">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-muted-foreground">
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
@@ -241,7 +241,7 @@ export default function HomePage() {
 
       {/* Problem/Solution Section */}
       <section className="py-20 lg:py-28">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Stop Guessing. Start <span className="text-primary">Knowing.</span>
@@ -252,7 +252,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {[
               {
                 icon: TrendingUp,
@@ -306,7 +306,7 @@ export default function HomePage() {
 
       {/* How It Works */}
       <section id="how-it-works" className="py-20 lg:py-28 bg-secondary/30">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Calculate Your Income in <span className="text-primary">3 Simple Steps</span>
@@ -316,7 +316,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             {[
               {
                 step: "1",
@@ -368,7 +368,7 @@ export default function HomePage() {
 
       {/* Tools Section */}
       <section className="py-20 lg:py-28">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Complete Financial <span className="text-primary">Toolkit</span>
@@ -434,7 +434,7 @@ export default function HomePage() {
 
       {/* Privacy Section */}
       <section className="py-20 lg:py-28 bg-secondary/30">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">
@@ -498,7 +498,7 @@ export default function HomePage() {
 
       {/* Final CTA */}
       <section className="py-20 lg:py-28">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary/80 p-8 lg:p-16 text-center">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
             <div className="relative">
@@ -525,7 +525,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-12">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">

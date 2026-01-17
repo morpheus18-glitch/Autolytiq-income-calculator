@@ -384,6 +384,187 @@
   }
 }
 
+/* Mobile-first responsive improvements */
+@layer utilities {
+  /* Touch-friendly tap targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Safe area padding for notched devices */
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Smooth content transitions */
+  .content-transition {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  /* Mobile card spacing */
+  @media (max-width: 639px) {
+    .glass-card,
+    .stat-card {
+      @apply rounded-xl;
+    }
+
+    .hero-stat {
+      @apply p-4;
+    }
+
+    /* Reduce excessive padding on mobile */
+    .mobile-compact {
+      @apply px-3 py-2;
+    }
+  }
+
+  /* Tablet optimizations */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .tablet-grid-2 {
+      @apply grid-cols-2;
+    }
+
+    .tablet-spacing {
+      @apply gap-4;
+    }
+  }
+
+  /* Desktop enhancements */
+  @media (min-width: 1024px) {
+    .desktop-hover-lift:hover {
+      @apply -translate-y-0.5;
+    }
+  }
+
+  /* Professional input styling */
+  .input-professional {
+    @apply h-11 rounded-lg border border-border/60 bg-background/50;
+    @apply transition-all duration-200;
+    @apply focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
+
+  .dark .input-professional {
+    @apply bg-input/30 border-border/40;
+    @apply focus:border-primary/60 focus:ring-primary/15;
+  }
+
+  /* Card hover effects */
+  .card-interactive {
+    @apply transition-all duration-200;
+    @apply hover:shadow-lg hover:border-primary/30;
+  }
+
+  .dark .card-interactive:hover {
+    @apply border-primary/40;
+    box-shadow: 0 0 25px hsl(142 100% 50% / 0.12);
+  }
+
+  /* Professional button variants */
+  .btn-professional {
+    @apply font-medium transition-all duration-200;
+    @apply hover:shadow-md active:scale-[0.98];
+  }
+
+  /* Smooth number animations */
+  .number-animate {
+    @apply tabular-nums transition-all duration-300;
+  }
+
+  /* Section spacing */
+  .section-spacing {
+    @apply py-6 sm:py-8 lg:py-12;
+  }
+
+  /* Responsive text sizing */
+  .heading-responsive {
+    @apply text-2xl sm:text-3xl lg:text-4xl;
+  }
+
+  .subheading-responsive {
+    @apply text-lg sm:text-xl;
+  }
+
+  /* Mobile-friendly grid gaps */
+  .grid-responsive {
+    @apply gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  /* Professional label styling */
+  .label-pro {
+    @apply text-sm font-medium text-foreground/90 mb-1.5 block;
+  }
+
+  /* Subtle dividers */
+  .divider-subtle {
+    @apply border-border/40;
+  }
+
+  .dark .divider-subtle {
+    @apply border-border/30;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply animate-pulse bg-muted/50 rounded;
+  }
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Floating action button style */
+  .fab {
+    @apply fixed bottom-6 right-6 z-40;
+    @apply h-14 w-14 rounded-full;
+    @apply shadow-xl hover:shadow-2xl;
+    @apply flex items-center justify-center;
+    @apply transition-all duration-300;
+  }
+
+  .dark .fab {
+    box-shadow: 0 0 30px hsl(142 100% 50% / 0.2);
+  }
+
+  /* Badge styling */
+  .badge-pro {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full;
+    @apply text-xs font-medium;
+  }
+
+  /* Result highlight */
+  .result-highlight {
+    @apply relative overflow-hidden rounded-xl p-4 sm:p-6;
+    @apply bg-gradient-to-br from-primary/10 to-primary/5;
+    @apply border border-primary/25;
+  }
+
+  .dark .result-highlight {
+    @apply border-primary/30;
+    box-shadow: 0 0 30px hsl(142 100% 50% / 0.1);
+  }
+}
+
+/* Improved scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Print Styles */
 @media print {
   body {

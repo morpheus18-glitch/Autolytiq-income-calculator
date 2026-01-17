@@ -310,7 +310,7 @@ function Calculator() {
 
       {/* Header - Homepage style */}
       <header className="site-header sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3">
               <div className="header-logo p-2 rounded-xl bg-primary/10">
@@ -346,7 +346,7 @@ function Calculator() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-8">
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 py-8">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -478,7 +478,7 @@ function Calculator() {
           </aside>
 
           {/* Center Content - Calculator */}
-          <div className="space-y-6">
+          <div className="space-y-6 max-w-2xl mx-auto w-full">
 
         {/* Income Calculator */}
         <Card className="glass-card border-none shadow-xl">
@@ -1256,7 +1256,7 @@ function Calculator() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-12 py-6">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. For estimation purposes only.

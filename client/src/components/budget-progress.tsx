@@ -16,6 +16,7 @@ interface SpendingSummary {
 interface BudgetProgressProps {
   monthlyIncome: number;
   className?: string;
+  refreshTrigger?: number;
 }
 
 function formatCurrency(amount: number): string {
@@ -42,7 +43,7 @@ function getDaysRemaining(date: Date): number {
 /**
  * Budget Progress Bars - Shows actual spending vs planned budget
  */
-export function BudgetProgressBars({ monthlyIncome, className }: BudgetProgressProps) {
+export function BudgetProgressBars({ monthlyIncome, className, refreshTrigger }: BudgetProgressProps) {
   const { user } = useAuth();
   const [spending, setSpending] = useState<SpendingSummary>({ needs: 0, wants: 0, savings: 0, total: 0 });
   const [loading, setLoading] = useState(true);
@@ -69,7 +70,7 @@ export function BudgetProgressBars({ monthlyIncome, className }: BudgetProgressP
 
         const { data: response } = await transactionApi.summary(startDate, endDate);
 
-        const summary = response.summary || {};
+        const summary = response?.summary || {};
         setSpending({
           needs: summary.needs?.total || 0,
           wants: summary.wants?.total || 0,
@@ -272,7 +273,7 @@ export function SafeToSpendCard({ monthlyIncome, className }: BudgetProgressProp
 
         const { data: response } = await transactionApi.summary(startDate, endDate);
 
-        const summary = response.summary || {};
+        const summary = response?.summary || {};
         setSpending({
           needs: summary.needs?.total || 0,
           wants: summary.wants?.total || 0,

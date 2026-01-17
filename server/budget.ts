@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   budgetDb,
   type BudgetSnapshot,
-} from "./db";
+} from "./db-postgres";
 import { requireAuth, type AuthRequest } from "./middleware/auth";
 
 const router = Router();
@@ -12,7 +12,7 @@ const router = Router();
 router.use(requireAuth);
 
 // Save budget snapshot
-router.post("/save", (req: AuthRequest, res) => {
+router.post("/save", async (req: AuthRequest, res) => {
   try {
     const {
       name,
@@ -29,7 +29,7 @@ router.post("/save", (req: AuthRequest, res) => {
 
     const id = uuidv4();
 
-    budgetDb.create.run(
+    await budgetDb.create(
       id,
       req.user!.id,
       name || null,
@@ -48,9 +48,9 @@ router.post("/save", (req: AuthRequest, res) => {
 });
 
 // Get latest budget (most recent)
-router.get("/latest", (req: AuthRequest, res) => {
+router.get("/latest", async (req: AuthRequest, res) => {
   try {
-    const snapshot = budgetDb.findLatest.get(req.user!.id) as BudgetSnapshot | undefined;
+    const snapshot = await budgetDb.findLatest(req.user!.id);
 
     if (!snapshot) {
       return res.json({ budget: null });
@@ -77,9 +77,9 @@ router.get("/latest", (req: AuthRequest, res) => {
 });
 
 // Get budget history
-router.get("/history", (req: AuthRequest, res) => {
+router.get("/history", async (req: AuthRequest, res) => {
   try {
-    const snapshots = budgetDb.findByUser.all(req.user!.id) as BudgetSnapshot[];
+    const snapshots = await budgetDb.findByUser(req.user!.id);
 
     const parsed = snapshots.map((s) => ({
       id: s.id,
@@ -103,12 +103,9 @@ router.get("/history", (req: AuthRequest, res) => {
 });
 
 // Load specific budget
-router.get("/:id", (req: AuthRequest, res) => {
+router.get("/:id", async (req: AuthRequest, res) => {
   try {
-    const snapshot = budgetDb.findById.get(
-      req.params.id,
-      req.user!.id
-    ) as BudgetSnapshot | undefined;
+    const snapshot = await budgetDb.findById(req.params.id, req.user!.id);
 
     if (!snapshot) {
       return res.status(404).json({ error: "Budget not found" });
@@ -133,7 +130,7 @@ router.get("/:id", (req: AuthRequest, res) => {
 });
 
 // Update budget
-router.put("/:id", (req: AuthRequest, res) => {
+router.put("/:id", async (req: AuthRequest, res) => {
   try {
     const {
       fixedExpenses,
@@ -143,16 +140,13 @@ router.put("/:id", (req: AuthRequest, res) => {
       monthlyIncome,
     } = req.body;
 
-    const existing = budgetDb.findById.get(
-      req.params.id,
-      req.user!.id
-    ) as BudgetSnapshot | undefined;
+    const existing = await budgetDb.findById(req.params.id, req.user!.id);
 
     if (!existing) {
       return res.status(404).json({ error: "Budget not found" });
     }
 
-    budgetDb.update.run(
+    await budgetDb.update(
       JSON.stringify(fixedExpenses),
       JSON.stringify(frequencyData),
       JSON.stringify(selectedSubscriptions || []),
@@ -170,14 +164,9 @@ router.put("/:id", (req: AuthRequest, res) => {
 });
 
 // Delete budget
-router.delete("/:id", (req: AuthRequest, res) => {
+router.delete("/:id", async (req: AuthRequest, res) => {
   try {
-    const result = budgetDb.delete.run(req.params.id, req.user!.id);
-
-    if (result.changes === 0) {
-      return res.status(404).json({ error: "Budget not found" });
-    }
-
+    await budgetDb.delete(req.params.id, req.user!.id);
     res.json({ success: true });
   } catch (error) {
     console.error("Delete budget error:", error);

@@ -3,10 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import {
   transactionDb,
   merchantDb,
-  statsDb,
   type Transaction,
   type MerchantCategory,
-} from "./db";
+} from "./db-postgres";
 import { requireAuth, type AuthRequest } from "./middleware/auth";
 import { recordTransaction, getUserStats, getUserBadges, BADGES } from "./gamification";
 
@@ -85,18 +84,15 @@ const MERCHANT_PATTERNS: Array<{
  * Detect category based on merchant name.
  * First checks user-specific mappings, then global patterns.
  */
-function detectCategory(
+async function detectCategory(
   merchant: string | null,
   userId: string
-): { category: string; subcategory: string | null } {
+): Promise<{ category: string; subcategory: string | null }> {
   if (!merchant) return { category: "wants", subcategory: null };
 
   // Check user-specific and global mappings in DB
   try {
-    const mapping = merchantDb.findMatch.get(
-      userId,
-      merchant
-    ) as MerchantCategory | undefined;
+    const mapping = await merchantDb.findMatch(userId, merchant);
     if (mapping) {
       return { category: mapping.category, subcategory: mapping.subcategory };
     }
@@ -116,7 +112,7 @@ function detectCategory(
 }
 
 // List transactions with pagination and filters
-router.get("/", (req: AuthRequest, res) => {
+router.get("/", async (req: AuthRequest, res) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
@@ -127,22 +123,20 @@ router.get("/", (req: AuthRequest, res) => {
     let transactions: Transaction[];
 
     if (startDate && endDate) {
-      transactions = transactionDb.findByUserDateRange.all(
+      transactions = await transactionDb.findByUserDateRange(
         req.user!.id,
         startDate,
         endDate
-      ) as Transaction[];
+      );
     } else {
-      transactions = transactionDb.findByUser.all(
+      transactions = await transactionDb.findByUser(
         req.user!.id,
         limit,
         offset
-      ) as Transaction[];
+      );
     }
 
-    const countResult = transactionDb.countByUser.get(req.user!.id) as {
-      count: number;
-    };
+    const countResult = await transactionDb.countByUser(req.user!.id);
 
     res.json({
       transactions,
@@ -158,7 +152,7 @@ router.get("/", (req: AuthRequest, res) => {
 });
 
 // Add manual transaction
-router.post("/", (req: AuthRequest, res) => {
+router.post("/", async (req: AuthRequest, res) => {
   try {
     const { amount, merchant, description, category, subcategory, transactionDate } =
       req.body;
@@ -170,11 +164,11 @@ router.post("/", (req: AuthRequest, res) => {
     // Auto-detect category if not provided
     const detected = category
       ? { category, subcategory: subcategory || null }
-      : detectCategory(merchant, req.user!.id);
+      : await detectCategory(merchant, req.user!.id);
 
     const id = uuidv4();
 
-    transactionDb.create.run(
+    await transactionDb.create(
       id,
       req.user!.id,
       parseFloat(amount),
@@ -190,7 +184,7 @@ router.post("/", (req: AuthRequest, res) => {
     );
 
     // Update gamification stats
-    const { stats, newBadges } = recordTransaction(
+    const { stats, newBadges } = await recordTransaction(
       req.user!.id,
       parseFloat(amount),
       transactionDate
@@ -214,12 +208,12 @@ router.post("/", (req: AuthRequest, res) => {
 });
 
 // Get single transaction
-router.get("/:id", (req: AuthRequest, res) => {
+router.get("/:id", async (req: AuthRequest, res) => {
   try {
-    const transaction = transactionDb.findById.get(
+    const transaction = await transactionDb.findById(
       req.params.id,
       req.user!.id
-    ) as Transaction | undefined;
+    );
 
     if (!transaction) {
       return res.status(404).json({ error: "Transaction not found" });
@@ -233,21 +227,21 @@ router.get("/:id", (req: AuthRequest, res) => {
 });
 
 // Update transaction
-router.put("/:id", (req: AuthRequest, res) => {
+router.put("/:id", async (req: AuthRequest, res) => {
   try {
     const { amount, merchant, description, category, subcategory, transactionDate } =
       req.body;
 
-    const existing = transactionDb.findById.get(
+    const existing = await transactionDb.findById(
       req.params.id,
       req.user!.id
-    ) as Transaction | undefined;
+    );
 
     if (!existing) {
       return res.status(404).json({ error: "Transaction not found" });
     }
 
-    transactionDb.update.run(
+    await transactionDb.update(
       amount ?? existing.amount,
       merchant ?? existing.merchant,
       description ?? existing.description,
@@ -266,14 +260,9 @@ router.put("/:id", (req: AuthRequest, res) => {
 });
 
 // Delete transaction
-router.delete("/:id", (req: AuthRequest, res) => {
+router.delete("/:id", async (req: AuthRequest, res) => {
   try {
-    const result = transactionDb.delete.run(req.params.id, req.user!.id);
-
-    if (result.changes === 0) {
-      return res.status(404).json({ error: "Transaction not found" });
-    }
-
+    await transactionDb.delete(req.params.id, req.user!.id);
     res.json({ success: true });
   } catch (error) {
     console.error("Delete transaction error:", error);
@@ -282,7 +271,7 @@ router.delete("/:id", (req: AuthRequest, res) => {
 });
 
 // Get spending summary by category
-router.get("/stats/summary", (req: AuthRequest, res) => {
+router.get("/stats/summary", async (req: AuthRequest, res) => {
   try {
     // Default to current month
     const now = new Date();
@@ -292,11 +281,11 @@ router.get("/stats/summary", (req: AuthRequest, res) => {
     const endDate =
       (req.query.endDate as string) || now.toISOString().split("T")[0];
 
-    const summary = transactionDb.sumByCategory.all(
+    const summary = await transactionDb.sumByCategory(
       req.user!.id,
       startDate,
       endDate
-    ) as Array<{ category: string; subcategory: string | null; total: number }>;
+    );
 
     // Group by category
     const grouped = summary.reduce(
@@ -322,7 +311,7 @@ router.get("/stats/summary", (req: AuthRequest, res) => {
 });
 
 // Learn a merchant category mapping
-router.post("/learn-category", (req: AuthRequest, res) => {
+router.post("/learn-category", async (req: AuthRequest, res) => {
   try {
     const { merchant, category, subcategory } = req.body;
 
@@ -331,7 +320,7 @@ router.post("/learn-category", (req: AuthRequest, res) => {
     }
 
     const id = uuidv4();
-    merchantDb.create.run(
+    await merchantDb.create(
       id,
       req.user!.id,
       merchant.toLowerCase().trim(),
@@ -347,10 +336,10 @@ router.post("/learn-category", (req: AuthRequest, res) => {
 });
 
 // Get user gamification stats
-router.get("/stats/gamification", (req: AuthRequest, res) => {
+router.get("/stats/gamification", async (req: AuthRequest, res) => {
   try {
-    const stats = getUserStats(req.user!.id);
-    const badges = getUserBadges(req.user!.id);
+    const stats = await getUserStats(req.user!.id);
+    const badges = await getUserBadges(req.user!.id);
 
     res.json({
       currentStreak: stats.current_streak,

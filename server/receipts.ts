@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { transactionDb, merchantDb, type MerchantCategory } from "./db";
+import { transactionDb, merchantDb, type MerchantCategory } from "./db-postgres";
 import { requireAuth, type AuthRequest } from "./middleware/auth";
 import { receiptUpload, processReceiptImage, getRelativePath } from "./upload";
 import { getOCRProvider } from "./services/ocr";
@@ -37,10 +37,10 @@ router.post(
 
       if (result.extractedData.merchant) {
         try {
-          const mapping = merchantDb.findMatch.get(
+          const mapping = await merchantDb.findMatch(
             req.user!.id,
             result.extractedData.merchant
-          ) as MerchantCategory | undefined;
+          );
           if (mapping) {
             category = mapping.category;
             subcategory = mapping.subcategory;
@@ -57,7 +57,7 @@ router.post(
       // Only create if we extracted a total
       let created = false;
       if (result.extractedData.total && result.extractedData.total > 0) {
-        transactionDb.create.run(
+        await transactionDb.create(
           transactionId,
           req.user!.id,
           result.extractedData.total,
@@ -100,7 +100,7 @@ router.post(
  * Confirm or update a scanned transaction.
  * Also learns the merchant category for future auto-categorization.
  */
-router.post("/confirm/:transactionId", (req: AuthRequest, res) => {
+router.post("/confirm/:transactionId", async (req: AuthRequest, res) => {
   try {
     const { amount, merchant, category, subcategory, transactionDate } = req.body;
 
@@ -109,7 +109,7 @@ router.post("/confirm/:transactionId", (req: AuthRequest, res) => {
     }
 
     // Update the transaction
-    transactionDb.update.run(
+    await transactionDb.update(
       parseFloat(amount),
       merchant || null,
       null,
@@ -124,7 +124,7 @@ router.post("/confirm/:transactionId", (req: AuthRequest, res) => {
     if (merchant && category) {
       try {
         const id = uuidv4();
-        merchantDb.create.run(
+        await merchantDb.create(
           id,
           req.user!.id,
           merchant.toLowerCase().trim(),
@@ -147,7 +147,7 @@ router.post("/confirm/:transactionId", (req: AuthRequest, res) => {
  * Create a transaction from extracted data without a prior scan.
  * Useful when the client did manual OCR correction before submission.
  */
-router.post("/create-from-scan", (req: AuthRequest, res) => {
+router.post("/create-from-scan", async (req: AuthRequest, res) => {
   try {
     const {
       amount,
@@ -166,7 +166,7 @@ router.post("/create-from-scan", (req: AuthRequest, res) => {
 
     const id = uuidv4();
 
-    transactionDb.create.run(
+    await transactionDb.create(
       id,
       req.user!.id,
       parseFloat(amount),
@@ -185,7 +185,7 @@ router.post("/create-from-scan", (req: AuthRequest, res) => {
     if (merchant && category) {
       try {
         const mappingId = uuidv4();
-        merchantDb.create.run(
+        await merchantDb.create(
           mappingId,
           req.user!.id,
           merchant.toLowerCase().trim(),

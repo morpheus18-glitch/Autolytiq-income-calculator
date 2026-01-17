@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { summaryDb, statsDb, type UserStats } from "./db";
+import { summaryDb, statsDb, type UserStats } from "./db-postgres";
 
 // Configure Resend
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -910,17 +910,13 @@ ${APP_URL}
   }
 }
 
-export function getWeeklyEmailData(
+export async function getWeeklyEmailData(
   userId: string,
   startDate: string,
   endDate: string
-): { needsTotal: number; wantsTotal: number; savingsTotal: number; totalSpent: number; transactionCount: number } {
+): Promise<{ needsTotal: number; wantsTotal: number; savingsTotal: number; totalSpent: number; transactionCount: number }> {
   try {
-    const results = summaryDb.getWeeklySummary.all(userId, startDate, endDate) as Array<{
-      category: string;
-      transaction_count: number;
-      total_spent: number;
-    }>;
+    const results = await summaryDb.getWeeklySummary(userId, startDate, endDate);
 
     let needsTotal = 0;
     let wantsTotal = 0;

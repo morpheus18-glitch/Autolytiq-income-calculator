@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { userDb, type User } from "../db";
+import { userDb, type User } from "../db-postgres";
 
 export interface AuthRequest extends Request {
   user?: { id: string; email: string; name?: string };
@@ -9,7 +9,7 @@ export interface AuthRequest extends Request {
  * Middleware to require authentication.
  * Checks for x-user-id header and validates the user exists.
  */
-export function requireAuth(
+export async function requireAuth(
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -20,25 +20,30 @@ export function requireAuth(
     return res.status(401).json({ error: "Authentication required" });
   }
 
-  const user = userDb.findById.get(userId) as User | undefined;
+  try {
+    const user = await userDb.findById(userId);
 
-  if (!user) {
-    return res.status(401).json({ error: "Invalid user" });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid user" });
+    }
+
+    req.user = {
+      id: user.id,
+      email: user.email,
+      name: user.name || undefined,
+    };
+
+    next();
+  } catch (error) {
+    console.error("Auth middleware error:", error);
+    return res.status(500).json({ error: "Authentication failed" });
   }
-
-  req.user = {
-    id: user.id,
-    email: user.email,
-    name: user.name || undefined,
-  };
-
-  next();
 }
 
 /**
  * Optional auth middleware - attaches user if present but doesn't require it.
  */
-export function optionalAuth(
+export async function optionalAuth(
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -46,13 +51,17 @@ export function optionalAuth(
   const userId = req.headers["x-user-id"] as string;
 
   if (userId) {
-    const user = userDb.findById.get(userId) as User | undefined;
-    if (user) {
-      req.user = {
-        id: user.id,
-        email: user.email,
-        name: user.name || undefined,
-      };
+    try {
+      const user = await userDb.findById(userId);
+      if (user) {
+        req.user = {
+          id: user.id,
+          email: user.email,
+          name: user.name || undefined,
+        };
+      }
+    } catch (error) {
+      // Ignore errors in optional auth
     }
   }
 

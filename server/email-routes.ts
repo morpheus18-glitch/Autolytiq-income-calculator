@@ -1,17 +1,14 @@
 import { Router } from "express";
 import { requireAuth, type AuthRequest } from "./middleware/auth";
 import { sendWeeklySummaryEmail, getWeeklyEmailData, type WeeklySummaryData } from "./email";
-import { preferencesDb, statsDb, transactionDb, userDb, type UserStats } from "./db";
+import { preferencesDb, statsDb, transactionDb, userDb, type UserStats } from "./db-postgres";
 
 const router = Router();
 
 // Get user's email preferences
-router.get("/preferences", requireAuth, (req: AuthRequest, res) => {
+router.get("/preferences", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const prefs = preferencesDb.get.get(req.user!.id) as {
-      weekly_email_enabled: number;
-      budget_alert_threshold: number | null;
-    } | undefined;
+    const prefs = await preferencesDb.get(req.user!.id);
 
     res.json({
       weeklyEmailEnabled: prefs?.weekly_email_enabled === 1,
@@ -24,21 +21,21 @@ router.get("/preferences", requireAuth, (req: AuthRequest, res) => {
 });
 
 // Update user's email preferences
-router.post("/preferences", requireAuth, (req: AuthRequest, res) => {
+router.post("/preferences", requireAuth, async (req: AuthRequest, res) => {
   try {
     const { weeklyEmailEnabled, budgetAlertThreshold } = req.body;
 
     // Check if preferences exist
-    const existing = preferencesDb.get.get(req.user!.id);
+    const existing = await preferencesDb.get(req.user!.id);
 
     if (existing) {
-      preferencesDb.update.run(
+      await preferencesDb.update(
         weeklyEmailEnabled ? 1 : 0,
         budgetAlertThreshold || null,
         req.user!.id
       );
     } else {
-      preferencesDb.create.run(
+      await preferencesDb.create(
         req.user!.id,
         weeklyEmailEnabled ? 1 : 0,
         budgetAlertThreshold || null
@@ -67,18 +64,18 @@ router.post("/test-weekly-summary", requireAuth, async (req: AuthRequest, res) =
       .split("T")[0];
 
     // Get spending data
-    const spendingData = getWeeklyEmailData(userId, startDate, endDate);
+    const spendingData = await getWeeklyEmailData(userId, startDate, endDate);
 
     // Get top merchants
-    const topMerchants = transactionDb.getTopMerchants.all(
+    const topMerchants = await transactionDb.getTopMerchants(
       userId,
       startDate,
       endDate,
       5
-    ) as Array<{ merchant: string; total: number; count: number }>;
+    );
 
     // Get user stats
-    const stats = statsDb.get.get(userId) as UserStats | undefined;
+    const stats = await statsDb.get(userId);
 
     const summaryData: WeeklySummaryData = {
       userId,
@@ -119,9 +116,7 @@ router.post("/send-weekly-batch", async (req, res) => {
 
   try {
     // Get all users with weekly email enabled
-    const enabledUsers = preferencesDb.getAllEnabled.all() as Array<{
-      user_id: string;
-    }>;
+    const enabledUsers = await preferencesDb.getAllEnabled();
 
     if (enabledUsers.length === 0) {
       return res.json({ sent: 0, message: "No users with weekly email enabled" });
@@ -139,29 +134,26 @@ router.post("/send-weekly-batch", async (req, res) => {
     for (const { user_id } of enabledUsers) {
       try {
         // Get user info
-        const user = userDb.findById.get(user_id) as {
-          email: string;
-          name: string | null;
-        } | undefined;
+        const user = await userDb.findById(user_id);
 
         if (!user) continue;
 
         // Get spending data
-        const spendingData = getWeeklyEmailData(user_id, startDate, endDate);
+        const spendingData = await getWeeklyEmailData(user_id, startDate, endDate);
 
         // Skip if no transactions
         if (spendingData.transactionCount === 0) continue;
 
         // Get top merchants
-        const topMerchants = transactionDb.getTopMerchants.all(
+        const topMerchants = await transactionDb.getTopMerchants(
           user_id,
           startDate,
           endDate,
           5
-        ) as Array<{ merchant: string; total: number; count: number }>;
+        );
 
         // Get user stats
-        const stats = statsDb.get.get(user_id) as UserStats | undefined;
+        const stats = await statsDb.get(user_id);
 
         const summaryData: WeeklySummaryData = {
           userId: user_id,

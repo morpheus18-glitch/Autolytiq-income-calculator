@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from "plaid";
 import { v4 as uuidv4 } from "uuid";
 import { requireAuth, type AuthRequest } from "./middleware/auth";
-import { plaidItemDb, plaidAccountDb, transactionDb, type PlaidItem, type PlaidAccount } from "./db";
+import { plaidItemDb, plaidAccountDb, transactionDb, type PlaidItem, type PlaidAccount } from "./db-postgres";
 
 const router = Router();
 
@@ -79,7 +79,7 @@ router.post("/exchange-token", requirePlaidConfig, async (req: AuthRequest, res)
 
     // Store the item in database
     const id = uuidv4();
-    plaidItemDb.create.run(
+    await plaidItemDb.create(
       id,
       userId,
       access_token,
@@ -93,7 +93,7 @@ router.post("/exchange-token", requirePlaidConfig, async (req: AuthRequest, res)
 
     for (const account of accountsResponse.data.accounts) {
       const accountId = uuidv4();
-      plaidAccountDb.upsert.run(
+      await plaidAccountDb.upsert(
         accountId,
         id,
         account.account_id,
@@ -124,11 +124,11 @@ router.post("/exchange-token", requirePlaidConfig, async (req: AuthRequest, res)
 router.get("/accounts", requirePlaidConfig, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id;
-    const items = plaidItemDb.findByUser.all(userId) as PlaidItem[];
+    const items = await plaidItemDb.findByUser(userId);
 
     const result = [];
     for (const item of items) {
-      const accounts = plaidAccountDb.findByItem.all(item.id) as PlaidAccount[];
+      const accounts = await plaidAccountDb.findByItem(item.id);
       result.push({
         id: item.id,
         institution_name: item.institution_name,
@@ -161,7 +161,7 @@ router.post("/sync/:itemId", requirePlaidConfig, async (req: AuthRequest, res) =
     const userId = req.user!.id;
     const { itemId } = req.params;
 
-    const item = plaidItemDb.findById.get(itemId, userId) as PlaidItem | undefined;
+    const item = await plaidItemDb.findById(itemId, userId);
     if (!item) {
       return res.status(404).json({ error: "Item not found" });
     }
@@ -186,7 +186,7 @@ router.post("/sync/:itemId", requirePlaidConfig, async (req: AuthRequest, res) =
         const category = mapPlaidCategory(txn.personal_finance_category?.primary || txn.category?.[0] || "");
         const id = uuidv4();
 
-        transactionDb.create.run(
+        await transactionDb.create(
           id,
           userId,
           Math.abs(txn.amount), // Plaid uses negative for expenses
@@ -220,14 +220,14 @@ router.post("/sync/:itemId", requirePlaidConfig, async (req: AuthRequest, res) =
     }
 
     // Update cursor
-    plaidItemDb.updateCursor.run(cursor || "", item.item_id);
-    plaidItemDb.clearError.run(item.item_id);
+    await plaidItemDb.updateCursor(cursor || "", item.item_id);
+    await plaidItemDb.clearError(item.item_id);
 
     // Update account balances
     const accountsResponse = await plaidClient.accountsGet({ access_token: item.access_token });
     for (const account of accountsResponse.data.accounts) {
       const accountId = uuidv4();
-      plaidAccountDb.upsert.run(
+      await plaidAccountDb.upsert(
         accountId,
         item.id,
         account.account_id,
@@ -255,9 +255,9 @@ router.post("/sync/:itemId", requirePlaidConfig, async (req: AuthRequest, res) =
     const plaidError = error.response?.data?.error_code;
     if (plaidError) {
       const { itemId } = req.params;
-      const item = plaidItemDb.findById.get(itemId, req.user!.id) as PlaidItem | undefined;
+      const item = await plaidItemDb.findById(itemId, req.user!.id);
       if (item) {
-        plaidItemDb.updateError.run(plaidError, item.item_id);
+        await plaidItemDb.updateError(plaidError, item.item_id);
       }
     }
 
@@ -269,7 +269,7 @@ router.post("/sync/:itemId", requirePlaidConfig, async (req: AuthRequest, res) =
 router.post("/sync-all", requirePlaidConfig, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.id;
-    const items = plaidItemDb.findByUser.all(userId) as PlaidItem[];
+    const items = await plaidItemDb.findByUser(userId);
 
     const results = [];
     for (const item of items) {
@@ -292,7 +292,7 @@ router.post("/sync-all", requirePlaidConfig, async (req: AuthRequest, res) => {
             const category = mapPlaidCategory(txn.personal_finance_category?.primary || txn.category?.[0] || "");
             const id = uuidv4();
 
-            transactionDb.create.run(
+            await transactionDb.create(
               id,
               userId,
               Math.abs(txn.amount),
@@ -313,8 +313,8 @@ router.post("/sync-all", requirePlaidConfig, async (req: AuthRequest, res) => {
           hasMore = has_more;
         }
 
-        plaidItemDb.updateCursor.run(cursor || "", item.item_id);
-        plaidItemDb.clearError.run(item.item_id);
+        await plaidItemDb.updateCursor(cursor || "", item.item_id);
+        await plaidItemDb.clearError(item.item_id);
 
         results.push({
           item_id: item.id,
@@ -323,7 +323,7 @@ router.post("/sync-all", requirePlaidConfig, async (req: AuthRequest, res) => {
           status: "success",
         });
       } catch (err: any) {
-        plaidItemDb.updateError.run(err.response?.data?.error_code || "SYNC_ERROR", item.item_id);
+        await plaidItemDb.updateError(err.response?.data?.error_code || "SYNC_ERROR", item.item_id);
         results.push({
           item_id: item.id,
           institution: item.institution_name,
@@ -346,7 +346,7 @@ router.delete("/items/:itemId", requirePlaidConfig, async (req: AuthRequest, res
     const userId = req.user!.id;
     const { itemId } = req.params;
 
-    const item = plaidItemDb.findById.get(itemId, userId) as PlaidItem | undefined;
+    const item = await plaidItemDb.findById(itemId, userId);
     if (!item) {
       return res.status(404).json({ error: "Item not found" });
     }
@@ -360,10 +360,10 @@ router.delete("/items/:itemId", requirePlaidConfig, async (req: AuthRequest, res
     }
 
     // Delete accounts first (foreign key)
-    plaidAccountDb.deleteByItem.run(item.id);
+    await plaidAccountDb.deleteByItem(item.id);
 
     // Delete item
-    plaidItemDb.delete.run(itemId, userId);
+    await plaidItemDb.delete(itemId, userId);
 
     res.json({ success: true });
   } catch (error: any) {
@@ -425,9 +425,9 @@ router.post("/webhook", async (req, res) => {
     case "ITEM":
       if (webhook_code === "ERROR") {
         // Mark item as having an error
-        const item = plaidItemDb.findByItemId.get(item_id) as PlaidItem | undefined;
+        const item = await plaidItemDb.findByItemId(item_id);
         if (item) {
-          plaidItemDb.updateError.run("ITEM_ERROR", item_id);
+          await plaidItemDb.updateError("ITEM_ERROR", item_id);
         }
       }
       break;

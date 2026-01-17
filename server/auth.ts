@@ -1,7 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import { userDb, resetDb, type User } from "./db";
+import { userDb, resetDb, type User } from "./db-postgres";
 import { sendPasswordResetEmail, sendWelcomeEmail } from "./email";
 import {
   authRateLimiter,
@@ -66,7 +66,7 @@ router.post("/signup", signupRateLimiter, async (req, res) => {
     const sanitizedName = name ? name.trim().substring(0, 100) : null;
 
     // Check if user exists
-    const existing = userDb.findByEmail.get(email.toLowerCase()) as User | undefined;
+    const existing = await userDb.findByEmail(email.toLowerCase());
     if (existing) {
       return res.status(400).json({ error: "Email already registered" });
     }
@@ -75,7 +75,7 @@ router.post("/signup", signupRateLimiter, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
     const userId = uuidv4();
 
-    userDb.create.run(userId, email.toLowerCase(), hashedPassword, sanitizedName);
+    await userDb.create(userId, email.toLowerCase(), hashedPassword, sanitizedName);
 
     // Send welcome email (async, don't wait)
     sendWelcomeEmail(email, sanitizedName || undefined).catch(console.error);
@@ -109,7 +109,7 @@ router.post("/login", authRateLimiter, async (req, res) => {
       });
     }
 
-    const user = userDb.findByEmail.get(normalizedEmail) as User | undefined;
+    const user = await userDb.findByEmail(normalizedEmail);
     if (!user) {
       // Record failed attempt even for non-existent users (prevents enumeration)
       await recordFailedAttempt(normalizedEmail);
@@ -149,7 +149,7 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
       return res.status(400).json({ error: "Email is required" });
     }
 
-    const user = userDb.findByEmail.get(email.toLowerCase()) as User | undefined;
+    const user = await userDb.findByEmail(email.toLowerCase());
 
     // Always return success to prevent email enumeration
     if (!user) {
@@ -160,7 +160,7 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
     const token = generateSecureToken(32);
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
 
-    resetDb.create.run(uuidv4(), user.id, token, expiresAt);
+    await resetDb.create(uuidv4(), user.id, token, expiresAt);
 
     // Send reset email
     await sendPasswordResetEmail(email, token);
@@ -187,20 +187,20 @@ router.post("/reset-password", authRateLimiter, async (req, res) => {
       return res.status(400).json({ error: passwordValidation.error });
     }
 
-    const reset = resetDb.findByToken.get(token) as { user_id: string } | undefined;
+    const reset = await resetDb.findByToken(token);
     if (!reset) {
       return res.status(400).json({ error: "Invalid or expired reset link" });
     }
 
     // Hash new password with higher cost factor
     const hashedPassword = await bcrypt.hash(password, 12);
-    userDb.updatePassword.run(hashedPassword, reset.user_id);
+    await userDb.updatePassword(hashedPassword, reset.user_id);
 
     // Mark token as used
-    resetDb.markUsed.run(token);
+    await resetDb.markUsed(token);
 
     // Clear any failed login attempts for this user
-    const user = userDb.findById?.get(reset.user_id) as User | undefined;
+    const user = await userDb.findById(reset.user_id);
     if (user) {
       await clearFailedAttempts(user.email);
     }
@@ -213,13 +213,13 @@ router.post("/reset-password", authRateLimiter, async (req, res) => {
 });
 
 // Get all users (admin endpoint for email list)
-router.get("/users", (req, res) => {
+router.get("/users", async (req, res) => {
   try {
-    const users = userDb.getAll.all();
-    const count = userDb.count.get() as { count: number };
+    const users = await userDb.getAll();
+    const countResult = await userDb.count();
 
     res.json({
-      total: count.count,
+      total: countResult.count,
       users,
     });
   } catch (error) {

@@ -70,10 +70,21 @@ export function clearUser() {
   Sentry.setUser(null);
 }
 
-// Express error handler middleware
-export const sentryErrorHandler = Sentry.Handlers?.errorHandler?.() || ((err: Error, _req: unknown, _res: unknown, next: (err?: Error) => void) => next(err));
+// Express error handler middleware (v8+ compatible)
+export function setupExpressErrorHandler(app: { use: (handler: unknown) => void }) {
+  if (!SENTRY_DSN) return;
+  Sentry.setupExpressErrorHandler(app);
+}
 
-// Express request handler middleware
-export const sentryRequestHandler = Sentry.Handlers?.requestHandler?.() || ((_req: unknown, _res: unknown, next: () => void) => next());
+// Express request handler middleware - noop in v8+ (automatic instrumentation)
+export const sentryRequestHandler = (_req: unknown, _res: unknown, next: () => void) => next();
+
+// Fallback error handler for manual use
+export const sentryErrorHandler = (err: Error, _req: unknown, _res: unknown, next: (err?: Error) => void) => {
+  if (SENTRY_DSN) {
+    Sentry.captureException(err);
+  }
+  next(err);
+};
 
 export default Sentry;
