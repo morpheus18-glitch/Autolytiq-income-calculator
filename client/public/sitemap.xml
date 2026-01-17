@@ -7,11 +7,11 @@
   <!-- Homepage - Marketing Landing Page -->
   <url>
     <loc>https://autolytiqs.com/</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://autolytiqs.com/og-image.png</image:loc>
+      <image:loc>https://autolytiqs.com/opengraph.jpg</image:loc>
       <image:title>Autolytiq - Free Income &amp; Budget Calculators</image:title>
       <image:caption>Free financial calculators for income, auto loans, housing, and budget planning</image:caption>
     </image:image>
@@ -20,11 +20,11 @@
   <!-- Income Calculator - Main Tool -->
   <url>
     <loc>https://autolytiqs.com/calculator</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://autolytiqs.com/og-image.png</image:loc>
+      <image:loc>https://autolytiqs.com/opengraph.jpg</image:loc>
       <image:title>Free Income Calculator</image:title>
       <image:caption>Calculate your projected annual salary from YTD earnings</image:caption>
     </image:image>
@@ -33,7 +33,7 @@
   <!-- Budget Builder / Desk -->
   <url>
     <loc>https://autolytiqs.com/desk</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -41,11 +41,11 @@
   <!-- Auto Loan Calculator -->
   <url>
     <loc>https://autolytiqs.com/auto</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://autolytiqs.com/og-image.png</image:loc>
+      <image:loc>https://autolytiqs.com/opengraph.jpg</image:loc>
       <image:title>Auto Loan Calculator</image:title>
       <image:caption>Calculate how much car you can afford based on your income</image:caption>
     </image:image>
@@ -54,11 +54,11 @@
   <!-- Smart Money Guide -->
   <url>
     <loc>https://autolytiqs.com/smart-money</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://autolytiqs.com/og-image.png</image:loc>
+      <image:loc>https://autolytiqs.com/opengraph.jpg</image:loc>
       <image:title>Smart Money Budget Planner</image:title>
       <image:caption>50/30/20 budget calculator and spending tracker</image:caption>
     </image:image>
@@ -67,11 +67,11 @@
   <!-- Housing Calculator -->
   <url>
     <loc>https://autolytiqs.com/housing</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://autolytiqs.com/og-image.png</image:loc>
+      <image:loc>https://autolytiqs.com/opengraph.jpg</image:loc>
       <image:title>Housing Affordability Calculator</image:title>
       <image:caption>Calculate rent or mortgage you can afford based on income</image:caption>
     </image:image>
@@ -80,7 +80,7 @@
   <!-- Blog Index -->
   <url>
     <loc>https://autolytiqs.com/blog</loc>
-    <lastmod>2026-01-07</lastmod>
+    <lastmod>2026-01-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
