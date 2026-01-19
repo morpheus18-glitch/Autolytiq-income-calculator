@@ -204,7 +204,7 @@ function Desk() {
 
       {/* Header */}
       <header className="site-header">
-        <div className="max-w-7xl mx-auto px-4 lg:px-6 h-14 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/">
               <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -255,7 +255,7 @@ function Desk() {
       </header>
 
       {/* Main Content - Split Screen */}
-      <main className="max-w-7xl mx-auto px-4 lg:px-6 py-6">
+      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 py-6">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Left Column - Income Calculator */}
           <Card className="glass-card border-none shadow-xl overflow-hidden">
@@ -619,7 +619,7 @@ function Desk() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-8">
-        <div className="max-w-7xl mx-auto px-4 lg:px-6 py-4">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 py-4">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>© {new Date().getFullYear()} Autolytiq</span>
             <div className="flex items-center gap-4">

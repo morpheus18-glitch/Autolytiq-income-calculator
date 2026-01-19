@@ -80,7 +80,7 @@ export default function HomePage() {
 
       {/* Header */}
       <header className="site-header">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 h-16 flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3">
               <div className="header-logo p-2 rounded-xl">
@@ -110,7 +110,7 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-32">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left: Copy */}
             <motion.div
@@ -219,7 +219,7 @@ export default function HomePage() {
 
       {/* Trust Bar */}
       <section className="py-8 border-y border-border/40 bg-secondary/30">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 text-muted-foreground">
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
@@ -243,7 +243,7 @@ export default function HomePage() {
 
       {/* Problem/Solution Section */}
       <section className="py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Stop Guessing. Start <span className="text-primary">Knowing.</span>
@@ -308,7 +308,7 @@ export default function HomePage() {
 
       {/* How It Works */}
       <section id="how-it-works" className="py-20 lg:py-28 bg-secondary/30">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Calculate Your Income in <span className="text-primary">3 Simple Steps</span>
@@ -370,7 +370,7 @@ export default function HomePage() {
 
       {/* Tools Section */}
       <section className="py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Complete Financial <span className="text-primary">Toolkit</span>
@@ -436,7 +436,7 @@ export default function HomePage() {
 
       {/* Privacy Section */}
       <section className="py-20 lg:py-28 bg-secondary/30">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">
@@ -500,7 +500,7 @@ export default function HomePage() {
 
       {/* Final CTA */}
       <section className="py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary/80 p-8 lg:p-16 text-center">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
             <div className="relative">
@@ -527,7 +527,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 py-12">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">

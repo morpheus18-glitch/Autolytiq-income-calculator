@@ -236,7 +236,7 @@ function SmartMoney() {
 
       {/* Header */}
       <header className="site-header">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 h-16 flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3">
               <div className="header-logo p-2 rounded-xl">
@@ -265,7 +265,7 @@ function SmartMoney() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 lg:px-8 xl:px-12 py-8">
+      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 py-8">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -848,7 +848,7 @@ function SmartMoney() {
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Autolytiq. Tax estimates are approximate.

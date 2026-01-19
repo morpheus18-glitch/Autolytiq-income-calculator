@@ -74,8 +74,8 @@
   --accent-foreground: 0 0% 0%;
   --destructive: 0 85% 55%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 12%;
-  --input: 0 0% 10%;
+  --border: 0 0% 18%;
+  --input: 0 0% 14%;
   --ring: 142 100% 50%;
 
   --neon-glow: 0 0 20px hsl(142 100% 50% / 0.4);
@@ -90,6 +90,29 @@
   }
   body {
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary/30 selection:text-primary;
+  }
+
+  /* Dark mode input visibility - ensure all inputs are clearly visible */
+  .dark input:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea,
+  .dark select {
+    background-color: hsl(0 0% 12%) !important;
+    border-color: hsl(0 0% 28%) !important;
+    box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.3);
+  }
+
+  .dark input:not([type="checkbox"]):not([type="radio"]):focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    border-color: hsl(142 100% 50% / 0.5) !important;
+    box-shadow:
+      0 0 0 2px hsl(142 100% 50% / 0.12),
+      inset 0 1px 2px hsl(0 0% 0% / 0.2);
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: hsl(0 0% 45%);
   }
 
   /* Clickable cursor for interactive elements */
@@ -178,17 +201,24 @@
   .dark .elite-input {
     background: linear-gradient(
       180deg,
-      hsl(0 0% 6%) 0%,
-      hsl(0 0% 4%) 100%
+      hsl(0 0% 12%) 0%,
+      hsl(0 0% 10%) 100%
     );
-    border: 1px solid hsl(0 0% 15%);
+    border: 1px solid hsl(0 0% 28%);
+    box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.3);
   }
 
   .dark .elite-input:focus {
-    border-color: hsl(142 100% 50% / 0.5);
+    border-color: hsl(142 100% 50% / 0.6);
+    background: linear-gradient(
+      180deg,
+      hsl(0 0% 14%) 0%,
+      hsl(0 0% 12%) 100%
+    );
     box-shadow:
-      0 0 0 2px hsl(142 100% 50% / 0.1),
-      0 0 20px hsl(142 100% 50% / 0.15);
+      0 0 0 2px hsl(142 100% 50% / 0.15),
+      0 0 20px hsl(142 100% 50% / 0.2),
+      inset 0 1px 2px hsl(0 0% 0% / 0.2);
   }
 
   /* Gradient Text */
@@ -476,8 +506,9 @@
   }
 
   .dark .input-professional {
-    @apply bg-input/30 border-border/40;
-    @apply focus:border-primary/60 focus:ring-primary/15;
+    @apply bg-[hsl(0_0%_12%)] border-[hsl(0_0%_28%)];
+    @apply focus:border-primary/60 focus:ring-primary/20;
+    box-shadow: inset 0 1px 2px hsl(0 0% 0% / 0.3);
   }
 
   /* Card hover effects */

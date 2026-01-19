@@ -377,7 +377,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
           <div>

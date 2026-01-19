@@ -26,6 +26,30 @@ let isShuttingDown = false;
 // Trust proxy for accurate IP detection (required for rate limiting behind reverse proxy)
 app.set("trust proxy", 1);
 
+// Canonical URL redirect middleware (www → non-www, HTTP → HTTPS)
+// Must be early in the chain to redirect before other processing
+const CANONICAL_HOST = "autolytiqs.com";
+app.use((req: Request, res: Response, next: NextFunction) => {
+  // Skip in development
+  if (process.env.NODE_ENV !== "production") {
+    return next();
+  }
+
+  const host = req.hostname || req.headers.host?.split(":")[0] || "";
+  const protocol = req.protocol || (req.headers["x-forwarded-proto"] as string) || "http";
+
+  const isWww = host.startsWith("www.");
+  const isHttp = protocol === "http";
+
+  // Redirect if www or http
+  if (isWww || isHttp) {
+    const canonicalUrl = `https://${CANONICAL_HOST}${req.originalUrl}`;
+    return res.redirect(301, canonicalUrl);
+  }
+
+  next();
+});
+
 // Security middleware - apply early in the chain
 app.use(corsConfig);
 app.use(securityHeaders);
