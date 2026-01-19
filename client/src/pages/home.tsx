@@ -139,11 +139,14 @@ export default function HomePage() {
                     <ChevronRight className="h-5 w-5 ml-2" />
                   </Button>
                 </Link>
-                <Link href="#how-it-works">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto text-lg px-8 py-6">
-                    See How It Works
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto text-lg px-8 py-6"
+                  onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  See How It Works
+                </Button>
               </motion.div>
 
               <motion.div variants={fadeInUp} className="flex items-center gap-6 mt-8 justify-center lg:justify-start">

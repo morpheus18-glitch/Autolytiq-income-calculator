@@ -88,7 +88,7 @@ export function FinancialChecklist({ className }: { className?: string }) {
 
     if (completed.length > 0) {
       setCompletedItems((prev) => {
-        const merged = [...new Set([...prev, ...completed])];
+        const merged = Array.from(new Set([...prev, ...completed]));
         localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
         return merged;
       });
