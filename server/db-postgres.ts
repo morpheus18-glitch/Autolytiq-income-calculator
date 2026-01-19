@@ -828,7 +828,7 @@ export const affiliateDb = {
 
   getClicks: async (startDate: string, endDate: string) => {
     return query<AffiliateClick>(
-      `SELECT * FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2 ORDER BY clicked_at DESC`,
+      `SELECT * FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day') ORDER BY clicked_at DESC`,
       [startDate, endDate]
     );
   },
@@ -836,7 +836,7 @@ export const affiliateDb = {
   getClicksByAffiliate: async (startDate: string, endDate: string) => {
     return query<{ affiliate_name: string; category: string; clicks: number; unique_sessions: number }>(
       `SELECT affiliate_name, category, COUNT(*) as clicks, COUNT(DISTINCT session_id) as unique_sessions
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')
        GROUP BY affiliate_name, category ORDER BY clicks DESC`,
       [startDate, endDate]
     );
@@ -845,7 +845,7 @@ export const affiliateDb = {
   getClicksByPage: async (startDate: string, endDate: string) => {
     return query<{ page_source: string; clicks: number }>(
       `SELECT page_source, COUNT(*) as clicks
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')
        GROUP BY page_source ORDER BY clicks DESC`,
       [startDate, endDate]
     );
@@ -854,7 +854,7 @@ export const affiliateDb = {
   getClicksByDevice: async (startDate: string, endDate: string) => {
     return query<{ device_type: string; clicks: number }>(
       `SELECT COALESCE(device_type, 'unknown') as device_type, COUNT(*) as clicks
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')
        GROUP BY device_type ORDER BY clicks DESC`,
       [startDate, endDate]
     );
@@ -863,7 +863,7 @@ export const affiliateDb = {
   getClicksByBrowser: async (startDate: string, endDate: string) => {
     return query<{ browser: string; clicks: number }>(
       `SELECT COALESCE(browser, 'unknown') as browser, COUNT(*) as clicks
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')
        GROUP BY browser ORDER BY clicks DESC`,
       [startDate, endDate]
     );
@@ -872,7 +872,7 @@ export const affiliateDb = {
   getDailyClicks: async (startDate: string, endDate: string) => {
     return query<{ date: string; clicks: number; unique_sessions: number }>(
       `SELECT DATE(clicked_at) as date, COUNT(*) as clicks, COUNT(DISTINCT session_id) as unique_sessions
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')
        GROUP BY DATE(clicked_at) ORDER BY date ASC`,
       [startDate, endDate]
     );
@@ -881,7 +881,7 @@ export const affiliateDb = {
   getHourlyClicks: async (startDate: string, endDate: string) => {
     return query<{ hour: number; clicks: number }>(
       `SELECT EXTRACT(HOUR FROM clicked_at) as hour, COUNT(*) as clicks
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')
        GROUP BY EXTRACT(HOUR FROM clicked_at) ORDER BY hour ASC`,
       [startDate, endDate]
     );
@@ -890,7 +890,7 @@ export const affiliateDb = {
   getTotalStats: async (startDate: string, endDate: string) => {
     return queryOne<{ total_clicks: number; unique_sessions: number; unique_affiliates: number }>(
       `SELECT COUNT(*) as total_clicks, COUNT(DISTINCT session_id) as unique_sessions, COUNT(DISTINCT affiliate_name) as unique_affiliates
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2`,
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')`,
       [startDate, endDate]
     );
   },
@@ -898,7 +898,7 @@ export const affiliateDb = {
   getTopReferrers: async (startDate: string, endDate: string, limit: number) => {
     return query<{ referrer: string; clicks: number }>(
       `SELECT COALESCE(referrer, 'direct') as referrer, COUNT(*) as clicks
-       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       FROM affiliate_clicks WHERE clicked_at >= $1::date AND clicked_at < ($2::date + interval '1 day')
        GROUP BY referrer ORDER BY clicks DESC LIMIT $3`,
       [startDate, endDate, limit]
     );
@@ -939,7 +939,7 @@ export const sessionDb = {
          SUM(CASE WHEN affiliate_clicks > 0 THEN 1 ELSE 0 END) as sessions_with_clicks,
          SUM(bounced) as bounced_sessions,
          AVG(pages_visited) as avg_pages
-       FROM affiliate_sessions WHERE started_at BETWEEN $1 AND $2`,
+       FROM affiliate_sessions WHERE started_at >= $1::date AND started_at < ($2::date + interval '1 day')`,
       [startDate, endDate]
     );
   },

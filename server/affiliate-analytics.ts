@@ -272,4 +272,67 @@ router.get("/analytics/export", async (req: Request, res: Response) => {
   }
 });
 
+// Export individual handlers for public routes (before CSRF)
+export const trackClickHandler = async (req: Request, res: Response) => {
+  try {
+    const { affiliateName, affiliateUrl, category, pageSource, sessionId } = req.body;
+
+    if (!affiliateName || !affiliateUrl || !category || !pageSource) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const id = uuidv4();
+    const userAgent = req.headers["user-agent"];
+    const ipAddress = req.ip || req.socket.remoteAddress || null;
+    const referrer = req.headers.referer || null;
+    const { device, browser } = parseUserAgent(userAgent);
+
+    await affiliateDb.trackClick(
+      id,
+      affiliateName,
+      affiliateUrl,
+      category,
+      pageSource,
+      sessionId || null,
+      userAgent || null,
+      ipAddress || null,
+      referrer || null,
+      device,
+      browser,
+      null
+    );
+
+    if (sessionId) {
+      try {
+        await sessionDb.incrementClicks(sessionId);
+      } catch (e) {
+        // Session might not exist yet
+      }
+    }
+
+    res.json({ success: true, id });
+  } catch (error) {
+    console.error("Track click error:", error);
+    res.status(500).json({ error: "Failed to track click" });
+  }
+};
+
+export const trackSessionHandler = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, page } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "Session ID required" });
+    }
+
+    const id = uuidv4();
+    await sessionDb.upsert(id, sessionId, page || null);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Track session error:", error);
+    res.status(500).json({ error: "Failed to track session" });
+  }
+};
+
 export default router;

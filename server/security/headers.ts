@@ -155,6 +155,11 @@ function sanitizeString(str: string): string {
  * Block common attack patterns
  */
 export function blockAttacks(req: Request, res: Response, next: NextFunction) {
+  // Skip checking for affiliate tracking endpoints (they contain URLs)
+  if (req.path === "/api/affiliate/track-click" || req.path === "/api/affiliate/track-session") {
+    return next();
+  }
+
   const suspiciousPatterns = [
     /(\%27)|(\')|(\-\-)|(\%23)|(#)/i, // SQL injection
     /<script[^>]*>[\s\S]*?<\/script>/gi, // XSS script tags
