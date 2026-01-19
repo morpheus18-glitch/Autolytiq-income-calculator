@@ -156,7 +156,41 @@ export async function initializeDatabase() {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      -- Affiliate clicks tracking
+      CREATE TABLE IF NOT EXISTS affiliate_clicks (
+        id TEXT PRIMARY KEY,
+        affiliate_name TEXT NOT NULL,
+        affiliate_url TEXT NOT NULL,
+        category TEXT NOT NULL,
+        page_source TEXT NOT NULL,
+        session_id TEXT,
+        user_agent TEXT,
+        ip_address TEXT,
+        referrer TEXT,
+        device_type TEXT,
+        browser TEXT,
+        country TEXT,
+        clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      -- Affiliate sessions (for conversion tracking)
+      CREATE TABLE IF NOT EXISTS affiliate_sessions (
+        id TEXT PRIMARY KEY,
+        session_id TEXT UNIQUE NOT NULL,
+        first_page TEXT,
+        pages_visited INTEGER DEFAULT 1,
+        affiliate_clicks INTEGER DEFAULT 0,
+        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        converted INTEGER DEFAULT 0,
+        bounced INTEGER DEFAULT 0
+      );
+
       -- Indexes
+      CREATE INDEX IF NOT EXISTS idx_affiliate_clicks_name ON affiliate_clicks(affiliate_name);
+      CREATE INDEX IF NOT EXISTS idx_affiliate_clicks_date ON affiliate_clicks(clicked_at);
+      CREATE INDEX IF NOT EXISTS idx_affiliate_clicks_category ON affiliate_clicks(category);
+      CREATE INDEX IF NOT EXISTS idx_affiliate_sessions_session ON affiliate_sessions(session_id);
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
       CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets(token);
       CREATE INDEX IF NOT EXISTS idx_budget_snapshots_user ON budget_snapshots(user_id);
@@ -293,6 +327,34 @@ export interface PlaidAccount {
   iso_currency_code: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface AffiliateClick {
+  id: string;
+  affiliate_name: string;
+  affiliate_url: string;
+  category: string;
+  page_source: string;
+  session_id: string | null;
+  user_agent: string | null;
+  ip_address: string | null;
+  referrer: string | null;
+  device_type: string | null;
+  browser: string | null;
+  country: string | null;
+  clicked_at: string;
+}
+
+export interface AffiliateSession {
+  id: string;
+  session_id: string;
+  first_page: string | null;
+  pages_visited: number;
+  affiliate_clicks: number;
+  started_at: string;
+  last_activity: string;
+  converted: number;
+  bounced: number;
 }
 
 // Query helper
@@ -746,6 +808,140 @@ export const plaidAccountDb = {
 
   deleteByItem: async (plaidItemId: string) => {
     await execute("DELETE FROM plaid_accounts WHERE plaid_item_id = $1", [plaidItemId]);
+  },
+};
+
+// Affiliate tracking operations
+export const affiliateDb = {
+  trackClick: async (
+    id: string, affiliateName: string, affiliateUrl: string, category: string,
+    pageSource: string, sessionId: string | null, userAgent: string | null,
+    ipAddress: string | null, referrer: string | null, deviceType: string | null,
+    browser: string | null, country: string | null
+  ) => {
+    await execute(
+      `INSERT INTO affiliate_clicks (id, affiliate_name, affiliate_url, category, page_source, session_id, user_agent, ip_address, referrer, device_type, browser, country)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+      [id, affiliateName, affiliateUrl, category, pageSource, sessionId, userAgent, ipAddress, referrer, deviceType, browser, country]
+    );
+  },
+
+  getClicks: async (startDate: string, endDate: string) => {
+    return query<AffiliateClick>(
+      `SELECT * FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2 ORDER BY clicked_at DESC`,
+      [startDate, endDate]
+    );
+  },
+
+  getClicksByAffiliate: async (startDate: string, endDate: string) => {
+    return query<{ affiliate_name: string; category: string; clicks: number; unique_sessions: number }>(
+      `SELECT affiliate_name, category, COUNT(*) as clicks, COUNT(DISTINCT session_id) as unique_sessions
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       GROUP BY affiliate_name, category ORDER BY clicks DESC`,
+      [startDate, endDate]
+    );
+  },
+
+  getClicksByPage: async (startDate: string, endDate: string) => {
+    return query<{ page_source: string; clicks: number }>(
+      `SELECT page_source, COUNT(*) as clicks
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       GROUP BY page_source ORDER BY clicks DESC`,
+      [startDate, endDate]
+    );
+  },
+
+  getClicksByDevice: async (startDate: string, endDate: string) => {
+    return query<{ device_type: string; clicks: number }>(
+      `SELECT COALESCE(device_type, 'unknown') as device_type, COUNT(*) as clicks
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       GROUP BY device_type ORDER BY clicks DESC`,
+      [startDate, endDate]
+    );
+  },
+
+  getClicksByBrowser: async (startDate: string, endDate: string) => {
+    return query<{ browser: string; clicks: number }>(
+      `SELECT COALESCE(browser, 'unknown') as browser, COUNT(*) as clicks
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       GROUP BY browser ORDER BY clicks DESC`,
+      [startDate, endDate]
+    );
+  },
+
+  getDailyClicks: async (startDate: string, endDate: string) => {
+    return query<{ date: string; clicks: number; unique_sessions: number }>(
+      `SELECT DATE(clicked_at) as date, COUNT(*) as clicks, COUNT(DISTINCT session_id) as unique_sessions
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       GROUP BY DATE(clicked_at) ORDER BY date ASC`,
+      [startDate, endDate]
+    );
+  },
+
+  getHourlyClicks: async (startDate: string, endDate: string) => {
+    return query<{ hour: number; clicks: number }>(
+      `SELECT EXTRACT(HOUR FROM clicked_at) as hour, COUNT(*) as clicks
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       GROUP BY EXTRACT(HOUR FROM clicked_at) ORDER BY hour ASC`,
+      [startDate, endDate]
+    );
+  },
+
+  getTotalStats: async (startDate: string, endDate: string) => {
+    return queryOne<{ total_clicks: number; unique_sessions: number; unique_affiliates: number }>(
+      `SELECT COUNT(*) as total_clicks, COUNT(DISTINCT session_id) as unique_sessions, COUNT(DISTINCT affiliate_name) as unique_affiliates
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2`,
+      [startDate, endDate]
+    );
+  },
+
+  getTopReferrers: async (startDate: string, endDate: string, limit: number) => {
+    return query<{ referrer: string; clicks: number }>(
+      `SELECT COALESCE(referrer, 'direct') as referrer, COUNT(*) as clicks
+       FROM affiliate_clicks WHERE clicked_at BETWEEN $1 AND $2
+       GROUP BY referrer ORDER BY clicks DESC LIMIT $3`,
+      [startDate, endDate, limit]
+    );
+  },
+};
+
+// Session tracking operations
+export const sessionDb = {
+  upsert: async (id: string, sessionId: string, firstPage: string | null) => {
+    await execute(
+      `INSERT INTO affiliate_sessions (id, session_id, first_page)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (session_id) DO UPDATE SET
+         pages_visited = affiliate_sessions.pages_visited + 1,
+         last_activity = CURRENT_TIMESTAMP`,
+      [id, sessionId, firstPage]
+    );
+  },
+
+  incrementClicks: async (sessionId: string) => {
+    await execute(
+      `UPDATE affiliate_sessions SET affiliate_clicks = affiliate_clicks + 1, last_activity = CURRENT_TIMESTAMP WHERE session_id = $1`,
+      [sessionId]
+    );
+  },
+
+  markBounced: async (sessionId: string) => {
+    await execute(
+      `UPDATE affiliate_sessions SET bounced = 1 WHERE session_id = $1 AND pages_visited = 1`,
+      [sessionId]
+    );
+  },
+
+  getSessionStats: async (startDate: string, endDate: string) => {
+    return queryOne<{ total_sessions: number; sessions_with_clicks: number; bounced_sessions: number; avg_pages: number }>(
+      `SELECT
+         COUNT(*) as total_sessions,
+         SUM(CASE WHEN affiliate_clicks > 0 THEN 1 ELSE 0 END) as sessions_with_clicks,
+         SUM(bounced) as bounced_sessions,
+         AVG(pages_visited) as avg_pages
+       FROM affiliate_sessions WHERE started_at BETWEEN $1 AND $2`,
+      [startDate, endDate]
+    );
   },
 };
 

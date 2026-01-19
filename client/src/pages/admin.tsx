@@ -21,7 +21,14 @@ import {
   Key,
   Power,
   Copy,
-  Check
+  Check,
+  BarChart3,
+  MousePointerClick,
+  Monitor,
+  Smartphone,
+  Globe,
+  FileSpreadsheet,
+  FileText
 } from "lucide-react";
 
 interface Lead {
@@ -59,7 +66,26 @@ interface Stats {
   };
 }
 
-type Tab = "leads" | "users";
+type Tab = "leads" | "users" | "analytics";
+
+interface AffiliateAnalytics {
+  summary: {
+    totalClicks: number;
+    uniqueSessions: number;
+    uniqueAffiliates: number;
+    totalSessions: number;
+    sessionsWithClicks: number;
+    clickThroughRate: string;
+    bounceRate: string;
+    avgPagesPerSession: string;
+  };
+  byAffiliate: { affiliate_name: string; category: string; clicks: number; unique_sessions: number }[];
+  byPage: { page_source: string; clicks: number }[];
+  byDevice: { device_type: string; clicks: number }[];
+  byBrowser: { browser: string; clicks: number }[];
+  dailyClicks: { date: string; clicks: number; unique_sessions: number }[];
+  topReferrers: { referrer: string; clicks: number }[];
+}
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -85,6 +111,14 @@ export default function AdminDashboard() {
   });
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // Analytics state
+  const [analyticsData, setAnalyticsData] = useState<AffiliateAnalytics | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0]
+  });
 
   const authenticate = async () => {
     setError("");
@@ -124,8 +158,10 @@ export default function AdminDashboard() {
     if (!isAuthenticated) return;
     if (activeTab === "leads") {
       fetchLeads();
-    } else {
+    } else if (activeTab === "users") {
       fetchUsers();
+    } else if (activeTab === "analytics") {
+      fetchAnalytics();
     }
   }, [isAuthenticated, activeTab, leadsPage, usersPage]);
 
@@ -174,6 +210,54 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       console.error("Failed to fetch stats:", e);
+    }
+  };
+
+  const fetchAnalytics = async () => {
+    setAnalyticsLoading(true);
+    try {
+      const res = await fetch(
+        `/api/affiliate/analytics/overview?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`,
+        { headers: { "x-admin-key": adminKey } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAnalyticsData(data);
+      }
+    } catch (e) {
+      console.error("Failed to fetch analytics:", e);
+    }
+    setAnalyticsLoading(false);
+  };
+
+  const exportAnalytics = async (format: "csv" | "json") => {
+    try {
+      const res = await fetch(
+        `/api/affiliate/analytics/export?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}&format=${format}`,
+        { headers: { "x-admin-key": adminKey } }
+      );
+      if (res.ok) {
+        if (format === "csv") {
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `affiliate-report-${dateRange.startDate}-${dateRange.endDate}.csv`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          const data = await res.json();
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `affiliate-report-${dateRange.startDate}-${dateRange.endDate}.json`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to export:", e);
     }
   };
 
@@ -477,7 +561,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 flex-wrap">
           <Button
             onClick={() => setActiveTab("leads")}
             variant={activeTab === "leads" ? "default" : "outline"}
@@ -497,6 +581,16 @@ export default function AdminDashboard() {
           >
             <Users className="w-4 h-4 mr-2" />
             Users ({stats.users.total})
+          </Button>
+          <Button
+            onClick={() => setActiveTab("analytics")}
+            variant={activeTab === "analytics" ? "default" : "outline"}
+            className={activeTab === "analytics"
+              ? "bg-purple-600 hover:bg-purple-700"
+              : "border-[#262626] text-neutral-300 hover:bg-[#171717]"}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Affiliate Analytics
           </Button>
         </div>
 
@@ -768,6 +862,298 @@ export default function AdminDashboard() {
                 </div>
               )}
             </Card>
+          </>
+        )}
+
+        {/* Analytics Tab */}
+        {activeTab === "analytics" && (
+          <>
+            {/* Date Range & Export */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex gap-2 items-center flex-1">
+                <label className="text-neutral-400 text-sm">From:</label>
+                <Input
+                  type="date"
+                  value={dateRange.startDate}
+                  onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                  className="bg-[#0f0f0f] border-[#262626] text-white w-40"
+                />
+                <label className="text-neutral-400 text-sm">To:</label>
+                <Input
+                  type="date"
+                  value={dateRange.endDate}
+                  onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                  className="bg-[#0f0f0f] border-[#262626] text-white w-40"
+                />
+                <Button onClick={fetchAnalytics} className="bg-purple-600 hover:bg-purple-700">
+                  Apply
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => exportAnalytics("csv")} className="bg-emerald-600 hover:bg-emerald-700">
+                  <FileSpreadsheet className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button onClick={() => exportAnalytics("json")} variant="outline" className="border-[#262626] text-neutral-300 hover:bg-[#171717]">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Export JSON
+                </Button>
+              </div>
+            </div>
+
+            {analyticsLoading ? (
+              <div className="text-center py-12 text-neutral-500">Loading analytics...</div>
+            ) : analyticsData ? (
+              <>
+                {/* Summary Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-neutral-400 text-xs">Total Clicks</p>
+                          <p className="text-2xl font-bold text-white">{analyticsData.summary.totalClicks}</p>
+                        </div>
+                        <MousePointerClick className="w-6 h-6 text-purple-500 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-neutral-400 text-xs">Unique Sessions</p>
+                          <p className="text-2xl font-bold text-white">{analyticsData.summary.uniqueSessions}</p>
+                        </div>
+                        <Users className="w-6 h-6 text-blue-500 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-neutral-400 text-xs">Click-Through Rate</p>
+                          <p className="text-2xl font-bold text-emerald-400">{analyticsData.summary.clickThroughRate}%</p>
+                        </div>
+                        <TrendingUp className="w-6 h-6 text-emerald-500 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-neutral-400 text-xs">Bounce Rate</p>
+                          <p className="text-2xl font-bold text-red-400">{analyticsData.summary.bounceRate}%</p>
+                        </div>
+                        <TrendingUp className="w-6 h-6 text-red-500 opacity-50 rotate-180" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-neutral-400 text-xs">Total Sessions</p>
+                          <p className="text-2xl font-bold text-white">{analyticsData.summary.totalSessions}</p>
+                        </div>
+                        <Globe className="w-6 h-6 text-cyan-500 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-neutral-400 text-xs">Avg Pages/Session</p>
+                          <p className="text-2xl font-bold text-white">{analyticsData.summary.avgPagesPerSession}</p>
+                        </div>
+                        <BarChart3 className="w-6 h-6 text-orange-500 opacity-50" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Charts Row */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                  {/* Daily Clicks Chart */}
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardHeader>
+                      <CardTitle className="text-lg text-white">Daily Clicks</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-64 flex items-end gap-1">
+                        {analyticsData.dailyClicks.length > 0 ? (
+                          analyticsData.dailyClicks.slice(-30).map((day, i) => {
+                            const maxClicks = Math.max(...analyticsData.dailyClicks.map(d => d.clicks), 1);
+                            const height = (day.clicks / maxClicks) * 100;
+                            return (
+                              <div key={i} className="flex-1 flex flex-col items-center group relative">
+                                <div
+                                  className="w-full bg-purple-600 rounded-t hover:bg-purple-500 transition-colors cursor-pointer"
+                                  style={{ height: `${Math.max(height, 2)}%` }}
+                                />
+                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#262626] text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap z-10">
+                                  {day.clicks} clicks
+                                  <br />
+                                  {new Date(day.date).toLocaleDateString()}
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p className="text-neutral-500 w-full text-center">No data for this period</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* By Affiliate */}
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardHeader>
+                      <CardTitle className="text-lg text-white">Clicks by Affiliate</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {analyticsData.byAffiliate.length > 0 ? (
+                          analyticsData.byAffiliate.map((aff, i) => {
+                            const maxClicks = Math.max(...analyticsData.byAffiliate.map(a => a.clicks), 1);
+                            const width = (aff.clicks / maxClicks) * 100;
+                            return (
+                              <div key={i}>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span className="text-white">{aff.affiliate_name}</span>
+                                  <span className="text-neutral-400">{aff.clicks} clicks ({aff.unique_sessions} unique)</span>
+                                </div>
+                                <div className="h-2 bg-[#262626] rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full"
+                                    style={{ width: `${width}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p className="text-neutral-500 text-center py-8">No affiliate clicks recorded</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Additional Stats Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* By Page */}
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardHeader>
+                      <CardTitle className="text-lg text-white flex items-center gap-2">
+                        <Globe className="w-5 h-5 text-cyan-500" />
+                        By Page
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {analyticsData.byPage.length > 0 ? (
+                          analyticsData.byPage.map((page, i) => (
+                            <div key={i} className="flex justify-between items-center p-2 bg-[#171717] rounded">
+                              <span className="text-neutral-300">{page.page_source}</span>
+                              <span className="text-white font-medium">{page.clicks}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-neutral-500 text-center py-4">No data</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* By Device */}
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardHeader>
+                      <CardTitle className="text-lg text-white flex items-center gap-2">
+                        <Monitor className="w-5 h-5 text-blue-500" />
+                        By Device
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {analyticsData.byDevice.length > 0 ? (
+                          analyticsData.byDevice.map((device, i) => (
+                            <div key={i} className="flex justify-between items-center p-2 bg-[#171717] rounded">
+                              <span className="text-neutral-300 flex items-center gap-2">
+                                {device.device_type === "mobile" ? (
+                                  <Smartphone className="w-4 h-4" />
+                                ) : (
+                                  <Monitor className="w-4 h-4" />
+                                )}
+                                {device.device_type}
+                              </span>
+                              <span className="text-white font-medium">{device.clicks}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-neutral-500 text-center py-4">No data</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Top Referrers */}
+                  <Card className="bg-[#0f0f0f] border-[#1a1a1a]">
+                    <CardHeader>
+                      <CardTitle className="text-lg text-white flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-emerald-500" />
+                        Top Referrers
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {analyticsData.topReferrers.length > 0 ? (
+                          analyticsData.topReferrers.slice(0, 5).map((ref, i) => (
+                            <div key={i} className="flex justify-between items-center p-2 bg-[#171717] rounded">
+                              <span className="text-neutral-300 truncate flex-1 mr-2">
+                                {ref.referrer === "direct" ? "Direct Traffic" : new URL(ref.referrer).hostname}
+                              </span>
+                              <span className="text-white font-medium">{ref.clicks}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-neutral-500 text-center py-4">No data</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Partner Pitch Section */}
+                <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30 mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg text-white">Generate Partner Report</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-neutral-300 mb-4">
+                      Export a professional report to share with potential affiliate partners showing your traffic metrics and conversion potential.
+                    </p>
+                    <div className="flex gap-3">
+                      <Button onClick={() => exportAnalytics("csv")} className="bg-purple-600 hover:bg-purple-700">
+                        <FileSpreadsheet className="w-4 h-4 mr-2" />
+                        Download Excel Report
+                      </Button>
+                      <Button onClick={() => exportAnalytics("json")} variant="outline" className="border-purple-500/50 text-purple-300 hover:bg-purple-900/30">
+                        <FileText className="w-4 h-4 mr-2" />
+                        Download JSON Data
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              <div className="text-center py-12 text-neutral-500">
+                Select a date range and click Apply to load analytics
+              </div>
+            )}
           </>
         )}
       </div>

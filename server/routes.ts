@@ -8,6 +8,7 @@ import transactionRoutes from "./transactions";
 import receiptRoutes from "./receipts";
 import emailRoutes from "./email-routes";
 import newsletterRoutes from "./newsletter";
+import affiliateAnalyticsRoutes from "./affiliate-analytics";
 import { getCsrfTokenHandler, csrfProtection } from "./security/csrf";
 import { sendCalculationResultsEmail } from "./email";
 
@@ -90,6 +91,10 @@ export async function registerRoutes(
     }
   });
 
+  // Affiliate tracking routes (public, no CSRF - uses rate limiting)
+  app.post("/api/affiliate/track-click", affiliateAnalyticsRoutes);
+  app.post("/api/affiliate/track-session", affiliateAnalyticsRoutes);
+
   // Apply CSRF protection to state-changing API routes
   app.use("/api", csrfProtection);
 
@@ -116,6 +121,9 @@ export async function registerRoutes(
 
   // Newsletter routes
   app.use("/api/newsletter", newsletterRoutes);
+
+  // Affiliate analytics routes (admin)
+  app.use("/api/affiliate", affiliateAnalyticsRoutes);
 
   return httpServer;
 }

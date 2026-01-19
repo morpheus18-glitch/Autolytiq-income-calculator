@@ -1,0 +1,640 @@
+{
+  "viewability": [
+    {
+      "viewport": "mobile-small",
+      "page": "Home",
+      "loadTime": "1440ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-home.png"
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Calculator",
+      "loadTime": "1271ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-calculator.png"
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Budget Planner",
+      "loadTime": "911ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-budget-planner.png"
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Housing",
+      "loadTime": "1122ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-housing.png"
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Auto Guide",
+      "loadTime": "1154ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-auto-guide.png"
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Blog",
+      "loadTime": "998ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-blog.png"
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Login",
+      "loadTime": "828ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-login.png"
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Signup",
+      "loadTime": "953ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-small-signup.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Home",
+      "loadTime": "1378ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-home.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Calculator",
+      "loadTime": "1161ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-calculator.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Budget Planner",
+      "loadTime": "914ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-budget-planner.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Housing",
+      "loadTime": "1138ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-housing.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Auto Guide",
+      "loadTime": "1221ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-auto-guide.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Blog",
+      "loadTime": "1252ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-blog.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Login",
+      "loadTime": "885ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-login.png"
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Signup",
+      "loadTime": "948ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/mobile-large-signup.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Home",
+      "loadTime": "1357ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-home.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Calculator",
+      "loadTime": "954ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-calculator.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Budget Planner",
+      "loadTime": "1017ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-budget-planner.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Housing",
+      "loadTime": "1332ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-housing.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Auto Guide",
+      "loadTime": "1226ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-auto-guide.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Blog",
+      "loadTime": "1200ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-blog.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Login",
+      "loadTime": "834ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-login.png"
+    },
+    {
+      "viewport": "tablet-portrait",
+      "page": "Signup",
+      "loadTime": "808ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-portrait-signup.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Home",
+      "loadTime": "1300ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-home.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Calculator",
+      "loadTime": "969ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-calculator.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Budget Planner",
+      "loadTime": "872ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-budget-planner.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Housing",
+      "loadTime": "1227ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-housing.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Auto Guide",
+      "loadTime": "994ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-auto-guide.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Blog",
+      "loadTime": "1286ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-blog.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Login",
+      "loadTime": "823ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-login.png"
+    },
+    {
+      "viewport": "tablet-landscape",
+      "page": "Signup",
+      "loadTime": "891ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/tablet-landscape-signup.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Home",
+      "loadTime": "1271ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-home.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Calculator",
+      "loadTime": "1017ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-calculator.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Budget Planner",
+      "loadTime": "943ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-budget-planner.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Housing",
+      "loadTime": "1085ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-housing.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Auto Guide",
+      "loadTime": "1085ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-auto-guide.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Blog",
+      "loadTime": "1213ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-blog.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Login",
+      "loadTime": "880ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-login.png"
+    },
+    {
+      "viewport": "desktop-small",
+      "page": "Signup",
+      "loadTime": "873ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-small-signup.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Home",
+      "loadTime": "1259ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-home.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Calculator",
+      "loadTime": "937ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-calculator.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Budget Planner",
+      "loadTime": "1000ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-budget-planner.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Housing",
+      "loadTime": "936ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-housing.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Auto Guide",
+      "loadTime": "1065ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-auto-guide.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Blog",
+      "loadTime": "1196ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-blog.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Login",
+      "loadTime": "917ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-login.png"
+    },
+    {
+      "viewport": "desktop-medium",
+      "page": "Signup",
+      "loadTime": "815ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-medium-signup.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Home",
+      "loadTime": "1274ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-home.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Calculator",
+      "loadTime": "970ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-calculator.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Budget Planner",
+      "loadTime": "1070ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-budget-planner.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Housing",
+      "loadTime": "1109ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-housing.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Auto Guide",
+      "loadTime": "1045ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-auto-guide.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Blog",
+      "loadTime": "1200ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-blog.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Login",
+      "loadTime": "880ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-login.png"
+    },
+    {
+      "viewport": "desktop-large",
+      "page": "Signup",
+      "loadTime": "941ms",
+      "hasOverflow": false,
+      "brokenImages": 0,
+      "screenshotPath": "./test/screenshots/desktop-large-signup.png"
+    }
+  ],
+  "functionality": [
+    {
+      "test": "Calculator Page",
+      "hasInputs": true,
+      "calcWorks": true,
+      "status": "✓ Inputs found"
+    },
+    {
+      "test": "Navigation",
+      "linksFound": 10,
+      "links": [
+        "/",
+        "/calculator",
+        "/smart-money",
+        "/housing",
+        "/blog",
+        "/auto",
+        "/blog/understanding-your-paystub",
+        "/blog/how-to-calculate-annual-income",
+        "/privacy",
+        "/terms"
+      ],
+      "status": "✓ Good navigation"
+    },
+    {
+      "test": "Theme Toggle",
+      "found": true,
+      "status": "✓ Theme toggle found"
+    },
+    {
+      "test": "Login Form",
+      "hasEmailField": true,
+      "hasPasswordField": true,
+      "status": "✓ Form complete"
+    }
+  ],
+  "ux": [
+    {
+      "viewport": "mobile-small",
+      "page": "Home",
+      "smallClickables": 21,
+      "smallText": 2,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Calculator",
+      "smallClickables": 19,
+      "smallText": 10,
+      "navHidden": true,
+      "ctaVisible": false
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Budget Planner",
+      "smallClickables": 9,
+      "smallText": 23,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Housing",
+      "smallClickables": 31,
+      "smallText": 36,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Auto Guide",
+      "smallClickables": 24,
+      "smallText": 26,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Blog",
+      "smallClickables": 12,
+      "smallText": 7,
+      "navHidden": false,
+      "ctaVisible": false
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Login",
+      "smallClickables": 6,
+      "smallText": 0,
+      "navHidden": false,
+      "ctaVisible": false
+    },
+    {
+      "viewport": "mobile-small",
+      "page": "Signup",
+      "smallClickables": 7,
+      "smallText": 0,
+      "navHidden": false,
+      "ctaVisible": false
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Home",
+      "smallClickables": 21,
+      "smallText": 2,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Calculator",
+      "smallClickables": 19,
+      "smallText": 9,
+      "navHidden": true,
+      "ctaVisible": false
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Budget Planner",
+      "smallClickables": 9,
+      "smallText": 23,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Housing",
+      "smallClickables": 31,
+      "smallText": 36,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Auto Guide",
+      "smallClickables": 24,
+      "smallText": 26,
+      "navHidden": true,
+      "ctaVisible": true
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Blog",
+      "smallClickables": 12,
+      "smallText": 7,
+      "navHidden": false,
+      "ctaVisible": false
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Login",
+      "smallClickables": 6,
+      "smallText": 0,
+      "navHidden": false,
+      "ctaVisible": false
+    },
+    {
+      "viewport": "mobile-large",
+      "page": "Signup",
+      "smallClickables": 7,
+      "smallText": 0,
+      "navHidden": false,
+      "ctaVisible": false
+    }
+  ],
+  "engagement": {
+    "ctaAboveFold": true,
+    "hasSocialProof": true,
+    "hasValueProp": true,
+    "hasTrustSignals": true,
+    "hasUrgency": true,
+    "hasNavigation": true,
+    "ctaCount": 7
+  },
+  "issues": [
+    "⚠️  21 small touch targets on Home (mobile)",
+    "⚠️  19 small touch targets on Calculator (mobile)",
+    "⚠️  31 small touch targets on Housing (mobile)",
+    "⚠️  24 small touch targets on Auto Guide (mobile)",
+    "⚠️  12 small touch targets on Blog (mobile)",
+    "⚠️  21 small touch targets on Home (mobile)",
+    "⚠️  19 small touch targets on Calculator (mobile)",
+    "⚠️  31 small touch targets on Housing (mobile)",
+    "⚠️  24 small touch targets on Auto Guide (mobile)",
+    "⚠️  12 small touch targets on Blog (mobile)"
+  ],
+  "suggestions": []
+}

@@ -784,7 +784,7 @@ function Auto() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  onClick={() => analytics.affiliateClick(link.name, "auto")}
+                  onClick={() => analytics.affiliateClick(link.name, "auto", link.url, "/auto")}
                   className="group relative p-3 rounded-lg bg-card border border-border/50 hover:border-primary/30 transition-all"
                 >
                   <span className="absolute -top-1 -right-1 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full font-medium">
