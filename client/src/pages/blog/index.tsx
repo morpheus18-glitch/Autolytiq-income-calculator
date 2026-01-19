@@ -4,6 +4,7 @@ import { Calendar, Clock, ArrowRight, Calculator as CalcIcon, CheckCircle } from
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MobileNav } from "@/components/mobile-nav";
+import { SEO } from "@/components/seo";
 import { analytics } from "@/lib/analytics";
 
 function NewsletterSection() {
@@ -137,6 +138,12 @@ const blogPosts = [
 export default function BlogIndex() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Financial Tips & Guides Blog"
+        description="Expert articles on income calculation, budgeting, salary negotiation, and personal finance. Free guides to help you earn more and spend smarter."
+        canonical="https://autolytiqs.com/blog"
+        keywords="income tips, budgeting guides, salary negotiation, personal finance blog, financial advice"
+      />
       {/* Header */}
       <header className="site-header">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">

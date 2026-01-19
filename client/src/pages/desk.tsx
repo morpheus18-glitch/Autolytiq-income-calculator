@@ -29,6 +29,7 @@ import { Link } from "wouter";
 
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/lib/auth";
+import { SEO } from "@/components/seo";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -200,6 +201,12 @@ function Desk() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
+      <SEO
+        title="Budget Builder & Financial Desk"
+        description="Your personal financial command center. Track income, calculate car payments, and manage your budget all in one place."
+        canonical="https://autolytiqs.com/desk"
+        keywords="budget builder, financial desk, income tracker, car payment calculator, budget management"
+      />
       <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
 
       {/* Header */}

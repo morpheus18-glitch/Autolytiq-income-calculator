@@ -1,10 +1,16 @@
 import { Link } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/seo";
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-background text-foreground p-6 max-w-2xl mx-auto">
+      <SEO
+        title="Terms of Service"
+        description="Terms of Service for using Autolytiq income calculator and financial tools."
+        canonical="https://autolytiqs.com/terms"
+      />
       <Link href="/">
         <Button variant="ghost" size="sm" className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />

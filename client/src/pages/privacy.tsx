@@ -1,10 +1,16 @@
 import { Link } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/seo";
 
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-background text-foreground p-6 max-w-2xl mx-auto">
+      <SEO
+        title="Privacy Policy"
+        description="Learn how Autolytiq protects your data. Our income calculator stores data locally in your browser for maximum privacy."
+        canonical="https://autolytiqs.com/privacy"
+      />
       <Link href="/">
         <Button variant="ghost" size="sm" className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
