@@ -31,13 +31,16 @@ export function FAQ({ items, title = "Frequently Asked Questions", className }: 
           <div
             key={index}
             className={cn(
-              "p-4 rounded-xl bg-card border border-border/50 transition-all cursor-pointer hover:border-primary/30 hover:shadow-md",
+              "p-4 rounded-xl bg-card border border-border/50 transition-all cursor-pointer hover:border-primary/30 hover:shadow-md faq-trigger",
               openIndex === index && "border-primary/50 bg-card/80",
               isLastOdd && "sm:col-span-2"
             )}
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && setOpenIndex(openIndex === index ? null : index)}
           >
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start justify-between gap-2 min-h-[36px]">
               <span className="font-medium text-sm leading-tight">{item.question}</span>
               <ChevronDown
                 className={cn(

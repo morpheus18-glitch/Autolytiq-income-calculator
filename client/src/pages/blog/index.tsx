@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Calendar, Clock, ArrowRight, Calculator as CalcIcon, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MobileNav } from "@/components/mobile-nav";
 import { analytics } from "@/lib/analytics";
 
 function NewsletterSection() {
@@ -147,14 +148,15 @@ export default function BlogIndex() {
               <span className="header-title">Autolytiq</span>
             </a>
           </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/">
+          <nav className="hidden md:flex items-center gap-4">
+            <Link href="/calculator">
               <Button variant="ghost" size="sm" className="header-nav-btn">Calculator</Button>
             </Link>
             <Link href="/blog">
               <Button variant="ghost" size="sm" className="header-nav-btn text-primary">Blog</Button>
             </Link>
           </nav>
+          <MobileNav />
         </div>
       </header>
 

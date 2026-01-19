@@ -50,6 +50,7 @@ import {
 import { MoneyInput } from "@/components/money-input";
 import { DateInput } from "@/components/date-input";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { MobileNav } from "@/components/mobile-nav";
 import { FAQ, INCOME_CALCULATOR_FAQ } from "@/components/faq";
 import { ExportButtons, ShareButtons, EmailCaptureModal } from "@/components/pdf-export";
 import { BarChart, AnimatedNumber } from "@/components/charts";
@@ -57,6 +58,11 @@ import { ScenarioManager } from "@/components/scenarios";
 import { SEO, createCalculatorSchema, createHowToSchema, createFAQSchema } from "@/components/seo";
 import { ManageCookiesButton } from "@/components/cookie-consent";
 import { FirstTimeGuide, CALCULATOR_GUIDE_STEPS } from "@/components/first-time-guide";
+import { useToast } from "@/hooks/use-toast";
+import { PostCalculationCTA } from "@/components/post-calculation-cta";
+import { FinancialChecklist } from "@/components/financial-checklist";
+import { AccountPrompt, useCalculationTracker } from "@/components/account-prompt";
+import { CalculationHistory, useCalculationHistory } from "@/components/calculation-history";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -105,7 +111,11 @@ function formatCurrency(amount: number): string {
 
 function Calculator() {
   const { user, logout } = useAuth();
+  const { toast } = useToast();
+  const { incrementCount } = useCalculationTracker();
+  const { addToHistory } = useCalculationHistory();
   const [mounted, setMounted] = useState(false);
+  const [showAccountPrompt, setShowAccountPrompt] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Income Calculator State
@@ -115,6 +125,19 @@ function Calculator() {
 
   // Email capture state
   const [showEmailModal, setShowEmailModal] = useState(false);
+
+  // Load sample data for first-time users
+  const loadSampleData = () => {
+    const currentYear = new Date().getFullYear();
+    // Sample: Started Jan 15, earned $45,230 through June 30
+    setStartDate(new Date(currentYear, 0, 15)); // Jan 15
+    setCheckDate(new Date(currentYear, 5, 30)); // June 30
+    setYtdIncome("45230");
+    toast({
+      title: "Sample data loaded!",
+      description: "See how the calculator works with example values.",
+    });
+  };
 
   // First-time user and help states
   const [showYtdHelp, setShowYtdHelp] = useState(false);
@@ -208,8 +231,23 @@ function Calculator() {
     if (incomeResults && !hasTrackedCalc.current) {
       analytics.calculationComplete(incomeResults.annual);
       hasTrackedCalc.current = true;
+
+      // Add to calculation history
+      addToHistory({
+        annualIncome: incomeResults.annual,
+        monthlyIncome: incomeResults.monthly,
+        weeklyIncome: incomeResults.weekly,
+        daysWorked: incomeResults.daysWorked,
+        ytdIncome: parseFloat(ytdIncome) || 0,
+      });
+
+      // Track calculation count for account prompt
+      const count = incrementCount();
+      if (count >= 2 && !user) {
+        setTimeout(() => setShowAccountPrompt(true), 1500);
+      }
     }
-  }, [incomeResults]);
+  }, [incomeResults, addToHistory, incrementCount, user, ytdIncome]);
 
   // Calculate payment results
   const price = parseFloat(vehiclePrice) || 0;
@@ -327,20 +365,21 @@ function Calculator() {
             <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
           </nav>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
+            <ThemeToggle className="hidden md:flex" />
             {user ? (
-              <Button variant="ghost" size="sm" onClick={logout} className="gap-2">
+              <Button variant="ghost" size="sm" onClick={logout} className="gap-2 hidden md:flex">
                 <LogoutIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Log Out</span>
               </Button>
             ) : (
-              <Link href="/login">
+              <Link href="/login" className="hidden md:block">
                 <Button variant="outline" size="sm" className="gap-2">
                   <LoginIcon className="h-4 w-4" />
                   <span className="hidden sm:inline">Sign In</span>
                 </Button>
               </Link>
             )}
+            <MobileNav />
           </div>
         </div>
       </header>
@@ -579,6 +618,21 @@ function Calculator() {
               </div>
             </div>
 
+            {/* Try Sample Data - show when no data entered */}
+            {!incomeResults && !startDate && !ytdIncome && (
+              <div className="flex justify-center pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadSampleData}
+                  className="text-muted-foreground hover:text-foreground gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Try with sample data
+                </Button>
+              </div>
+            )}
+
             {/* Income Results */}
             <AnimatePresence>
               {incomeResults && (
@@ -649,6 +703,13 @@ function Calculator() {
                         text={`My projected annual income: ${formatCurrency(incomeResults.annual)}`}
                       />
                     </div>
+
+                    {/* Post-Calculation CTAs - Contextual suggestions */}
+                    <PostCalculationCTA
+                      annualIncome={incomeResults.annual}
+                      monthlyIncome={incomeResults.monthly}
+                      className="mt-6 pt-4 border-t border-border/50"
+                    />
 
                     {/* CTAs - Next Steps */}
                     <motion.div
@@ -1104,6 +1165,12 @@ function Calculator() {
                 </div>
               </div>
 
+              {/* Calculation History */}
+              <CalculationHistory className="mt-4" />
+
+              {/* Financial Checklist */}
+              <FinancialChecklist className="mt-4" />
+
               {/* Account Benefits */}
               {!user && (
                 <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
@@ -1253,6 +1320,11 @@ function Calculator() {
         subtitle="Get your projected annual income in 4 simple steps"
         steps={CALCULATOR_GUIDE_STEPS}
       />
+
+      {/* Account Creation Prompt - Shows after 2nd calculation */}
+      {showAccountPrompt && (
+        <AccountPrompt onClose={() => setShowAccountPrompt(false)} />
+      )}
 
       {/* Footer */}
       <footer className="border-t border-border/40 mt-12">

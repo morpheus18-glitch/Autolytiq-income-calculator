@@ -419,6 +419,37 @@
     }
   }
 
+  /* Mobile touch target improvements */
+  @media (max-width: 767px) {
+    /* FAQ accordion triggers */
+    .faq-trigger {
+      @apply min-h-[48px] py-3;
+    }
+
+    /* Footer links */
+    .footer-link {
+      @apply min-h-[44px] flex items-center;
+    }
+
+    /* Navigation links */
+    .nav-link {
+      @apply min-h-[44px] px-3 flex items-center;
+    }
+
+    /* All clickable elements get larger touch areas */
+    button:not(.touch-sm),
+    a:not(.touch-sm) {
+      min-height: 44px;
+    }
+
+    /* Form inputs */
+    input,
+    select,
+    textarea {
+      min-height: 48px;
+    }
+  }
+
   /* Tablet optimizations */
   @media (min-width: 640px) and (max-width: 1023px) {
     .tablet-grid-2 {

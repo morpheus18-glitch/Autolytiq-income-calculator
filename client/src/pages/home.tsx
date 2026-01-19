@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { MobileNav } from "@/components/mobile-nav";
 import { AutolytiqLogo } from "@/components/icons";
 import { SEO } from "@/components/seo";
 
@@ -95,13 +96,14 @@ export default function HomePage() {
             <Link href="/blog" className="header-nav-btn text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md">Blog</Link>
           </nav>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
+            <ThemeToggle className="hidden md:flex" />
             <Link href="/calculator">
-              <Button size="sm" className="hidden sm:flex">
+              <Button size="sm" className="hidden md:flex">
                 Open Calculator
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </Link>
+            <MobileNav />
           </div>
         </div>
       </header>
