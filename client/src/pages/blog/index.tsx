@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Calendar, Clock, ArrowRight, CheckCircle, BookOpen, TrendingUp, ChevronRight } from "lucide-react";
@@ -361,6 +361,86 @@ const blogPosts = [
 
 const categories = ["All", "Budgeting", "Auto", "Calculators", "Career", "Retirement", "Taxes", "Side Income", "Basics"];
 
+// Inline newsletter card for grid integration
+function InlineNewsletterCard() {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "blog-inline" })
+      });
+
+      if (res.ok) {
+        setIsSuccess(true);
+        analytics.newsletterSignup("blog-inline");
+      }
+    } catch {
+      // Silent fail for inline card
+    }
+    setIsSubmitting(false);
+  };
+
+  if (isSuccess) {
+    return (
+      <Card className="h-full glass-card border-2 border-emerald-500/30 shadow-lg overflow-hidden">
+        <CardContent className="p-6 flex flex-col items-center justify-center h-full text-center">
+          <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
+            <CheckCircle className="h-6 w-6 text-emerald-500" />
+          </div>
+          <p className="font-semibold text-emerald-600 dark:text-emerald-400">You're subscribed!</p>
+          <p className="text-xs text-muted-foreground mt-1">Check your inbox</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="h-full glass-card border-2 border-primary/20 shadow-lg overflow-hidden bg-gradient-to-br from-primary/5 to-emerald-500/5">
+      <CardContent className="p-6 flex flex-col h-full">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="p-1.5 rounded-lg bg-primary/10">
+            <TrendingUp className="h-4 w-4 text-primary" />
+          </div>
+          <span className="text-xs font-semibold text-primary">Newsletter</span>
+        </div>
+
+        <h3 className="font-bold text-lg mb-2">Get Weekly Tips</h3>
+        <p className="text-sm text-muted-foreground mb-4 flex-1">
+          Join 10,000+ readers getting actionable financial strategies.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="h-10 bg-background/80"
+          />
+          <Button type="submit" disabled={isSubmitting || !email} className="w-full h-10 gap-2">
+            {isSubmitting ? "..." : "Subscribe Free"}
+            {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+          </Button>
+        </form>
+
+        <p className="text-[10px] text-muted-foreground text-center mt-2">
+          No spam. Unsubscribe anytime.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
 const categoryColors: Record<string, string> = {
   "Budgeting": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
   "Auto": "bg-blue-500/10 text-blue-500 border-blue-500/20",
@@ -531,53 +611,81 @@ export default function BlogIndex() {
           </div>
         </motion.div>
 
-        {/* Blog Posts Grid */}
+        {/* Blog Posts Grid with Integrated Newsletter */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
         >
-          {filteredPosts.map((post, index) => (
+          {filteredPosts.map((post, index) => {
+            // Insert newsletter card after 6th post (or in the middle for smaller grids)
+            const showNewsletter = index === 5 && filteredPosts.length > 6;
+
+            return (
+              <React.Fragment key={post.slug}>
+                {showNewsletter && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                    className="md:col-span-2 lg:col-span-1"
+                  >
+                    <InlineNewsletterCard />
+                  </motion.div>
+                )}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * (index + (showNewsletter ? 1 : 0)) }}
+                >
+                  <Link href={`/blog/${post.slug}`}>
+                    <Card className="group h-full glass-card border-none shadow-lg hover:shadow-xl hover:border-primary/30 transition-all duration-300 cursor-pointer overflow-hidden">
+                      <CardContent className="p-6">
+                        <span className={cn("inline-block px-3 py-1 text-xs font-medium rounded-full border mb-4", categoryColors[post.category])}>
+                          {post.category}
+                        </span>
+
+                        <h2 className="text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                          {post.title}
+                        </h2>
+
+                        <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                          {post.excerpt}
+                        </p>
+
+                        <div className="flex items-center justify-between text-muted-foreground text-sm pt-4 border-t border-border/50">
+                          <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5" />
+                              {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5" />
+                              {post.readTime}
+                            </span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              </React.Fragment>
+            );
+          })}
+
+          {/* Show newsletter at end if not shown inline */}
+          {filteredPosts.length > 0 && filteredPosts.length <= 6 && (
             <motion.div
-              key={post.slug}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
+              transition={{ delay: 0.1 * filteredPosts.length }}
+              className="md:col-span-2 lg:col-span-1"
             >
-              <Link href={`/blog/${post.slug}`}>
-                <Card className="group h-full glass-card border-none shadow-lg hover:shadow-xl hover:border-primary/30 transition-all duration-300 cursor-pointer overflow-hidden">
-                  <CardContent className="p-6">
-                    <span className={cn("inline-block px-3 py-1 text-xs font-medium rounded-full border mb-4", categoryColors[post.category])}>
-                      {post.category}
-                    </span>
-
-                    <h2 className="text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                      {post.title}
-                    </h2>
-
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-
-                    <div className="flex items-center justify-between text-muted-foreground text-sm pt-4 border-t border-border/50">
-                      <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" />
-                          {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          {post.readTime}
-                        </span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+              <InlineNewsletterCard />
             </motion.div>
-          ))}
+          )}
         </motion.div>
 
         {/* No Results */}
@@ -590,7 +698,7 @@ export default function BlogIndex() {
           </div>
         )}
 
-        {/* Newsletter CTA */}
+        {/* Full Newsletter CTA */}
         <NewsletterSection />
 
         {/* Calculator CTA */}

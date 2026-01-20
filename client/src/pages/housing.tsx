@@ -148,6 +148,34 @@ function Housing() {
     }
   }, [hasCalculatorIncome, calculatorIncome, monthlyIncome]);
 
+  // Save state to localStorage for financial checklist tracking
+  useEffect(() => {
+    if (monthlyIncome) {
+      localStorage.setItem("housing-calc-state", JSON.stringify({
+        monthlyIncome,
+        monthlyDebts,
+        currentRent,
+        activeTab,
+      }));
+    }
+  }, [monthlyIncome, monthlyDebts, currentRent, activeTab]);
+
+  // Load saved state on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("housing-calc-state");
+    if (saved && !monthlyIncome) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.monthlyIncome) setMonthlyIncome(parsed.monthlyIncome);
+        if (parsed.monthlyDebts) setMonthlyDebts(parsed.monthlyDebts);
+        if (parsed.currentRent) setCurrentRent(parsed.currentRent);
+        if (parsed.activeTab) setActiveTab(parsed.activeTab);
+      } catch {
+        // Invalid JSON, ignore
+      }
+    }
+  }, []);
+
   const income = parseFloat(monthlyIncome) || 0;
   const debts = parseFloat(monthlyDebts) || 0;
   const rent = parseFloat(currentRent) || 0;
