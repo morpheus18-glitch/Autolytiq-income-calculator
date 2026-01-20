@@ -400,39 +400,176 @@ function Calculator() {
           </p>
         </motion.div>
 
-        {/* Full-Width Calculator Layout */}
-        <div className="w-full">
-          {/* Center Content - Calculator */}
-          <div className="space-y-6 w-full">
+        {/* Main Content - CTA Left, Calculator Right */}
+        <div className="grid lg:grid-cols-5 gap-6 mb-8">
+          {/* LEFT: Visual CTA & Value Proposition */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="lg:col-span-2 space-y-5"
+          >
+            {/* Hero CTA Card */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-emerald-500/10 border-2 border-primary/30 p-6 shadow-xl">
+              {/* Animated background elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
 
-        {/* Income Calculator */}
-        <Card className="glass-card border-none shadow-xl w-full">
-          <CardHeader className="pb-3 lg:pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg lg:text-xl flex items-center gap-2">
-                <IncomeIcon className="h-5 w-5 lg:h-6 lg:w-6 text-primary" />
-                Income Calculator
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                <ScenarioManager
-                  storageKey="income-calc"
-                  currentData={currentScenarioData}
-                  onLoad={handleLoadScenario}
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleReset}
-                  className="h-8 px-2 text-muted-foreground hover:text-foreground"
-                >
-                  <ResetIcon className="h-3.5 w-3.5 mr-1" />
-                  Reset
-                </Button>
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 mb-4">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                  <span className="text-xs font-semibold text-primary">YTD Income Calculator</span>
+                </div>
+
+                <h3 className="text-2xl font-bold mb-2">
+                  Know Your <span className="text-primary">True Income</span>
+                </h3>
+                <p className="text-muted-foreground text-sm mb-5">
+                  Project your annual salary from your year-to-date paystub earnings.
+                </p>
+
+                {/* Quick Stats Preview */}
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                      <span className="text-xs text-muted-foreground">Annual</span>
+                    </div>
+                    <div className="text-sm font-bold">Projected</div>
+                    <div className="text-[10px] text-muted-foreground">from YTD</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <span className="text-xs text-muted-foreground">Monthly</span>
+                    </div>
+                    <div className="text-sm font-bold">Calculated</div>
+                    <div className="text-[10px] text-muted-foreground">average</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="text-xs text-muted-foreground">Weekly</span>
+                    </div>
+                    <div className="text-sm font-bold">Included</div>
+                    <div className="text-[10px] text-muted-foreground">breakdown</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckIcon className="w-3 h-3 text-emerald-500" />
+                      <span className="text-xs text-muted-foreground">Auto</span>
+                    </div>
+                    <div className="text-sm font-bold">12% Rule</div>
+                  </div>
+                </div>
+
+                {/* Arrow pointing to calculator */}
+                <div className="hidden lg:flex items-center gap-2 text-primary">
+                  <span className="text-sm font-medium">Enter your paystub data</span>
+                  <ChevronRight className="h-5 w-5 animate-bounce-x" />
+                </div>
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4 lg:space-y-6">
-            <div className="grid sm:grid-cols-3 gap-4 lg:gap-6">
+
+            {/* Trust Badges */}
+            <div className="flex items-center justify-center gap-4 py-3 px-4 rounded-xl bg-card/50 border border-border/50">
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">100% Free</span>
+              </div>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">No Signup</span>
+              </div>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">Saves Locally</span>
+              </div>
+            </div>
+
+            {/* What You'll Get */}
+            <Card className="glass-card border-none shadow-lg">
+              <CardHeader className="pb-2 pt-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                  What You'll Get
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pb-4">
+                <div className="space-y-2">
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="flex items-start gap-2 p-2 rounded-lg hover:bg-secondary/30 transition-colors"
+                  >
+                    <IncomeIcon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-xs font-medium">Projected Annual Income</span>
+                      <p className="text-[10px] text-muted-foreground leading-tight">Based on your YTD earnings and days worked</p>
+                    </div>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="flex items-start gap-2 p-2 rounded-lg hover:bg-secondary/30 transition-colors"
+                  >
+                    <AutoIcon className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-xs font-medium">Max Car Payment (12% Rule)</span>
+                      <p className="text-[10px] text-muted-foreground leading-tight">Know exactly what you can afford</p>
+                    </div>
+                  </motion.div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* RIGHT: Income Calculator */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-3 space-y-6"
+          >
+            <Card className="glass-card border-2 border-primary/20 shadow-2xl shadow-primary/5 overflow-hidden">
+              <CardHeader className="pb-3 lg:pb-4 bg-gradient-to-r from-primary/5 to-transparent">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg lg:text-xl flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-primary/10">
+                      <IncomeIcon className="h-5 w-5 lg:h-6 lg:w-6 text-primary" />
+                    </div>
+                    Income Calculator
+                    <span className="ml-2 text-xs font-normal text-muted-foreground bg-secondary/50 px-2 py-1 rounded-full">
+                      YTD Method
+                    </span>
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <ScenarioManager
+                      storageKey="income-calc"
+                      currentData={currentScenarioData}
+                      onLoad={handleLoadScenario}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleReset}
+                      className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                    >
+                      <ResetIcon className="h-3.5 w-3.5 mr-1" />
+                      Reset
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 lg:space-y-6 pt-4">
+                <div className="grid sm:grid-cols-3 gap-4 lg:gap-6">
               {/* Start Date */}
               <div className="space-y-2 lg:space-y-3">
                 <Label className="text-sm lg:text-base font-medium flex items-center gap-2">
@@ -972,8 +1109,10 @@ function Calculator() {
             </motion.div>
           )}
         </AnimatePresence>
+          </motion.div>
+        </div>
 
-            {/* Quick Links Row */}
+        {/* Quick Links Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <Link href="/auto">
                 <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
@@ -1032,11 +1171,6 @@ function Calculator() {
                 </div>
               </div>
             )}
-          </div>
-          {/* End Center Content */}
-
-        </div>
-        {/* End Full-Width Layout */}
 
         {/* FAQ Section - Full Width Below Grid */}
         <FAQ items={INCOME_CALCULATOR_FAQ} className="mt-8" />

@@ -286,82 +286,238 @@ function Housing() {
           <NoIncomeCTA className="mb-6" />
         )}
 
-        {/* Income Inputs */}
-        <Card className="glass-card border-none shadow-xl mb-6 max-w-3xl mx-auto">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <DollarIcon className="h-5 w-5 text-primary" />
-              Your Income
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  Monthly Gross Income
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Pre-tax monthly income</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </Label>
-                <MoneyInput
-                  value={monthlyIncome}
-                  onChange={setMonthlyIncome}
-                  className="h-11"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  Monthly Debt Payments
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Car payments, student loans, credit cards, etc.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </Label>
-                <MoneyInput
-                  value={monthlyDebts}
-                  onChange={setMonthlyDebts}
-                  className="h-11"
-                />
+        {/* Main Content - CTA Left, Calculator Right */}
+        <div className="grid lg:grid-cols-5 gap-6 mb-8">
+          {/* LEFT: Visual CTA & Value Proposition */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="lg:col-span-2 space-y-5"
+          >
+            {/* Hero CTA Card */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/20 via-purple-500/10 to-primary/10 border-2 border-purple-500/30 p-6 shadow-xl">
+              {/* Animated background elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
+
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/30 mb-4">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                  </span>
+                  <span className="text-xs font-semibold text-purple-400">30% Rule Calculator</span>
+                </div>
+
+                <h3 className="text-2xl font-bold mb-2">
+                  Find Your <span className="text-purple-400">Perfect Home</span>
+                </h3>
+                <p className="text-muted-foreground text-sm mb-5">
+                  Calculate how much rent or mortgage you can comfortably afford.
+                </p>
+
+                {/* Quick Stats Preview */}
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Key className="w-3 h-3 text-blue-500" />
+                      <span className="text-xs text-muted-foreground">Rent</span>
+                    </div>
+                    <div className="text-lg font-bold text-blue-400">30%</div>
+                    <div className="text-[10px] text-muted-foreground">max of income</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Building className="w-3 h-3 text-emerald-500" />
+                      <span className="text-xs text-muted-foreground">Buy</span>
+                    </div>
+                    <div className="text-lg font-bold text-emerald-400">28%</div>
+                    <div className="text-[10px] text-muted-foreground">front-end DTI</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Percent className="w-3 h-3 text-yellow-500" />
+                      <span className="text-xs text-muted-foreground">PMI</span>
+                    </div>
+                    <div className="text-sm font-bold text-yellow-400">Calculated</div>
+                    <div className="text-[10px] text-muted-foreground">if &lt;20% down</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckIcon className="w-3 h-3 text-emerald-500" />
+                      <span className="text-xs text-muted-foreground">PITI</span>
+                    </div>
+                    <div className="text-sm font-bold">Included</div>
+                  </div>
+                </div>
+
+                {/* Arrow pointing to calculator */}
+                <div className="hidden lg:flex items-center gap-2 text-purple-400">
+                  <span className="text-sm font-medium">Enter your income</span>
+                  <ChevronRight className="h-5 w-5 animate-bounce-x" />
+                </div>
               </div>
             </div>
 
-            {income > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-border/50"
-              >
-                <div className="stat-card text-center">
-                  <div className="text-xs text-muted-foreground">Max Rent (30%)</div>
-                  <div className="text-lg font-bold mono-value text-primary mt-1">
-                    {formatCurrency(maxRent30)}
+            {/* Trust Badges */}
+            <div className="flex items-center justify-center gap-4 py-3 px-4 rounded-xl bg-card/50 border border-border/50">
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">100% Free</span>
+              </div>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">No Signup</span>
+              </div>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">Instant</span>
+              </div>
+            </div>
+
+            {/* Quick Tips */}
+            <Card className="glass-card border-none shadow-lg">
+              <CardHeader className="pb-2 pt-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <LightbulbIcon className="h-4 w-4 text-yellow-500" />
+                  Quick Tips
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pb-4">
+                <div className="space-y-2">
+                  {RENT_TIPS.slice(0, 2).map((tip, index) => (
+                    <motion.div
+                      key={tip.title}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
+                      className="flex items-start gap-2 p-2 rounded-lg hover:bg-secondary/30 transition-colors"
+                    >
+                      <tip.icon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-xs font-medium">{tip.title}</span>
+                        <p className="text-[10px] text-muted-foreground leading-tight">{tip.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* RIGHT: Income Calculator */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-3"
+          >
+            <Card className="glass-card border-2 border-purple-500/20 shadow-2xl shadow-purple-500/5 overflow-hidden">
+              <CardHeader className="pb-3 bg-gradient-to-r from-purple-500/5 to-transparent">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-purple-500/10">
+                    <DollarIcon className="h-5 w-5 text-purple-500" />
+                  </div>
+                  Your Income
+                  <span className="ml-auto text-xs font-normal text-muted-foreground bg-secondary/50 px-2 py-1 rounded-full">
+                    30% Rule
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                      Monthly Gross Income
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Pre-tax monthly income</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <MoneyInput
+                      value={monthlyIncome}
+                      onChange={setMonthlyIncome}
+                      className="h-12 text-lg"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      Monthly Debt Payments
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Car payments, student loans, credit cards, etc.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <MoneyInput
+                      value={monthlyDebts}
+                      onChange={setMonthlyDebts}
+                      className="h-12 text-lg"
+                    />
                   </div>
                 </div>
-                <div className="stat-card text-center">
-                  <div className="text-xs text-muted-foreground">Safe Rent (25%)</div>
-                  <div className="text-lg font-bold mono-value text-emerald-400 mt-1">
-                    {formatCurrency(maxRent25)}
+
+                {income > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-5 pt-5 border-t border-border/50"
+                  >
+                    {/* Results Hero */}
+                    <div className="relative mb-4 p-5 rounded-xl bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent border border-purple-500/20">
+                      <div className="absolute top-2 right-2">
+                        <span className="text-[10px] font-medium text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
+                          Your Limits
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="text-xs text-muted-foreground mb-1">Max Rent (30%)</div>
+                          <div className="text-2xl font-bold mono-value text-purple-400">
+                            {formatCurrency(maxRent30)}
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-muted-foreground mb-1">Safe Rent (25%)</div>
+                          <div className="text-2xl font-bold mono-value text-emerald-400">
+                            {formatCurrency(maxRent25)}
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-muted-foreground mb-1">Max Home Price</div>
+                          <div className="text-2xl font-bold mono-value text-blue-400">
+                            {formatCurrency(maxHomePrice)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Empty State CTA */}
+                {income === 0 && (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/10 mb-3">
+                      <DollarSign className="h-6 w-6 text-purple-500" />
+                    </div>
+                    <p className="text-sm">Enter your monthly income to see what you can afford</p>
                   </div>
-                </div>
-                <div className="stat-card text-center col-span-2 sm:col-span-1">
-                  <div className="text-xs text-muted-foreground">Max Home Price</div>
-                  <div className="text-lg font-bold mono-value text-blue-400 mt-1">
-                    {formatCurrency(maxHomePrice)}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </CardContent>
-        </Card>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
 
         {/* Tab Toggle */}
         <div className="flex mb-6">
