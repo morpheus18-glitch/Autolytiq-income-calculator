@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Calendar, Clock, ArrowRight, Calculator as CalcIcon, CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { Calendar, Clock, ArrowRight, CheckCircle, BookOpen, TrendingUp, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { MobileNav } from "@/components/mobile-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { SEO } from "@/components/seo";
+import { AutolytiqLogo, CheckIcon } from "@/components/icons";
 import { analytics } from "@/lib/analytics";
+import { cn } from "@/lib/utils";
 
 function NewsletterSection() {
   const [email, setEmail] = useState("");
@@ -44,41 +49,74 @@ function NewsletterSection() {
 
   if (isSuccess) {
     return (
-      <section className="py-16 px-4 border-t border-border">
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="py-16 px-4"
+      >
         <div className="max-w-2xl mx-auto text-center">
-          <CheckCircle className="w-12 h-12 text-primary mx-auto mb-4" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 mb-4">
+            <CheckCircle className="w-8 h-8 text-emerald-500" />
+          </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">You're Subscribed!</h2>
           <p className="text-muted-foreground">
             Check your inbox for your welcome email with tips to get started.
           </p>
         </div>
-      </section>
+      </motion.section>
     );
   }
 
   return (
-    <section className="py-16 px-4 border-t border-border">
-      <div className="max-w-2xl mx-auto text-center">
-        <h2 className="text-2xl font-bold text-foreground mb-4">Get Weekly Financial Tips</h2>
-        <p className="text-muted-foreground mb-6">
-          Join 10,000+ subscribers getting actionable income-boosting strategies every week.
-        </p>
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-          <Input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="flex-1"
-          />
-          <Button type="submit" disabled={isSubmitting || !email} className="gap-2">
-            {isSubmitting ? "Subscribing..." : "Subscribe Free"}
-            {!isSubmitting && <ArrowRight className="w-4 h-4" />}
-          </Button>
-        </form>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        <p className="text-muted-foreground text-xs mt-4">No spam. Unsubscribe anytime.</p>
+    <section className="py-16 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-emerald-500/10 border border-primary/20 p-8 md:p-12">
+          {/* Background elements */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl" />
+
+          <div className="relative z-10 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 mb-4">
+              <TrendingUp className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold text-primary">Free Weekly Tips</span>
+            </div>
+
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+              Get Weekly Financial Tips
+            </h2>
+            <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
+              Join 10,000+ subscribers getting actionable income-boosting strategies delivered every week.
+            </p>
+
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex-1 h-12 bg-background/80 backdrop-blur-sm"
+              />
+              <Button type="submit" disabled={isSubmitting || !email} size="lg" className="gap-2">
+                {isSubmitting ? "Subscribing..." : "Subscribe Free"}
+                {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+              </Button>
+            </form>
+
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+            <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <CheckIcon className="h-3 w-3 text-emerald-500" />
+                No spam
+              </span>
+              <span className="flex items-center gap-1">
+                <CheckIcon className="h-3 w-3 text-emerald-500" />
+                Unsubscribe anytime
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -91,7 +129,8 @@ const blogPosts = [
     excerpt: "Master the simplest budgeting method that actually works. Learn how to split your income into needs, wants, and savings with real examples at every income level.",
     date: "2026-01-20",
     readTime: "8 min read",
-    category: "Budgeting"
+    category: "Budgeting",
+    featured: true
   },
   {
     slug: "first-paycheck-budget",
@@ -159,65 +198,200 @@ const blogPosts = [
   }
 ];
 
+const categories = ["All", "Budgeting", "Auto", "Calculators", "Career", "Retirement", "Taxes", "Side Income", "Basics"];
+
+const categoryColors: Record<string, string> = {
+  "Budgeting": "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  "Auto": "bg-blue-500/10 text-blue-500 border-blue-500/20",
+  "Calculators": "bg-primary/10 text-primary border-primary/20",
+  "Career": "bg-purple-500/10 text-purple-500 border-purple-500/20",
+  "Retirement": "bg-orange-500/10 text-orange-500 border-orange-500/20",
+  "Taxes": "bg-red-500/10 text-red-500 border-red-500/20",
+  "Side Income": "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+  "Basics": "bg-gray-500/10 text-gray-500 border-gray-500/20",
+};
+
 export default function BlogIndex() {
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const featuredPost = blogPosts.find(p => p.featured);
+  const filteredPosts = activeCategory === "All"
+    ? blogPosts.filter(p => !p.featured)
+    : blogPosts.filter(p => p.category === activeCategory && !p.featured);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
       <SEO
-        title="Financial Tips & Guides Blog"
+        title="Financial Tips & Guides Blog | Autolytiq"
         description="Expert articles on income calculation, budgeting, salary negotiation, and personal finance. Free guides to help you earn more and spend smarter."
         canonical="https://autolytiqs.com/blog"
-        keywords="income tips, budgeting guides, salary negotiation, personal finance blog, financial advice"
+        keywords="income tips, budgeting guides, salary negotiation, personal finance blog, financial advice, 50/30/20 rule, first paycheck budget"
       />
+
+      {/* Background */}
+      <div className="fixed inset-0 dark:grid-bg opacity-30 pointer-events-none" />
+
+      {/* Gradient orbs */}
+      <div className="fixed top-0 left-1/4 w-[300px] h-[300px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="fixed bottom-1/4 right-1/4 w-[200px] h-[200px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
+
       {/* Header */}
-      <header className="site-header">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="site-header sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 h-16 flex items-center justify-between">
           <Link href="/">
-            <a className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-              <div className="header-logo">
-                <CalcIcon className="w-5 h-5 text-primary" />
+            <div className="flex items-center gap-3">
+              <div className="header-logo p-2 rounded-xl bg-primary/10">
+                <AutolytiqLogo className="h-6 w-6 text-primary" />
               </div>
-              <span className="header-title">Autolytiq</span>
-            </a>
+              <span className="header-title text-xl font-bold tracking-tight">Autolytiq</span>
+            </div>
           </Link>
-          <nav className="hidden md:flex items-center gap-4">
-            <Link href="/calculator">
-              <Button variant="ghost" size="sm" className="header-nav-btn">Calculator</Button>
-            </Link>
-            <Link href="/blog">
-              <Button variant="ghost" size="sm" className="header-nav-btn text-primary">Blog</Button>
-            </Link>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/calculator" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Calculator</Link>
+            <Link href="/smart-money" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Budget Planner</Link>
+            <Link href="/housing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Housing</Link>
+            <Link href="/auto" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Auto</Link>
+            <span className="text-sm font-medium text-primary">Blog</span>
           </nav>
-          <MobileNav />
+          <div className="flex items-center gap-3">
+            <ThemeToggle className="hidden md:flex" />
+            <Link href="/calculator">
+              <Button size="sm" className="hidden md:flex">
+                Open Calculator
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </Link>
+            <MobileNav />
+          </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Financial Insights & Tips
+      <main className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 py-8">
+        {/* Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-10"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Financial Education</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Financial <span className="text-primary">Insights</span> & Tips
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Expert advice on income optimization, tax strategies, and building wealth.
-            Updated weekly with actionable insights.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Expert advice on income optimization, tax strategies, and building wealth. Updated weekly with actionable insights.
           </p>
-        </div>
-      </section>
+        </motion.div>
 
-      {/* Blog Posts Grid */}
-      <section className="pb-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.map((post) => (
-              <Link key={post.slug} href={`/blog/${post.slug}`}>
-                <a className="group block bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300">
-                  {/* Category Badge */}
-                  <div className="p-6">
-                    <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full mb-4">
+        {/* Featured Post */}
+        {featuredPost && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-10"
+          >
+            <Link href={`/blog/${featuredPost.slug}`}>
+              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-emerald-500/5 border-2 border-primary/20 p-6 md:p-8 hover:border-primary/40 transition-all cursor-pointer">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-50" />
+
+                <div className="relative z-10 grid md:grid-cols-2 gap-6 items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
+                        <TrendingUp className="h-3 w-3" />
+                        Featured
+                      </span>
+                      <span className={cn("px-3 py-1 text-xs font-medium rounded-full border", categoryColors[featuredPost.category])}>
+                        {featuredPost.category}
+                      </span>
+                    </div>
+
+                    <h2 className="text-2xl md:text-3xl font-bold mb-3 group-hover:text-primary transition-colors">
+                      {featuredPost.title}
+                    </h2>
+
+                    <p className="text-muted-foreground mb-4 line-clamp-2">
+                      {featuredPost.excerpt}
+                    </p>
+
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {new Date(featuredPost.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {featuredPost.readTime}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="hidden md:flex justify-end">
+                    <div className="p-6 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50 text-center">
+                      <div className="text-6xl font-bold text-primary mb-2">50/30/20</div>
+                      <div className="text-sm text-muted-foreground">The Golden Budget Rule</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ArrowRight className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+        )}
+
+        {/* Category Filter */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium transition-all",
+                  activeCategory === category
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card border border-border hover:border-primary/50 text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Blog Posts Grid */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+        >
+          {filteredPosts.map((post, index) => (
+            <motion.div
+              key={post.slug}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              <Link href={`/blog/${post.slug}`}>
+                <Card className="group h-full glass-card border-none shadow-lg hover:shadow-xl hover:border-primary/30 transition-all duration-300 cursor-pointer overflow-hidden">
+                  <CardContent className="p-6">
+                    <span className={cn("inline-block px-3 py-1 text-xs font-medium rounded-full border mb-4", categoryColors[post.category])}>
                       {post.category}
                     </span>
 
-                    <h2 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                    <h2 className="text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
                       {post.title}
                     </h2>
 
@@ -225,43 +399,114 @@ export default function BlogIndex() {
                       {post.excerpt}
                     </p>
 
-                    <div className="flex items-center justify-between text-muted-foreground text-sm">
-                      <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between text-muted-foreground text-sm pt-4 border-t border-border/50">
+                      <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
+                          <Calendar className="w-3.5 h-3.5" />
                           {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-3.5 h-3.5" />
                           {post.readTime}
                         </span>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                     </div>
-                  </div>
-                </a>
+                  </CardContent>
+                </Card>
               </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+            </motion.div>
+          ))}
+        </motion.div>
 
-      {/* Newsletter CTA */}
-      <NewsletterSection />
+        {/* No Results */}
+        {filteredPosts.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No articles found in this category.</p>
+            <Button variant="outline" className="mt-4" onClick={() => setActiveCategory("All")}>
+              View All Articles
+            </Button>
+          </div>
+        )}
+
+        {/* Newsletter CTA */}
+        <NewsletterSection />
+
+        {/* Calculator CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12"
+        >
+          <Card className="glass-card border-2 border-primary/20 shadow-xl overflow-hidden">
+            <CardContent className="p-6 md:p-8">
+              <div className="grid md:grid-cols-2 gap-6 items-center">
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">Ready to Put This Into Practice?</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Use our free calculators to apply what you've learned and take control of your finances today.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Link href="/calculator">
+                      <Button className="gap-2">
+                        Income Calculator
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <Link href="/smart-money">
+                      <Button variant="outline" className="gap-2">
+                        Budget Planner
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+                <div className="hidden md:grid grid-cols-2 gap-3">
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 text-center">
+                    <div className="text-2xl font-bold text-primary">50/30/20</div>
+                    <div className="text-xs text-muted-foreground">Budget Rule</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 text-center">
+                    <div className="text-2xl font-bold text-blue-500">12%</div>
+                    <div className="text-xs text-muted-foreground">Auto Rule</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20 text-center">
+                    <div className="text-2xl font-bold text-purple-500">30%</div>
+                    <div className="text-xs text-muted-foreground">Housing Rule</div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-center">
+                    <div className="text-2xl font-bold text-emerald-500">20%</div>
+                    <div className="text-xs text-muted-foreground">Savings Goal</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Autolytiq. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6 text-sm">
-            <Link href="/privacy">
-              <a className="text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
-            </Link>
-            <Link href="/terms">
-              <a className="text-muted-foreground hover:text-foreground transition-colors">Terms</a>
-            </Link>
+      <footer className="border-t border-border/40">
+        <div className="max-w-[1800px] mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} Autolytiq. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-xs">
+              <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                Home
+              </Link>
+              <Link href="/calculator" className="text-muted-foreground hover:text-foreground transition-colors">
+                Calculator
+              </Link>
+              <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+                Privacy
+              </Link>
+              <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
+                Terms
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
