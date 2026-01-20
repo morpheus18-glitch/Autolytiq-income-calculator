@@ -271,6 +271,20 @@
     animation: neon-pulse 2s ease-in-out infinite;
   }
 
+  /* Horizontal bounce animation for CTAs */
+  @keyframes bounce-x {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(6px);
+    }
+  }
+
+  .animate-bounce-x {
+    animation: bounce-x 1s ease-in-out infinite;
+  }
+
   /* Stat Card Styling */
   .stat-card {
     @apply relative overflow-hidden rounded-xl p-4;

@@ -295,159 +295,323 @@ function SmartMoney() {
           <NoIncomeCTA className="mb-6" />
         )}
 
-        {/* Income & Money Tips - Side by Side Layout */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-6">
-          {/* Income Input Card - Left */}
-          <Card className="glass-card border-none shadow-xl">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <DollarIcon className="h-5 w-5 text-primary" />
-                Income & Deductions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Annual Gross Income</Label>
-                  <MoneyInput
-                    value={annualIncome}
-                    onChange={setAnnualIncome}
-                    className="h-11"
-                  />
+        {/* Main Content - CTA Left, Calculator Right */}
+        <div className="grid lg:grid-cols-5 gap-6 mb-8">
+          {/* LEFT: Visual CTA & Value Proposition */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="lg:col-span-2 space-y-5"
+          >
+            {/* Hero CTA Card */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-emerald-500/10 border-2 border-primary/30 p-6 shadow-xl">
+              {/* Animated background elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
+
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 mb-4">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                  <span className="text-xs font-semibold text-primary">Free Calculator</span>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium flex items-center gap-2">
-                    State Tax Rate
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Your state income tax rate (0% for TX, FL, etc.)</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </Label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={stateTaxRate}
-                      onChange={(e) => setStateTaxRate(e.target.value.replace(/[^\d.]/g, ""))}
-                      className="w-full h-11 px-3 pr-7 rounded-lg border bg-background font-mono text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none"
-                      placeholder="5"
-                    />
-                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
+
+                <h3 className="text-2xl font-bold mb-2">
+                  Know Your <span className="text-primary">Real</span> Take-Home
+                </h3>
+                <p className="text-muted-foreground text-sm mb-5">
+                  Enter your salary and see exactly where every dollar goes. No signup required.
+                </p>
+
+                {/* Quick Stats Preview */}
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <span className="text-xs text-muted-foreground">Needs</span>
+                    </div>
+                    <div className="text-lg font-bold text-emerald-400">50%</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="text-xs text-muted-foreground">Wants</span>
+                    </div>
+                    <div className="text-lg font-bold text-blue-400">30%</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                      <span className="text-xs text-muted-foreground">Savings</span>
+                    </div>
+                    <div className="text-lg font-bold text-primary">20%</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckIcon className="w-3 h-3 text-emerald-500" />
+                      <span className="text-xs text-muted-foreground">Method</span>
+                    </div>
+                    <div className="text-sm font-bold">50/30/20</div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">401k Contribution</Label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={retirement401k}
-                      onChange={(e) => setRetirement401k(e.target.value.replace(/[^\d.]/g, ""))}
-                      className="w-full h-11 px-3 pr-7 rounded-lg border bg-background font-mono text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none"
-                      placeholder="6"
-                    />
-                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Health Insurance/mo</Label>
-                  <MoneyInput
-                    value={healthInsurance}
-                    onChange={setHealthInsurance}
-                    className="h-11"
-                  />
+
+                {/* Arrow pointing to calculator */}
+                <div className="hidden lg:flex items-center gap-2 text-primary">
+                  <span className="text-sm font-medium">Start here</span>
+                  <ChevronRight className="h-5 w-5 animate-bounce-x" />
                 </div>
               </div>
+            </div>
 
-              {/* Income Breakdown */}
-              {gross > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="pt-4 border-t border-border/50"
-                >
-                  {/* Take Home Pay Hero */}
-                  <div className="hero-stat text-center mb-4">
-                    <div className="text-sm text-muted-foreground mb-1">Take-Home Pay</div>
-                    <div className="text-3xl font-bold mono-value text-primary neon-text">
-                      <AnimatedNumber value={netMonthly} formatValue={(v) => formatCurrency(v)} />/mo
-                    </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {formatCurrency(netAnnual)}/year • {formatCurrency(netWeekly)}/week
-                    </div>
-                  </div>
+            {/* Trust Badges */}
+            <div className="flex items-center justify-center gap-4 py-3 px-4 rounded-xl bg-card/50 border border-border/50">
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">100% Free</span>
+              </div>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">No Signup</span>
+              </div>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center gap-1.5">
+                <CheckIcon className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs text-muted-foreground">Instant Results</span>
+              </div>
+            </div>
 
-                  {/* Pre vs Post Tax */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="stat-card text-center">
-                      <div className="text-xs text-muted-foreground">Gross Annual</div>
-                      <div className="text-xl font-bold mono-value mt-1">{formatCurrency(gross)}</div>
-                    </div>
-                    <div className="stat-card text-center">
-                      <div className="text-xs text-muted-foreground">Effective Tax Rate</div>
-                      <div className="text-xl font-bold mono-value mt-1 text-yellow-500">
-                        {formatPercent(effectiveTaxRate)}
+            {/* Smart Money Tips - Compact */}
+            <Card className="glass-card border-none shadow-lg">
+              <CardHeader className="pb-2 pt-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <LightbulbIcon className="h-4 w-4 text-yellow-500" />
+                  Quick Tips
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pb-4">
+                <div className="space-y-2">
+                  {MONEY_TIPS.slice(0, 3).map((tip, index) => (
+                    <motion.div
+                      key={tip.title}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
+                      className="flex items-start gap-2 p-2 rounded-lg hover:bg-secondary/30 transition-colors"
+                    >
+                      <tip.icon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <div>
+                        <span className="text-xs font-medium">{tip.title}</span>
+                        <p className="text-[10px] text-muted-foreground leading-tight">{tip.description}</p>
                       </div>
-                    </div>
-                  </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-                  {/* Deduction Breakdown */}
+          {/* RIGHT: Income & Deductions Calculator */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-3"
+          >
+            <Card className="glass-card border-2 border-primary/20 shadow-2xl shadow-primary/5 overflow-hidden">
+              <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-primary/10">
+                    <DollarIcon className="h-5 w-5 text-primary" />
+                  </div>
+                  Income & Deductions
+                  <span className="ml-auto text-xs font-normal text-muted-foreground bg-secondary/50 px-2 py-1 rounded-full">
+                    2024 Tax Rates
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-5 pt-4">
+                <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <div className="text-sm font-medium text-muted-foreground">Deductions Breakdown</div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                        <div className="text-xs text-muted-foreground">Federal Tax</div>
-                        <div className="font-mono font-bold text-red-400 text-sm">{formatCurrency(federalTax)}</div>
-                      </div>
-                      <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                        <div className="text-xs text-muted-foreground">FICA</div>
-                        <div className="font-mono font-bold text-orange-400 text-sm">{formatCurrency(ficaTax)}</div>
-                      </div>
-                      <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                        <div className="text-xs text-muted-foreground">State Tax</div>
-                        <div className="font-mono font-bold text-yellow-400 text-sm">{formatCurrency(stateTaxAmount)}</div>
-                      </div>
-                      <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                        <div className="text-xs text-muted-foreground">401k</div>
-                        <div className="font-mono font-bold text-emerald-400 text-sm">{formatCurrency(retirement401kAmount)}</div>
-                      </div>
-                      <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 col-span-2 sm:col-span-1">
-                        <div className="text-xs text-muted-foreground">Health Ins.</div>
-                        <div className="font-mono font-bold text-blue-400 text-sm">{formatCurrency(healthAnnual)}</div>
-                      </div>
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      Annual Gross Income
+                    </Label>
+                    <MoneyInput
+                      value={annualIncome}
+                      onChange={setAnnualIncome}
+                      className="h-12 text-lg"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      State Tax Rate
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Your state income tax rate (0% for TX, FL, etc.)</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={stateTaxRate}
+                        onChange={(e) => setStateTaxRate(e.target.value.replace(/[^\d.]/g, ""))}
+                        className="w-full h-12 px-4 pr-8 rounded-lg border bg-background font-mono text-lg focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all"
+                        placeholder="5"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
                     </div>
                   </div>
-                </motion.div>
-              )}
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">401k Contribution</Label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={retirement401k}
+                        onChange={(e) => setRetirement401k(e.target.value.replace(/[^\d.]/g, ""))}
+                        className="w-full h-12 px-4 pr-8 rounded-lg border bg-background font-mono text-lg focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all"
+                        placeholder="6"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Health Insurance/mo</Label>
+                    <MoneyInput
+                      value={healthInsurance}
+                      onChange={setHealthInsurance}
+                      className="h-12 text-lg"
+                    />
+                  </div>
+                </div>
 
-          {/* Money Tips Card - Right */}
-          <Card className="glass-card border-none shadow-xl h-fit">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <GraduationIcon className="h-5 w-5 text-primary" />
-                Smart Money Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {MONEY_TIPS.map((tip) => (
-                  <div key={tip.title} className="p-3 rounded-lg bg-card border border-border/50">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <tip.icon className="h-4 w-4 text-primary shrink-0" />
-                      <h3 className="font-semibold text-sm">{tip.title}</h3>
+                {/* Income Breakdown Results */}
+                {gross > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="pt-5 border-t border-border/50"
+                  >
+                    {/* Take Home Pay Hero */}
+                    <div className="relative mb-5 p-5 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
+                      <div className="absolute top-2 right-2">
+                        <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                          After Taxes
+                        </span>
+                      </div>
+                      <div className="text-sm text-muted-foreground mb-1">Your Take-Home Pay</div>
+                      <div className="text-4xl font-bold mono-value text-primary mb-2">
+                        <AnimatedNumber value={netMonthly} formatValue={(v) => formatCurrency(v)} />
+                        <span className="text-lg text-muted-foreground font-normal">/month</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          {formatCurrency(netAnnual)}/year
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                          {formatCurrency(netWeekly)}/week
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                          {formatCurrency(netDaily)}/day
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">{tip.description}</p>
+
+                    {/* Pre vs Post Tax Stats */}
+                    <div className="grid grid-cols-2 gap-4 mb-5">
+                      <div className="p-4 rounded-xl bg-card border border-border/50 text-center">
+                        <div className="text-xs text-muted-foreground mb-1">Gross Annual</div>
+                        <div className="text-2xl font-bold mono-value">{formatCurrency(gross)}</div>
+                      </div>
+                      <div className="p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20 text-center">
+                        <div className="text-xs text-muted-foreground mb-1">Effective Tax Rate</div>
+                        <div className="text-2xl font-bold mono-value text-yellow-500">
+                          {formatPercent(effectiveTaxRate)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Deduction Breakdown */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-muted-foreground">Deductions Breakdown</span>
+                        <span className="text-xs text-muted-foreground">{formatCurrency(totalDeductions)}/year total</span>
+                      </div>
+                      <div className="grid grid-cols-5 gap-2">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center cursor-help hover:border-red-500/40 transition-colors">
+                              <div className="text-[10px] text-muted-foreground mb-1">Federal</div>
+                              <div className="font-mono font-bold text-red-400 text-sm">{formatCurrency(federalTax)}</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>Federal Income Tax (progressive brackets)</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-center cursor-help hover:border-orange-500/40 transition-colors">
+                              <div className="text-[10px] text-muted-foreground mb-1">FICA</div>
+                              <div className="font-mono font-bold text-orange-400 text-sm">{formatCurrency(ficaTax)}</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>Social Security (6.2%) + Medicare (1.45%)</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-center cursor-help hover:border-yellow-500/40 transition-colors">
+                              <div className="text-[10px] text-muted-foreground mb-1">State</div>
+                              <div className="font-mono font-bold text-yellow-400 text-sm">{formatCurrency(stateTaxAmount)}</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>State Income Tax at {stateTaxRate}%</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center cursor-help hover:border-emerald-500/40 transition-colors">
+                              <div className="text-[10px] text-muted-foreground mb-1">401k</div>
+                              <div className="font-mono font-bold text-emerald-400 text-sm">{formatCurrency(retirement401kAmount)}</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>Pre-tax 401k at {retirement401k}% (reduces taxable income)</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center cursor-help hover:border-blue-500/40 transition-colors">
+                              <div className="text-[10px] text-muted-foreground mb-1">Health</div>
+                              <div className="font-mono font-bold text-blue-400 text-sm">{formatCurrency(healthAnnual)}</div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>Health Insurance at ${healthInsurance}/month</TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Empty State CTA */}
+                {gross === 0 && (
+                  <div className="text-center py-6 text-muted-foreground">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-3">
+                      <DollarIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <p className="text-sm">Enter your annual income above to see your budget breakdown</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
         {/* Budget Planner */}
