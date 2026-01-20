@@ -79,7 +79,7 @@ export function MobileNav() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-0 right-0 bottom-0 z-40 w-[280px] bg-card border-l border-border shadow-2xl"
+            className="fixed top-0 right-0 bottom-0 z-40 w-[280px] bg-background border-l border-border shadow-2xl dark:bg-slate-900"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
@@ -169,7 +169,7 @@ export function MobileNav() {
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-secondary/30">
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-muted dark:bg-slate-800">
               <p className="text-xs text-muted-foreground text-center">
                 Free financial tools for smarter decisions
               </p>
