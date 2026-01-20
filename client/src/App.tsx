@@ -29,6 +29,9 @@ const BlogMaximize401k = lazy(() => import("@/pages/blog/maximize-your-401k"));
 const BlogUnderstandingPaystub = lazy(() => import("@/pages/blog/understanding-your-paystub"));
 const BlogSideHustleIdeas = lazy(() => import("@/pages/blog/side-hustle-income-ideas"));
 const BlogTaxDeductions = lazy(() => import("@/pages/blog/tax-deductions-you-might-be-missing"));
+const BlogCarAffordability = lazy(() => import("@/pages/blog/how-much-car-can-i-afford"));
+const BlogFirstPaycheck = lazy(() => import("@/pages/blog/first-paycheck-budget"));
+const Blog503020Rule = lazy(() => import("@/pages/blog/503020-budget-rule"));
 const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
 const LPCalculator = lazy(() => import("@/pages/lp/calculator"));
 
@@ -77,6 +80,9 @@ function Router() {
       <Route path="/blog/understanding-your-paystub" component={BlogUnderstandingPaystub} />
       <Route path="/blog/side-hustle-income-ideas" component={BlogSideHustleIdeas} />
       <Route path="/blog/tax-deductions-you-might-be-missing" component={BlogTaxDeductions} />
+      <Route path="/blog/how-much-car-can-i-afford" component={BlogCarAffordability} />
+      <Route path="/blog/first-paycheck-budget" component={BlogFirstPaycheck} />
+      <Route path="/blog/50-30-20-budget-rule" component={Blog503020Rule} />
       <Route path="/unsubscribe" component={Unsubscribe} />
       <Route path="/lp/calculator" component={LPCalculator} />
       <Route component={NotFound} />

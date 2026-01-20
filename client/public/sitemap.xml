@@ -87,6 +87,27 @@
 
   <!-- Blog Posts -->
   <url>
+    <loc>https://autolytiqs.com/blog/50-30-20-budget-rule</loc>
+    <lastmod>2026-01-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://autolytiqs.com/blog/first-paycheck-budget</loc>
+    <lastmod>2026-01-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://autolytiqs.com/blog/how-much-car-can-i-afford</loc>
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://autolytiqs.com/blog/how-to-calculate-annual-income</loc>
     <lastmod>2026-01-02</lastmod>
     <changefreq>monthly</changefreq>

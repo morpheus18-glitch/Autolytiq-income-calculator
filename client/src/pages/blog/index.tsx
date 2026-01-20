@@ -86,6 +86,30 @@ function NewsletterSection() {
 
 const blogPosts = [
   {
+    slug: "50-30-20-budget-rule",
+    title: "The 50/30/20 Budget Rule: Complete Guide for 2026",
+    excerpt: "Master the simplest budgeting method that actually works. Learn how to split your income into needs, wants, and savings with real examples at every income level.",
+    date: "2026-01-20",
+    readTime: "8 min read",
+    category: "Budgeting"
+  },
+  {
+    slug: "first-paycheck-budget",
+    title: "How to Budget Your First Paycheck: A Complete Guide",
+    excerpt: "Just landed your first job? Learn exactly how to budget your paycheck with a proven system that builds savings while still enjoying life.",
+    date: "2026-01-18",
+    readTime: "9 min read",
+    category: "Budgeting"
+  },
+  {
+    slug: "how-much-car-can-i-afford",
+    title: "How Much Car Can I Afford? Complete 2026 Guide",
+    excerpt: "Use the 20/4/10 rule and income-based calculations to find exactly how much you should spend on a car without straining your budget.",
+    date: "2026-01-15",
+    readTime: "10 min read",
+    category: "Auto"
+  },
+  {
     slug: "how-to-calculate-annual-income",
     title: "How to Calculate Your Annual Income from YTD Earnings",
     excerpt: "Learn the exact formula to project your yearly salary from your year-to-date paystub. Plus tips for accounting for bonuses, overtime, and variable pay.",
