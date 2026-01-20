@@ -30,6 +30,7 @@ const BlogUnderstandingPaystub = lazy(() => import("@/pages/blog/understanding-y
 const BlogSideHustleIdeas = lazy(() => import("@/pages/blog/side-hustle-income-ideas"));
 const BlogTaxDeductions = lazy(() => import("@/pages/blog/tax-deductions-you-might-be-missing"));
 const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
+const LPCalculator = lazy(() => import("@/pages/lp/calculator"));
 
 // Minimal loading fallback
 function PageLoader() {
@@ -77,6 +78,7 @@ function Router() {
       <Route path="/blog/side-hustle-income-ideas" component={BlogSideHustleIdeas} />
       <Route path="/blog/tax-deductions-you-might-be-missing" component={BlogTaxDeductions} />
       <Route path="/unsubscribe" component={Unsubscribe} />
+      <Route path="/lp/calculator" component={LPCalculator} />
       <Route component={NotFound} />
     </Switch>
   );
