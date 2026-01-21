@@ -156,9 +156,34 @@ function SmartMoney() {
   const [budgetView, setBudgetView] = useState<"monthly" | "weekly" | "daily">("monthly");
   const [showBudgetDetails, setShowBudgetDetails] = useState(true);
 
+  // Load saved state from localStorage
   useEffect(() => {
     setMounted(true);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.annualIncome) setAnnualIncome(data.annualIncome);
+        if (data.stateTaxRate) setStateTaxRate(data.stateTaxRate);
+        if (data.retirement401k) setRetirement401k(data.retirement401k);
+        if (data.healthInsurance) setHealthInsurance(data.healthInsurance);
+      }
+    } catch (e) {
+      console.error("Failed to load smart-money state:", e);
+    }
   }, []);
+
+  // Save state to localStorage for financial checklist tracking
+  useEffect(() => {
+    if (annualIncome) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        annualIncome,
+        stateTaxRate,
+        retirement401k,
+        healthInsurance,
+      }));
+    }
+  }, [annualIncome, stateTaxRate, retirement401k, healthInsurance]);
 
   // Auto-populate income from calculator when available
   useEffect(() => {

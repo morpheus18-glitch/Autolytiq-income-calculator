@@ -362,7 +362,7 @@ const blogPosts = [
 const categories = ["All", "Budgeting", "Auto", "Calculators", "Career", "Retirement", "Taxes", "Side Income", "Basics"];
 
 // Inline newsletter card for grid integration
-function InlineNewsletterCard() {
+function InlineNewsletterCard({ fullWidth = false }: { fullWidth?: boolean }) {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -392,17 +392,69 @@ function InlineNewsletterCard() {
   if (isSuccess) {
     return (
       <Card className="h-full glass-card border-2 border-emerald-500/30 shadow-lg overflow-hidden">
-        <CardContent className="p-6 flex flex-col items-center justify-center h-full text-center">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
+        <CardContent className={cn(
+          "flex items-center justify-center text-center",
+          fullWidth ? "p-6 lg:p-8" : "p-6 flex-col h-full"
+        )}>
+          <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3 lg:mb-0 lg:mr-4">
             <CheckCircle className="h-6 w-6 text-emerald-500" />
           </div>
-          <p className="font-semibold text-emerald-600 dark:text-emerald-400">You're subscribed!</p>
-          <p className="text-xs text-muted-foreground mt-1">Check your inbox</p>
+          <div>
+            <p className="font-semibold text-emerald-600 dark:text-emerald-400">You're subscribed!</p>
+            <p className="text-xs text-muted-foreground mt-1">Check your inbox for your first tip</p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
+  // Full width horizontal layout for desktop
+  if (fullWidth) {
+    return (
+      <Card className="glass-card border-2 border-primary/20 shadow-lg overflow-hidden bg-gradient-to-r from-primary/5 via-emerald-500/5 to-primary/5">
+        <CardContent className="p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            {/* Left side - content */}
+            <div className="flex items-start lg:items-center gap-4 flex-1">
+              <div className="p-3 rounded-xl bg-primary/10 flex-shrink-0">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Free Weekly Tips</span>
+                </div>
+                <h3 className="font-bold text-xl mb-1">Get Financial Tips Delivered Weekly</h3>
+                <p className="text-sm text-muted-foreground">
+                  Join 10,000+ readers getting actionable strategies to grow your income and build wealth.
+                </p>
+              </div>
+            </div>
+
+            {/* Right side - form */}
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 lg:w-auto lg:min-w-[400px]">
+              <Input
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-12 bg-background/80 flex-1 text-base"
+              />
+              <Button type="submit" disabled={isSubmitting || !email} className="h-12 px-6 gap-2 whitespace-nowrap">
+                {isSubmitting ? "Subscribing..." : "Subscribe Free"}
+                {!isSubmitting && <ArrowRight className="w-4 h-4" />}
+              </Button>
+            </form>
+          </div>
+          <p className="text-xs text-muted-foreground text-center lg:text-right mt-4">
+            No spam, ever. Unsubscribe anytime.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Default vertical layout
   return (
     <Card className="h-full glass-card border-2 border-primary/20 shadow-lg overflow-hidden bg-gradient-to-br from-primary/5 to-emerald-500/5">
       <CardContent className="p-6 flex flex-col h-full">
@@ -463,7 +515,7 @@ export default function BlogIndex() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
       <SEO
-        title="Financial Tips & Guides Blog | Autolytiq"
+        title="Financial Tips & Guides Blog"
         description="Expert articles on income calculation, budgeting, salary negotiation, and personal finance. Free guides to help you earn more and spend smarter."
         canonical="https://autolytiqs.com/blog"
         keywords="income tips, budgeting guides, salary negotiation, personal finance blog, financial advice, 50/30/20 rule, first paycheck budget"
@@ -629,9 +681,9 @@ export default function BlogIndex() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
-                    className="md:col-span-2 lg:col-span-1"
+                    className="md:col-span-2 lg:col-span-3"
                   >
-                    <InlineNewsletterCard />
+                    <InlineNewsletterCard fullWidth />
                   </motion.div>
                 )}
                 <motion.div
@@ -681,9 +733,9 @@ export default function BlogIndex() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * filteredPosts.length }}
-              className="md:col-span-2 lg:col-span-1"
+              className="md:col-span-2 lg:col-span-3"
             >
-              <InlineNewsletterCard />
+              <InlineNewsletterCard fullWidth />
             </motion.div>
           )}
         </motion.div>

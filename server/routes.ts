@@ -11,11 +11,16 @@ import newsletterRoutes from "./newsletter";
 import affiliateAnalyticsRoutes, { trackClickHandler, trackSessionHandler } from "./affiliate-analytics";
 import { getCsrfTokenHandler, csrfProtection } from "./security/csrf";
 import { sendCalculationResultsEmail } from "./email";
+import { initMonetization } from "./monetization";
+import monetizationRoutes from "./monetization/routes";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Initialize monetization system (safe to call multiple times)
+  initMonetization();
+
   // Health check for uptime monitoring
   app.get("/api/health", (req, res) => {
     const uptime = process.uptime();
@@ -124,6 +129,14 @@ export async function registerRoutes(
 
   // Affiliate analytics routes (admin)
   app.use("/api/affiliate", affiliateAnalyticsRoutes);
+
+  // Monetization routes (feature-flagged)
+  app.use("/api/monetization", monetizationRoutes);
+  app.use("/api/checkout", monetizationRoutes);
+  app.use("/api/webhooks", monetizationRoutes);
+  app.use("/api/partner", monetizationRoutes);
+  // Affiliate redirect endpoint (short URL)
+  app.use("/r", monetizationRoutes);
 
   return httpServer;
 }

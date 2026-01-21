@@ -150,9 +150,38 @@ function Auto() {
   const [selectedTerm, setSelectedTerm] = useState(60);
   const [showCalculator, setShowCalculator] = useState(true);
 
+  // Load saved state from localStorage
   useEffect(() => {
     setMounted(true);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.monthlyIncome) setMonthlyIncome(data.monthlyIncome);
+        if (data.currentCarPayment) setCurrentCarPayment(data.currentCarPayment);
+        if (data.downPayment) setDownPayment(data.downPayment);
+        if (data.estimatedInsurance) setEstimatedInsurance(data.estimatedInsurance);
+        if (data.creditTier) setCreditTier(data.creditTier);
+        if (data.selectedTerm) setSelectedTerm(data.selectedTerm);
+      }
+    } catch (e) {
+      console.error("Failed to load auto state:", e);
+    }
   }, []);
+
+  // Save state to localStorage for financial checklist tracking
+  useEffect(() => {
+    if (monthlyIncome) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        monthlyIncome,
+        currentCarPayment,
+        downPayment,
+        estimatedInsurance,
+        creditTier,
+        selectedTerm,
+      }));
+    }
+  }, [monthlyIncome, currentCarPayment, downPayment, estimatedInsurance, creditTier, selectedTerm]);
 
   // Auto-populate income from calculator when available
   useEffect(() => {

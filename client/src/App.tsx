@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth";
 import { CookieConsentBanner } from "@/components/cookie-consent";
+import { StickyChecklist } from "@/components/sticky-checklist";
 import { analytics } from "@/lib/analytics";
 
 // Lazy load all pages for code splitting
@@ -100,6 +101,7 @@ function App() {
           <Suspense fallback={<PageLoader />}>
             <Router />
           </Suspense>
+          <StickyChecklist />
           <CookieConsentBanner />
         </TooltipProvider>
       </ThemeProvider>

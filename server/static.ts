@@ -12,11 +12,24 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist (except API routes)
+  // Serve prerendered HTML for SEO routes, fallback to SPA for others
   app.use("*", (req: Request, res: Response, next: NextFunction) => {
     if (req.originalUrl.startsWith("/api")) {
       return next();
     }
+
+    // Normalize the path (remove trailing slashes, handle query strings)
+    const urlPath = req.originalUrl.split("?")[0].replace(/\/$/, "") || "/";
+
+    // Check for prerendered HTML in subdirectory (e.g., /blog/index.html)
+    if (urlPath !== "/") {
+      const prerenderPath = path.resolve(distPath, urlPath.slice(1), "index.html");
+      if (fs.existsSync(prerenderPath)) {
+        return res.sendFile(prerenderPath);
+      }
+    }
+
+    // Fallback to root index.html (SPA mode)
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
