@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useSearch } from "wouter";
 import { motion } from "framer-motion";
 import { Lock, Eye, EyeOff, CheckCircle, KeyRound } from "lucide-react";
@@ -10,6 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ResetPassword() {
+  // Set noindex for auth pages
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => { meta.remove(); };
+  }, []);
   const search = useSearch();
   const params = new URLSearchParams(search);
   const token = params.get("token") || "";

@@ -746,9 +746,10 @@ type Step =
 
 interface InteractiveBudgetProps {
   monthlyIncome: number;
+  onTransactionCreated?: () => void;
 }
 
-export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
+export function InteractiveBudget({ monthlyIncome, onTransactionCreated }: InteractiveBudgetProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -922,6 +923,7 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
   // Handle transaction created from receipt scan or manual entry
   const handleTransactionCreated = () => {
     setRefreshTrigger((prev) => prev + 1);
+    onTransactionCreated?.();
   };
 
   const handleNext = () => {
@@ -1813,10 +1815,10 @@ export function InteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
  * Interactive Budget wrapped with AuthGuard.
  * Requires login to use the budget builder and expense tracking features.
  */
-export function ProtectedInteractiveBudget({ monthlyIncome }: InteractiveBudgetProps) {
+export function ProtectedInteractiveBudget({ monthlyIncome, onTransactionCreated }: InteractiveBudgetProps) {
   return (
     <AuthGuard>
-      <InteractiveBudget monthlyIncome={monthlyIncome} />
+      <InteractiveBudget monthlyIncome={monthlyIncome} onTransactionCreated={onTransactionCreated} />
     </AuthGuard>
   );
 }

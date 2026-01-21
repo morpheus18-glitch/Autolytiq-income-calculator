@@ -85,7 +85,7 @@ export function BudgetProgressBars({ monthlyIncome, className, refreshTrigger }:
     }
 
     fetchSpending();
-  }, [user]);
+  }, [user, refreshTrigger]);
 
   const categories = [
     {
@@ -254,7 +254,7 @@ export function BudgetProgressBars({ monthlyIncome, className, refreshTrigger }:
 /**
  * Safe to Spend Today - Dynamic daily allowance
  */
-export function SafeToSpendCard({ monthlyIncome, className }: BudgetProgressProps) {
+export function SafeToSpendCard({ monthlyIncome, className, refreshTrigger }: BudgetProgressProps) {
   const { user } = useAuth();
   const [spending, setSpending] = useState<SpendingSummary>({ needs: 0, wants: 0, savings: 0, total: 0 });
   const [loading, setLoading] = useState(true);
@@ -288,7 +288,7 @@ export function SafeToSpendCard({ monthlyIncome, className }: BudgetProgressProp
     }
 
     fetchSpending();
-  }, [user]);
+  }, [user, refreshTrigger]);
 
   const now = new Date();
   const daysRemaining = getDaysRemaining(now) + 1; // Include today
@@ -416,11 +416,11 @@ export function SafeToSpendCard({ monthlyIncome, className }: BudgetProgressProp
 /**
  * Combined Budget Dashboard
  */
-export function BudgetDashboard({ monthlyIncome, className }: BudgetProgressProps) {
+export function BudgetDashboard({ monthlyIncome, className, refreshTrigger }: BudgetProgressProps) {
   return (
     <div className={cn("grid gap-4 lg:grid-cols-2", className)}>
-      <SafeToSpendCard monthlyIncome={monthlyIncome} />
-      <BudgetProgressBars monthlyIncome={monthlyIncome} />
+      <SafeToSpendCard monthlyIncome={monthlyIncome} refreshTrigger={refreshTrigger} />
+      <BudgetProgressBars monthlyIncome={monthlyIncome} refreshTrigger={refreshTrigger} />
     </div>
   );
 }

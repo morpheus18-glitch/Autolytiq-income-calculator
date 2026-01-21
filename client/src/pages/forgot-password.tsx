@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Mail, ArrowLeft, Send, CheckCircle } from "lucide-react";
@@ -11,6 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ForgotPassword() {
   const { forgotPassword } = useAuth();
+
+  // Set noindex for auth pages
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => { meta.remove(); };
+  }, []);
 
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");

@@ -13,6 +13,15 @@ export default function Login() {
   const [location, setLocation] = useLocation();
   const { login } = useAuth();
 
+  // Set noindex for auth pages
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => { meta.remove(); };
+  }, []);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

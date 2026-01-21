@@ -156,6 +156,12 @@ function SmartMoney() {
   const [budgetView, setBudgetView] = useState<"monthly" | "weekly" | "daily">("monthly");
   const [showBudgetDetails, setShowBudgetDetails] = useState(true);
 
+  // Budget dashboard refresh trigger - incremented when transactions are added
+  const [budgetRefreshTrigger, setBudgetRefreshTrigger] = useState(0);
+  const handleTransactionCreated = () => {
+    setBudgetRefreshTrigger((prev) => prev + 1);
+  };
+
   // Load saved state from localStorage
   useEffect(() => {
     setMounted(true);
@@ -574,48 +580,48 @@ function SmartMoney() {
                         <span className="text-sm font-medium text-muted-foreground">Deductions Breakdown</span>
                         <span className="text-xs text-muted-foreground">{formatCurrency(totalDeductions)}/year total</span>
                       </div>
-                      <div className="grid grid-cols-5 gap-2">
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 sm:gap-2">
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center cursor-help hover:border-red-500/40 transition-colors">
-                              <div className="text-[10px] text-muted-foreground mb-1">Federal</div>
-                              <div className="font-mono font-bold text-red-400 text-sm">{formatCurrency(federalTax)}</div>
+                            <div className="p-2 sm:p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center cursor-help hover:border-red-500/40 transition-colors">
+                              <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1">Federal</div>
+                              <div className="font-mono font-bold text-red-400 text-xs sm:text-sm">{formatCurrency(federalTax)}</div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>Federal Income Tax (progressive brackets)</TooltipContent>
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-center cursor-help hover:border-orange-500/40 transition-colors">
-                              <div className="text-[10px] text-muted-foreground mb-1">FICA</div>
-                              <div className="font-mono font-bold text-orange-400 text-sm">{formatCurrency(ficaTax)}</div>
+                            <div className="p-2 sm:p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-center cursor-help hover:border-orange-500/40 transition-colors">
+                              <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1">FICA</div>
+                              <div className="font-mono font-bold text-orange-400 text-xs sm:text-sm">{formatCurrency(ficaTax)}</div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>Social Security (6.2%) + Medicare (1.45%)</TooltipContent>
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-center cursor-help hover:border-yellow-500/40 transition-colors">
-                              <div className="text-[10px] text-muted-foreground mb-1">State</div>
-                              <div className="font-mono font-bold text-yellow-400 text-sm">{formatCurrency(stateTaxAmount)}</div>
+                            <div className="p-2 sm:p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-center cursor-help hover:border-yellow-500/40 transition-colors">
+                              <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1">State</div>
+                              <div className="font-mono font-bold text-yellow-400 text-xs sm:text-sm">{formatCurrency(stateTaxAmount)}</div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>State Income Tax at {stateTaxRate}%</TooltipContent>
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center cursor-help hover:border-emerald-500/40 transition-colors">
-                              <div className="text-[10px] text-muted-foreground mb-1">401k</div>
-                              <div className="font-mono font-bold text-emerald-400 text-sm">{formatCurrency(retirement401kAmount)}</div>
+                            <div className="p-2 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center cursor-help hover:border-emerald-500/40 transition-colors">
+                              <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1">401k</div>
+                              <div className="font-mono font-bold text-emerald-400 text-xs sm:text-sm">{formatCurrency(retirement401kAmount)}</div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>Pre-tax 401k at {retirement401k}% (reduces taxable income)</TooltipContent>
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center cursor-help hover:border-blue-500/40 transition-colors">
-                              <div className="text-[10px] text-muted-foreground mb-1">Health</div>
-                              <div className="font-mono font-bold text-blue-400 text-sm">{formatCurrency(healthAnnual)}</div>
+                            <div className="p-2 sm:p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center cursor-help hover:border-blue-500/40 transition-colors">
+                              <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1">Health</div>
+                              <div className="font-mono font-bold text-blue-400 text-xs sm:text-sm">{formatCurrency(healthAnnual)}</div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>Health Insurance at ${healthInsurance}/month</TooltipContent>
@@ -685,30 +691,30 @@ function SmartMoney() {
                     showLegend={false}
                     className="shrink-0"
                   />
-                  <div className="grid grid-cols-3 gap-3 flex-1 w-full">
-                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
-                      <div className="text-2xl font-bold text-emerald-400">50%</div>
-                      <div className="text-sm font-medium">Needs</div>
-                      <div className="text-lg font-mono font-bold mt-1">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3 flex-1 w-full">
+                    <div className="p-2 sm:p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-emerald-400">50%</div>
+                      <div className="text-xs sm:text-sm font-medium">Needs</div>
+                      <div className="text-sm sm:text-lg font-mono font-bold mt-1">
                         {formatCurrency(getViewAmount(needsAmount))}
                       </div>
-                      <div className="text-xs text-muted-foreground">{viewLabel}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">{viewLabel}</div>
                     </div>
-                    <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-center">
-                      <div className="text-2xl font-bold text-blue-400">30%</div>
-                      <div className="text-sm font-medium">Wants</div>
-                      <div className="text-lg font-mono font-bold mt-1">
+                    <div className="p-2 sm:p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-blue-400">30%</div>
+                      <div className="text-xs sm:text-sm font-medium">Wants</div>
+                      <div className="text-sm sm:text-lg font-mono font-bold mt-1">
                         {formatCurrency(getViewAmount(wantsAmount))}
                       </div>
-                      <div className="text-xs text-muted-foreground">{viewLabel}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">{viewLabel}</div>
                     </div>
-                    <div className="p-4 rounded-xl bg-primary/10 border border-primary/30 text-center">
-                      <div className="text-2xl font-bold text-primary">20%</div>
-                      <div className="text-sm font-medium">Savings</div>
-                      <div className="text-lg font-mono font-bold mt-1">
+                    <div className="p-2 sm:p-4 rounded-xl bg-primary/10 border border-primary/30 text-center">
+                      <div className="text-xl sm:text-2xl font-bold text-primary">20%</div>
+                      <div className="text-xs sm:text-sm font-medium">Savings</div>
+                      <div className="text-sm sm:text-lg font-mono font-bold mt-1">
                         {formatCurrency(getViewAmount(savingsAmount))}
                       </div>
-                      <div className="text-xs text-muted-foreground">{viewLabel}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">{viewLabel}</div>
                     </div>
                   </div>
                 </div>
@@ -789,14 +795,14 @@ function SmartMoney() {
                           <PiggyIcon className="h-4 w-4" />
                           Savings & Investments (20%)
                         </h3>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                           {BUDGET_SAVINGS.map((item) => (
                             <Tooltip key={item.label}>
                               <TooltipTrigger asChild>
-                                <div className="p-3 rounded-lg bg-card border border-border/50 cursor-help">
-                                  <item.icon className="h-4 w-4 text-primary mb-1" />
-                                  <div className="text-xs text-muted-foreground">{item.label}</div>
-                                  <div className="font-mono font-bold text-sm">
+                                <div className="p-2 sm:p-3 rounded-lg bg-card border border-border/50 cursor-help">
+                                  <item.icon className="h-3 w-3 sm:h-4 sm:w-4 text-primary mb-1" />
+                                  <div className="text-[10px] sm:text-xs text-muted-foreground">{item.label}</div>
+                                  <div className="font-mono font-bold text-xs sm:text-sm">
                                     {formatCurrency(getViewAmount(netAnnual * item.percent))}
                                   </div>
                                 </div>
@@ -824,7 +830,7 @@ function SmartMoney() {
             transition={{ delay: 0.3 }}
             className="mb-6"
           >
-            <ProtectedInteractiveBudget monthlyIncome={netMonthly} />
+            <ProtectedInteractiveBudget monthlyIncome={netMonthly} onTransactionCreated={handleTransactionCreated} />
           </motion.div>
         )}
 
@@ -836,7 +842,7 @@ function SmartMoney() {
             transition={{ delay: 0.4 }}
             className="mb-6"
           >
-            <BudgetDashboard monthlyIncome={netMonthly} />
+            <BudgetDashboard monthlyIncome={netMonthly} refreshTrigger={budgetRefreshTrigger} />
           </motion.div>
         )}
 

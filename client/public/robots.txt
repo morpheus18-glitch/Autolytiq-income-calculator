@@ -1,11 +1,7 @@
 # Autolytiq Robots.txt
-# https://autolytiqs.com
+# Canonical: https://autolytiqs.com (no www)
 
 User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: https://autolytiqs.com/sitemap.xml
 
 # Block admin and auth pages from indexing
 Disallow: /admin
@@ -13,22 +9,14 @@ Disallow: /login
 Disallow: /signup
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /unsubscribe
+Disallow: /desk
 
-# Allow all major search engine crawlers
-User-agent: Googlebot
+# Allow everything else
 Allow: /
 
-User-agent: Bingbot
-Allow: /
+# Sitemap
+Sitemap: https://autolytiqs.com/sitemap.xml
 
-User-agent: Slurp
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
-
-User-agent: Baiduspider
-Allow: /
-
-User-agent: YandexBot
-Allow: /
+# Host directive (helps some crawlers)
+Host: https://autolytiqs.com
