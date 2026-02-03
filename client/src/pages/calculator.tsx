@@ -59,6 +59,8 @@ import { PostCalculationCTA } from "@/components/post-calculation-cta";
 import { FinancialChecklist } from "@/components/financial-checklist";
 import { AccountPrompt, useCalculationTracker } from "@/components/account-prompt";
 import { CalculationHistory, useCalculationHistory } from "@/components/calculation-history";
+import { CreditKarmaPopup, useCreditKarmaPopup } from "@/components/credit-karma-popup";
+import { BlogPreview } from "@/components/blog-preview";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -112,6 +114,7 @@ function Calculator() {
   const { addToHistory } = useCalculationHistory();
   const [mounted, setMounted] = useState(false);
   const [showAccountPrompt, setShowAccountPrompt] = useState(false);
+  const { showPopup: showCreditKarmaPopup, closePopup: closeCreditKarmaPopup } = useCreditKarmaPopup();
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Income Calculator State
@@ -400,155 +403,48 @@ function Calculator() {
           </p>
         </motion.div>
 
-        {/* Main Content - CTA Left, Calculator Right */}
-        <div className="grid lg:grid-cols-5 gap-6 mb-8">
-          {/* LEFT: Visual CTA & Value Proposition */}
+        {/* Trust Badges - Compact inline */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center justify-center gap-6 py-3 mb-6"
+        >
+          <div className="flex items-center gap-1.5">
+            <CheckIcon className="h-4 w-4 text-emerald-500" />
+            <span className="text-sm text-muted-foreground">100% Free</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-1.5">
+            <CheckIcon className="h-4 w-4 text-emerald-500" />
+            <span className="text-sm text-muted-foreground">No Signup Required</span>
+          </div>
+          <div className="w-px h-4 bg-border" />
+          <div className="flex items-center gap-1.5">
+            <CheckIcon className="h-4 w-4 text-emerald-500" />
+            <span className="text-sm text-muted-foreground">Saves Locally</span>
+          </div>
+        </motion.div>
+
+        {/* Main Calculator - Full Width Focal Point */}
+        <div className="mb-8">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="lg:col-span-2 space-y-5"
-          >
-            {/* Hero CTA Card */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-emerald-500/10 border-2 border-primary/30 p-6 shadow-xl">
-              {/* Animated background elements */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
-
-              <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 mb-4">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                  </span>
-                  <span className="text-xs font-semibold text-primary">YTD Income Calculator</span>
-                </div>
-
-                <h3 className="text-2xl font-bold mb-2">
-                  Know Your <span className="text-primary">True Income</span>
-                </h3>
-                <p className="text-muted-foreground text-sm mb-5">
-                  Project your annual salary from your year-to-date paystub earnings.
-                </p>
-
-                {/* Quick Stats Preview */}
-                <div className="grid grid-cols-2 gap-3 mb-5">
-                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
-                      <span className="text-xs text-muted-foreground">Annual</span>
-                    </div>
-                    <div className="text-sm font-bold">Projected</div>
-                    <div className="text-[10px] text-muted-foreground">from YTD</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span className="text-xs text-muted-foreground">Monthly</span>
-                    </div>
-                    <div className="text-sm font-bold">Calculated</div>
-                    <div className="text-[10px] text-muted-foreground">average</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full bg-blue-500" />
-                      <span className="text-xs text-muted-foreground">Weekly</span>
-                    </div>
-                    <div className="text-sm font-bold">Included</div>
-                    <div className="text-[10px] text-muted-foreground">breakdown</div>
-                  </div>
-                  <div className="p-3 rounded-xl bg-background/60 backdrop-blur-sm border border-border/50">
-                    <div className="flex items-center gap-2 mb-1">
-                      <CheckIcon className="w-3 h-3 text-emerald-500" />
-                      <span className="text-xs text-muted-foreground">Auto</span>
-                    </div>
-                    <div className="text-sm font-bold">12% Rule</div>
-                  </div>
-                </div>
-
-                {/* Arrow pointing to calculator */}
-                <div className="hidden lg:flex items-center gap-2 text-primary">
-                  <span className="text-sm font-medium">Enter your paystub data</span>
-                  <ChevronRight className="h-5 w-5 animate-bounce-x" />
-                </div>
-              </div>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="flex items-center justify-center gap-4 py-3 px-4 rounded-xl bg-card/50 border border-border/50">
-              <div className="flex items-center gap-1.5">
-                <CheckIcon className="h-4 w-4 text-emerald-500" />
-                <span className="text-xs text-muted-foreground">100% Free</span>
-              </div>
-              <div className="w-px h-4 bg-border" />
-              <div className="flex items-center gap-1.5">
-                <CheckIcon className="h-4 w-4 text-emerald-500" />
-                <span className="text-xs text-muted-foreground">No Signup</span>
-              </div>
-              <div className="w-px h-4 bg-border" />
-              <div className="flex items-center gap-1.5">
-                <CheckIcon className="h-4 w-4 text-emerald-500" />
-                <span className="text-xs text-muted-foreground">Saves Locally</span>
-              </div>
-            </div>
-
-            {/* What You'll Get */}
-            <Card className="glass-card border-none shadow-lg">
-              <CardHeader className="pb-2 pt-4">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-yellow-500" />
-                  What You'll Get
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <div className="space-y-2">
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="flex items-start gap-2 p-2 rounded-lg hover:bg-secondary/30 transition-colors"
-                  >
-                    <IncomeIcon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                    <div>
-                      <span className="text-xs font-medium">Projected Annual Income</span>
-                      <p className="text-[10px] text-muted-foreground leading-tight">Based on your YTD earnings and days worked</p>
-                    </div>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="flex items-start gap-2 p-2 rounded-lg hover:bg-secondary/30 transition-colors"
-                  >
-                    <AutoIcon className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                    <div>
-                      <span className="text-xs font-medium">Max Car Payment (12% Rule)</span>
-                      <p className="text-[10px] text-muted-foreground leading-tight">Know exactly what you can afford</p>
-                    </div>
-                  </motion.div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* RIGHT: Income Calculator */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-3 space-y-6"
+            className="max-w-4xl mx-auto"
           >
-            <Card className="glass-card border-2 border-primary/20 shadow-2xl shadow-primary/5 overflow-hidden">
-              <CardHeader className="pb-3 lg:pb-4 bg-gradient-to-r from-primary/5 to-transparent">
+            <Card className="glass-card border-2 border-primary/30 shadow-2xl shadow-primary/10 overflow-hidden">
+              <CardHeader className="pb-4 lg:pb-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg lg:text-xl flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-primary/10">
-                      <IncomeIcon className="h-5 w-5 lg:h-6 lg:w-6 text-primary" />
+                  <CardTitle className="text-xl lg:text-2xl flex items-center gap-3">
+                    <div className="p-2 lg:p-3 rounded-xl bg-primary/20">
+                      <IncomeIcon className="h-6 w-6 lg:h-8 lg:w-8 text-primary" />
                     </div>
-                    Income Calculator
-                    <span className="ml-2 text-xs font-normal text-muted-foreground bg-secondary/50 px-2 py-1 rounded-full">
-                      YTD Method
-                    </span>
+                    <div>
+                      <span className="block">Income Calculator</span>
+                      <span className="text-sm font-normal text-muted-foreground">Project your annual salary from YTD earnings</span>
+                    </div>
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <ScenarioManager
@@ -560,86 +456,88 @@ function Calculator() {
                       variant="ghost"
                       size="sm"
                       onClick={handleReset}
-                      className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                      className="h-9 px-3 text-muted-foreground hover:text-foreground"
                     >
-                      <ResetIcon className="h-3.5 w-3.5 mr-1" />
+                      <ResetIcon className="h-4 w-4 mr-1.5" />
                       Reset
                     </Button>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4 lg:space-y-6 pt-4">
-                <div className="grid sm:grid-cols-3 gap-4 lg:gap-6">
-              {/* Start Date */}
-              <div className="space-y-2 lg:space-y-3">
-                <Label className="text-sm lg:text-base font-medium flex items-center gap-2">
-                  Job Start Date
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>When did you start this job?</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </Label>
-                <DateInput
-                  value={startDate}
-                  onChange={setStartDate}
-                  maxDate={new Date()}
-                  placeholder="MM/DD/YYYY"
-                />
-              </div>
+              <CardContent className="space-y-6 lg:space-y-8 pt-6 pb-8 px-6 lg:px-10">
+                <div className="grid sm:grid-cols-3 gap-6 lg:gap-8">
+                  {/* Start Date */}
+                  <div className="space-y-3">
+                    <Label className="text-base lg:text-lg font-semibold flex items-center gap-2">
+                      Job Start Date
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>When did you start this job?</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <DateInput
+                      value={startDate}
+                      onChange={setStartDate}
+                      maxDate={new Date()}
+                      placeholder="MM/DD/YYYY"
+                      className="h-12 lg:h-14 text-base lg:text-lg"
+                    />
+                  </div>
 
-              {/* YTD Income */}
-              <div className="space-y-2 lg:space-y-3">
-                <Label className="text-sm lg:text-base font-medium flex items-center gap-2">
-                  YTD Gross Income
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[220px]">
-                      <p>Year-to-date gross income from your paystub. Look for "YTD Gross" or "YTD Earnings" - it's your total pre-tax earnings since Jan 1.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </Label>
-                <MoneyInput
-                  value={ytdIncome}
-                  onChange={setYtdIncome}
-                  className="h-11 lg:h-12"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowYtdHelp(true)}
-                  className="text-xs text-primary hover:underline lg:hidden"
-                >
-                  Where do I find this?
-                </button>
-              </div>
+                  {/* YTD Income */}
+                  <div className="space-y-3">
+                    <Label className="text-base lg:text-lg font-semibold flex items-center gap-2">
+                      YTD Gross Income
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[220px]">
+                          <p>Year-to-date gross income from your paystub. Look for "YTD Gross" or "YTD Earnings" - it's your total pre-tax earnings since Jan 1.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <MoneyInput
+                      value={ytdIncome}
+                      onChange={setYtdIncome}
+                      className="h-12 lg:h-14 text-base lg:text-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowYtdHelp(true)}
+                      className="text-sm text-primary hover:underline lg:hidden"
+                    >
+                      Where do I find this?
+                    </button>
+                  </div>
 
-              {/* Check Date */}
-              <div className="space-y-2 lg:space-y-3">
-                <Label className="text-sm lg:text-base font-medium flex items-center gap-2">
-                  Paystub Date
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Date on your most recent paystub</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </Label>
-                <DateInput
-                  value={checkDate}
-                  onChange={setCheckDate}
-                  minDate={startDate}
-                  maxDate={new Date()}
-                  placeholder="MM/DD/YYYY"
-                />
-              </div>
-            </div>
+                  {/* Check Date */}
+                  <div className="space-y-3">
+                    <Label className="text-base lg:text-lg font-semibold flex items-center gap-2">
+                      Paystub Date
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Date on your most recent paystub</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </Label>
+                    <DateInput
+                      value={checkDate}
+                      onChange={setCheckDate}
+                      minDate={startDate}
+                      maxDate={new Date()}
+                      placeholder="MM/DD/YYYY"
+                      className="h-12 lg:h-14 text-base lg:text-lg"
+                    />
+                  </div>
+                </div>
 
             {/* Try Sample Data - show when no data entered */}
             {!incomeResults && !startDate && !ytdIncome && (
@@ -665,54 +563,57 @@ function Calculator() {
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="pt-4 lg:pt-6 border-t border-border/50">
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 lg:gap-4">
-                      <div className="stat-card text-center col-span-2 sm:col-span-1 lg:col-span-1 sm:row-span-2 lg:row-span-1 flex flex-col justify-center p-4 lg:p-6">
-                        <div className="text-xs lg:text-sm text-muted-foreground">Annual</div>
-                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mono-value text-primary mt-1">
-                          <AnimatedNumber
-                            value={incomeResults.annual}
-                            formatValue={(v) => formatCurrency(v)}
-                          />
-                        </div>
-                        <div className="text-xs lg:text-sm text-muted-foreground mt-1">
-                          {incomeResults.daysWorked} days worked
-                        </div>
+                  <div className="pt-6 lg:pt-8 border-t-2 border-primary/20">
+                    {/* Primary Result - Annual Income */}
+                    <div className="text-center mb-6 lg:mb-8">
+                      <div className="text-sm lg:text-base text-muted-foreground mb-2">Your Projected Annual Income</div>
+                      <div className="text-4xl sm:text-5xl lg:text-6xl font-bold mono-value text-primary">
+                        <AnimatedNumber
+                          value={incomeResults.annual}
+                          formatValue={(v) => formatCurrency(v)}
+                        />
                       </div>
-                      <div className="stat-card text-center p-4 lg:p-6">
-                        <div className="text-xs lg:text-sm text-muted-foreground">Monthly</div>
-                        <div className="text-lg lg:text-2xl font-bold mono-value mt-1">
+                      <div className="text-sm lg:text-base text-muted-foreground mt-2">
+                        Based on {incomeResults.daysWorked} days worked
+                      </div>
+                    </div>
+
+                    {/* Secondary Results Grid */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                      <div className="stat-card text-center p-5 lg:p-6 rounded-xl bg-gradient-to-br from-background to-muted/30">
+                        <div className="text-sm lg:text-base text-muted-foreground">Monthly</div>
+                        <div className="text-xl lg:text-3xl font-bold mono-value mt-2">
                           {formatCurrency(incomeResults.monthly)}
                         </div>
                       </div>
-                      <div className="stat-card text-center p-4 lg:p-6">
-                        <div className="text-xs lg:text-sm text-muted-foreground">Weekly</div>
-                        <div className="text-lg lg:text-2xl font-bold mono-value mt-1">
+                      <div className="stat-card text-center p-5 lg:p-6 rounded-xl bg-gradient-to-br from-background to-muted/30">
+                        <div className="text-sm lg:text-base text-muted-foreground">Weekly</div>
+                        <div className="text-xl lg:text-3xl font-bold mono-value mt-2">
                           {formatCurrency(incomeResults.weekly)}
                         </div>
                       </div>
-                      <div className="stat-card text-center p-4 lg:p-6">
-                        <div className="text-xs lg:text-sm text-muted-foreground">Daily</div>
-                        <div className="text-lg lg:text-2xl font-bold mono-value mt-1">
+                      <div className="stat-card text-center p-5 lg:p-6 rounded-xl bg-gradient-to-br from-background to-muted/30">
+                        <div className="text-sm lg:text-base text-muted-foreground">Daily</div>
+                        <div className="text-xl lg:text-3xl font-bold mono-value mt-2">
                           {formatCurrency(incomeResults.daily)}
                         </div>
                       </div>
-                      <div className="stat-card text-center col-span-2 sm:col-span-1 p-4 lg:p-6">
-                        <div className="text-xs lg:text-sm text-muted-foreground flex items-center justify-center gap-1">
+                      <div className="stat-card text-center p-5 lg:p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                        <div className="text-sm lg:text-base text-muted-foreground flex items-center justify-center gap-1">
                           Max Auto Payment
                           <Tooltip>
                             <TooltipTrigger>
-                              <InfoIcon className="h-3 w-3 text-muted-foreground" />
+                              <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
                             </TooltipTrigger>
                             <TooltipContent className="max-w-[200px]">
                               <p>Based on the 12% rule: keep car payments at or below 12% of gross monthly income to stay within budget.</p>
                             </TooltipContent>
                           </Tooltip>
                         </div>
-                        <div className="text-lg lg:text-2xl font-bold mono-value mt-1 text-primary">
+                        <div className="text-xl lg:text-3xl font-bold mono-value mt-2 text-primary">
                           {formatCurrency(maxAffordablePayment || 0)}/mo
                         </div>
-                        <div className="text-[10px] lg:text-xs text-muted-foreground mt-0.5">12% of monthly income</div>
+                        <div className="text-xs lg:text-sm text-muted-foreground mt-1">12% of monthly income</div>
                       </div>
                     </div>
 
@@ -1109,68 +1010,71 @@ function Calculator() {
             </motion.div>
           )}
         </AnimatePresence>
-          </motion.div>
+        </motion.div>
         </div>
 
         {/* Quick Links Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <Link href="/auto">
-                <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-                  <AutoIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                  <div className="text-sm font-medium">Auto Guide</div>
-                  <div className="text-xs text-muted-foreground">Shopping tips</div>
-                </div>
-              </Link>
-              <Link href="/smart-money">
-                <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-                  <WalletIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                  <div className="text-sm font-medium">Smart Money</div>
-                  <div className="text-xs text-muted-foreground">Budget planner</div>
-                </div>
-              </Link>
-              <Link href="/housing">
-                <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-                  <HousingIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                  <div className="text-sm font-medium">Housing</div>
-                  <div className="text-xs text-muted-foreground">Rent & mortgage</div>
-                </div>
-              </Link>
-              <Link href="/desk">
-                <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
-                  <ChartIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                  <div className="text-sm font-medium">Pro Mode</div>
-                  <div className="text-xs text-muted-foreground">Advanced options</div>
-                </div>
-              </Link>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <Link href="/auto">
+            <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
+              <AutoIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <div className="text-sm font-medium">Auto Guide</div>
+              <div className="text-xs text-muted-foreground">Shopping tips</div>
             </div>
-
-            {/* Additional Tools Row - Calculation History & Financial Checklist */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <CalculationHistory />
-              <FinancialChecklist />
+          </Link>
+          <Link href="/smart-money">
+            <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
+              <WalletIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <div className="text-sm font-medium">Smart Money</div>
+              <div className="text-xs text-muted-foreground">Budget planner</div>
             </div>
+          </Link>
+          <Link href="/housing">
+            <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
+              <HousingIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <div className="text-sm font-medium">Housing</div>
+              <div className="text-xs text-muted-foreground">Rent & mortgage</div>
+            </div>
+          </Link>
+          <Link href="/desk">
+            <div className="p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all cursor-pointer text-center group">
+              <ChartIcon className="h-6 w-6 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+              <div className="text-sm font-medium">Pro Mode</div>
+              <div className="text-xs text-muted-foreground">Advanced options</div>
+            </div>
+          </Link>
+        </div>
 
-            {/* Account Benefits Banner */}
-            {!user && (
-              <div className="p-6 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-primary/20">
-                      <LoginIcon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Create Free Account</h3>
-                      <p className="text-sm text-muted-foreground">Save calculations, compare scenarios, and email results</p>
-                    </div>
-                  </div>
-                  <Link href="/signup">
-                    <Button size="lg" className="whitespace-nowrap">
-                      Sign Up Free
-                    </Button>
-                  </Link>
+        {/* Additional Tools Row - Calculation History & Financial Checklist */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <CalculationHistory />
+          <FinancialChecklist />
+        </div>
+
+        {/* Account Benefits Banner */}
+        {!user && (
+          <div className="p-6 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 mb-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-primary/20">
+                  <LoginIcon className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Create Free Account</h3>
+                  <p className="text-sm text-muted-foreground">Save calculations, compare scenarios, and email results</p>
                 </div>
               </div>
-            )}
+              <Link href="/signup">
+                <Button size="lg" className="whitespace-nowrap">
+                  Sign Up Free
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Blog Preview Section */}
+        <BlogPreview calculatorType="calculator" className="mt-8" />
 
         {/* FAQ Section - Full Width Below Grid */}
         <FAQ items={INCOME_CALCULATOR_FAQ} className="mt-8" />
@@ -1263,6 +1167,11 @@ function Calculator() {
       {/* Account Creation Prompt - Shows after 2nd calculation */}
       {showAccountPrompt && (
         <AccountPrompt onClose={() => setShowAccountPrompt(false)} />
+      )}
+
+      {/* Credit Karma Exit Intent Popup */}
+      {showCreditKarmaPopup && (
+        <CreditKarmaPopup onClose={closeCreditKarmaPopup} />
       )}
 
       {/* Footer */}
