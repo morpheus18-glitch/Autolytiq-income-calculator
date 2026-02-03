@@ -45,6 +45,7 @@ import { IncomeBanner, NoIncomeCTA } from "@/components/income-banner";
 import { useIncome } from "@/lib/use-income";
 import { BudgetDashboard } from "@/components/budget-progress";
 import { SavingsGoals } from "@/components/savings-goals";
+import { BlogPreview } from "@/components/blog-preview";
 
 const STORAGE_KEY = "smart-money-state";
 
@@ -52,7 +53,7 @@ const STORAGE_KEY = "smart-money-state";
 const MONEY_AFFILIATES = [
   { name: "SoFi", desc: "Banking & high-yield savings", url: "https://www.sofi.com/invite/money", tag: "Top Pick" },
   { name: "Robinhood", desc: "Commission-free investing", url: "https://join.robinhood.com/", tag: "Free Stock" },
-  { name: "Credit Karma", desc: "Free credit monitoring", url: "https://www.creditkarma.com/signup", tag: "Free" },
+  { name: "Credit Karma", desc: "Free credit monitoring", url: "https://www.awin1.com/cread.php?awinmid=66532&awinaffid=2720202", tag: "Free" },
   { name: "YNAB", desc: "Budgeting app", url: "https://www.ynab.com/", tag: "Budgeting" },
 ];
 
@@ -921,6 +922,9 @@ function SmartMoney() {
             <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
+
+        {/* Blog Preview Section */}
+        <BlogPreview calculatorType="smart-money" className="mb-6" />
 
         {/* FAQ Section */}
         <FAQ items={BUDGET_PLANNER_FAQ} className="mb-6" />

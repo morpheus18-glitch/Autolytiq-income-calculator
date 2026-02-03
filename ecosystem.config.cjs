@@ -3,11 +3,22 @@ module.exports = {
     {
       name: "autolytiq",
       script: "dist/index.cjs",
+      cwd: "/root/income-calculator-autolytiq",
       instances: "max", // Use all available CPU cores
       exec_mode: "cluster", // Enable cluster mode
       env: {
         NODE_ENV: "production",
         PORT: 5000,
+        WASM_ENABLED: "true",
+        OTEL_ENABLED: "true",
+        OTEL_SERVICE_NAME: "autolytiq-server",
+        OTEL_EXPORTER_OTLP_ENDPOINT: "http://localhost:4318",
+      },
+      env_development: {
+        NODE_ENV: "development",
+        PORT: 5000,
+        WASM_ENABLED: "true",
+        OTEL_ENABLED: "false",
       },
       // Auto-restart configuration
       max_memory_restart: "500M",

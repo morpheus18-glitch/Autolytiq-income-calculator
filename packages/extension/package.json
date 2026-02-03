@@ -1,0 +1,22 @@
+{
+  "name": "@autolytiq/extension",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@autolytiq/calc-wasm": "workspace:*"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.23",
+    "@types/chrome": "^0.0.268",
+    "typescript": "5.6.3",
+    "vite": "^7.1.9",
+    "vite-plugin-wasm": "^3.3.0",
+    "vite-plugin-top-level-await": "^1.4.1"
+  }
+}

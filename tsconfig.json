@@ -1,23 +1,29 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
-  "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
     "noEmit": true,
     "module": "ESNext",
     "strict": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
     "baseUrl": ".",
-    "types": ["node", "vite/client"],
+    "types": ["node"],
     "paths": {
-      "@/*": ["./client/src/*"],
-      "@shared/*": ["./shared/*"]
+      "@/*": ["./packages/web/src/*"],
+      "@shared/*": ["./shared/*"],
+      "@autolytiq/calc-wasm": ["./packages/calc-wasm/pkg"]
     }
-  }
+  },
+  "references": [
+    { "path": "./packages/web" },
+    { "path": "./packages/server" },
+    { "path": "./packages/extension" }
+  ],
+  "include": [],
+  "exclude": ["node_modules", "dist", "**/node_modules", "**/dist"]
 }

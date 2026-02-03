@@ -1,0 +1,29 @@
+# Parca Server Configuration
+#
+# Continuous profiling configuration for Autolytiq
+
+object_storage:
+  bucket:
+    type: FILESYSTEM
+    config:
+      directory: /var/lib/parca
+
+scrape_configs:
+  # Scrape the Node.js application (if it exposes pprof)
+  - job_name: "autolytiq-server"
+    scrape_interval: "10s"
+    scrape_timeout: "10s"
+    static_configs:
+      - targets: ["host.docker.internal:5000"]
+        labels:
+          service: "autolytiq-server"
+          environment: "development"
+
+# Store settings
+store:
+  # Keep profiles for 7 days
+  retention_duration: 168h
+
+# Symbolization settings
+symbolizer:
+  enable_debuginfod: true

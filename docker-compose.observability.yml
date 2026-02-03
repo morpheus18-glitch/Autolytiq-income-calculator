@@ -1,0 +1,155 @@
+# Docker Compose for Observability Stack
+#
+# Provides:
+# - Jaeger: Distributed tracing UI
+# - Parca: Continuous profiling
+# - Prometheus: Metrics collection
+# - Grafana: Dashboards
+#
+# Usage:
+#   docker-compose -f docker-compose.observability.yml up -d
+#
+# Access:
+#   - Jaeger UI: http://localhost:16686
+#   - Parca UI: http://localhost:7070
+#   - Prometheus: http://localhost:9090
+#   - Grafana: http://localhost:3000 (admin/admin)
+
+version: "3.9"
+
+services:
+  # ==========================================================================
+  # Jaeger - Distributed Tracing
+  # ==========================================================================
+  jaeger:
+    image: jaegertracing/all-in-one:1.54
+    container_name: autolytiq-jaeger
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC
+      - "4318:4318"     # OTLP HTTP
+      - "14268:14268"   # Jaeger HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - LOG_LEVEL=info
+    networks:
+      - observability
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Parca - Continuous Profiling
+  # ==========================================================================
+  parca:
+    image: ghcr.io/parca-dev/parca:v0.19.0
+    container_name: autolytiq-parca
+    ports:
+      - "7070:7070"
+    command:
+      - /parca
+      - --config-path=/etc/parca/parca.yaml
+      - --log-level=info
+    volumes:
+      - ./observability/parca.yaml:/etc/parca/parca.yaml:ro
+      - parca-data:/var/lib/parca
+    networks:
+      - observability
+    restart: unless-stopped
+
+  parca-agent:
+    image: ghcr.io/parca-dev/parca-agent:v0.28.0
+    container_name: autolytiq-parca-agent
+    privileged: true
+    pid: host
+    command:
+      - /bin/parca-agent
+      - --log-level=info
+      - --node=autolytiq-node
+      - --remote-store-address=parca:7070
+      - --remote-store-insecure
+      - --http-address=:7071
+    ports:
+      - "7071:7071"
+    volumes:
+      - /sys/kernel/debug:/sys/kernel/debug:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /proc:/proc
+      - /run:/run
+    networks:
+      - observability
+    depends_on:
+      - parca
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Prometheus - Metrics Collection
+  # ==========================================================================
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: autolytiq-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+      - --web.enable-admin-api
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - observability
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Grafana - Dashboards
+  # ==========================================================================
+  grafana:
+    image: grafana/grafana:10.3.1
+    container_name: autolytiq-grafana
+    ports:
+      - "3001:3000"  # Port 3000 might conflict with Next.js/other apps
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - observability
+    depends_on:
+      - prometheus
+      - jaeger
+    restart: unless-stopped
+
+  # ==========================================================================
+  # OpenTelemetry Collector (optional, for processing)
+  # ==========================================================================
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.93.0
+    container_name: autolytiq-otel-collector
+    command:
+      - --config=/etc/otel-collector-config.yaml
+    volumes:
+      - ./observability/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4319:4317"   # OTLP gRPC (alternate port)
+      - "4320:4318"   # OTLP HTTP (alternate port)
+      - "8888:8888"   # Prometheus metrics (collector)
+      - "8889:8889"   # Prometheus exporter metrics
+    networks:
+      - observability
+    depends_on:
+      - jaeger
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  observability:
+    driver: bridge
+
+volumes:
+  parca-data:
+  prometheus-data:
+  grafana-data:

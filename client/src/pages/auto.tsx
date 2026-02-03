@@ -43,6 +43,7 @@ import { MobileNav } from "@/components/mobile-nav";
 import { AnimatedNumber } from "@/components/charts";
 import { IncomeBanner, NoIncomeCTA } from "@/components/income-banner";
 import { useIncome } from "@/lib/use-income";
+import { BlogPreview } from "@/components/blog-preview";
 
 const STORAGE_KEY = "auto-page-state";
 
@@ -51,7 +52,7 @@ const AUTO_AFFILIATES = [
   { name: "LendingTree Auto", desc: "Compare auto loan rates", url: "https://www.lendingtree.com/auto/", tag: "Top Pick" },
   { name: "Progressive", desc: "Compare insurance quotes", url: "https://www.progressive.com/auto/", tag: "Insurance" },
   { name: "CarGurus", desc: "Research & find deals", url: "https://www.cargurus.com/", tag: "Research" },
-  { name: "Credit Karma", desc: "Free credit scores", url: "https://www.creditkarma.com/signup", tag: "Free" },
+  { name: "Credit Karma", desc: "Free credit scores", url: "https://www.awin1.com/cread.php?awinmid=66532&awinaffid=2720202", tag: "Free" },
 ];
 
 const CREDIT_TIERS = [
@@ -965,6 +966,9 @@ function Auto() {
             <p className="text-[10px] text-muted-foreground/50 text-center mt-3">We may earn a commission from partner links</p>
           </CardContent>
         </Card>
+
+        {/* Blog Preview Section */}
+        <BlogPreview calculatorType="auto" className="mb-6" />
 
         {/* FAQ Section */}
         <FAQ items={AUTO_FAQ} className="mb-6" />

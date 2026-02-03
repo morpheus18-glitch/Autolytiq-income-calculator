@@ -1,0 +1,91 @@
+================================
+CHROME WEB STORE LISTING
+================================
+
+NAME:
+Income Calculator Pro
+
+SHORT DESCRIPTION (132 chars max):
+Calculate your projected annual income from YTD earnings. Includes vehicle payment calculator with tax, fees, and trade-in.
+
+DETAILED DESCRIPTION:
+Income Calculator Pro helps you project your annual income based on your year-to-date earnings. Perfect for loan applications, budgeting, and financial planning.
+
+FEATURES:
+
+Income Calculator
+- Enter your job start date and YTD income
+- Get projected annual, monthly, weekly, and daily income
+- Accounts for jobs started mid-year
+- Copy results with one click
+
+Vehicle Payment Calculator
+- Calculate monthly car payments
+- Enter vehicle price, down payment, trade-in value
+- Includes sales tax and dealer fees
+- Compare different loan terms (36-84 months)
+- See total interest and total cost
+- Affordability check based on your income (12% PTI rule)
+
+Why Use This Extension?
+- Works offline - no internet required
+- Your data stays on your device
+- Fast and lightweight
+- Clean, modern dark theme
+- No ads, no tracking
+
+Perfect for:
+- Car buyers calculating affordability
+- Employees projecting annual salary
+- Anyone applying for loans or mortgages
+- Financial planning and budgeting
+
+CATEGORY:
+Productivity
+
+LANGUAGE:
+English
+
+================================
+REQUIRED IMAGES
+================================
+
+1. ICON (already included):
+   - 128x128 PNG ✓
+
+2. SCREENSHOTS (need at least 1):
+   - Size: 1280x800 or 640x400 pixels
+   - Take screenshots of the extension in action
+   - Recommended: 3-5 screenshots showing different features
+
+   Screenshot ideas:
+   - Income calculator with results showing
+   - Payment calculator with vehicle details
+   - Both tabs to show full functionality
+
+3. PROMOTIONAL TILE (optional but recommended):
+   - Size: 440x280 pixels
+   - Shows in search results
+   - Should have logo + tagline
+
+================================
+HOW TO TAKE SCREENSHOTS
+================================
+
+1. Open the extension popup in Chrome
+2. Right-click the popup → Inspect
+3. In DevTools, press Ctrl+Shift+P (Cmd+Shift+P on Mac)
+4. Type "screenshot" and select "Capture screenshot"
+5. This saves a clean PNG of the popup
+
+OR use a tool like:
+- Lightshot
+- Greenshot
+- Windows Snipping Tool
+- Mac Screenshot (Cmd+Shift+4)
+
+Then resize to 1280x800 using:
+- Canva (free)
+- Photoshop
+- GIMP
+- Online tool: https://www.iloveimg.com/resize-image

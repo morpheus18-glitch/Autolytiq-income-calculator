@@ -1,0 +1,41 @@
+{
+  "name": "@autolytiq/calc-wasm",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "WASM calculation engine for Autolytiq",
+  "main": "pkg/calc_wasm.js",
+  "module": "pkg/calc_wasm.js",
+  "types": "pkg/calc_wasm.d.ts",
+  "files": [
+    "pkg"
+  ],
+  "scripts": {
+    "build": "wasm-pack build --target web --out-dir pkg",
+    "build:bundler": "wasm-pack build --target bundler --out-dir pkg-bundler",
+    "build:node": "wasm-pack build --target nodejs --out-dir pkg-node",
+    "test": "wasm-pack test --headless --chrome",
+    "clean": "rm -rf pkg pkg-bundler pkg-node target"
+  },
+  "keywords": [
+    "wasm",
+    "rust",
+    "calculator",
+    "finance",
+    "income",
+    "mortgage",
+    "budget"
+  ],
+  "author": "Autolytiq Team",
+  "license": "MIT",
+  "devDependencies": {
+    "wasm-pack": "^0.12.1"
+  },
+  "exports": {
+    ".": {
+      "import": "./pkg/calc_wasm.js",
+      "types": "./pkg/calc_wasm.d.ts"
+    },
+    "./pkg/*": "./pkg/*"
+  },
+  "sideEffects": false
+}

@@ -124,13 +124,22 @@ function NewsletterSection() {
 
 const blogPosts = [
   {
+    slug: "what-credit-score-do-you-need",
+    title: "What Credit Score Do You Need? Complete Guide for 2026",
+    excerpt: "Learn what credit score you need for mortgages, auto loans, and credit cards. Plus how to check your score free and improve it fast.",
+    date: "2026-01-30",
+    readTime: "8 min read",
+    category: "Credit",
+    featured: true
+  },
+  {
     slug: "50-30-20-budget-rule",
     title: "The 50/30/20 Budget Rule: Complete Guide for 2026",
     excerpt: "Master the simplest budgeting method that actually works. Learn how to split your income into needs, wants, and savings with real examples at every income level.",
     date: "2026-01-20",
     readTime: "8 min read",
     category: "Budgeting",
-    featured: true
+    featured: false
   },
   {
     slug: "first-paycheck-budget",
@@ -194,167 +203,6 @@ const blogPosts = [
     excerpt: "The average taxpayer overpays by $400. Make sure you're claiming all the deductions you're entitled to with this comprehensive checklist.",
     date: "2025-12-15",
     readTime: "9 min read",
-    category: "Taxes"
-  },
-  // Additional posts for fuller grid
-  {
-    slug: "emergency-fund-guide",
-    title: "How to Build an Emergency Fund From Scratch",
-    excerpt: "Start with $0 and build a 3-6 month safety net. Step-by-step strategies to save your first $1,000 and beyond, even on a tight budget.",
-    date: "2025-12-12",
-    readTime: "7 min read",
-    category: "Budgeting"
-  },
-  {
-    slug: "new-vs-used-car",
-    title: "New vs Used Car: Which is the Smarter Financial Choice?",
-    excerpt: "Crunch the numbers on depreciation, maintenance, and total cost of ownership to make the right decision for your budget.",
-    date: "2025-12-10",
-    readTime: "8 min read",
-    category: "Auto"
-  },
-  {
-    slug: "roth-vs-traditional-401k",
-    title: "Roth vs Traditional 401(k): Which Should You Choose?",
-    excerpt: "Compare tax implications, growth potential, and withdrawal rules to pick the retirement account that fits your situation.",
-    date: "2025-12-08",
-    readTime: "9 min read",
-    category: "Retirement"
-  },
-  {
-    slug: "rent-vs-buy-calculator-guide",
-    title: "Rent vs Buy: The Complete Financial Breakdown",
-    excerpt: "Use our framework to calculate the true cost of homeownership vs renting, including hidden costs most people forget.",
-    date: "2025-12-05",
-    readTime: "11 min read",
-    category: "Calculators"
-  },
-  {
-    slug: "asking-for-a-raise",
-    title: "How to Ask for a Raise (And Actually Get It)",
-    excerpt: "Timing, preparation, and scripts that work. Real examples from people who successfully negotiated 10-30% salary increases.",
-    date: "2025-12-03",
-    readTime: "8 min read",
-    category: "Career"
-  },
-  {
-    slug: "zero-based-budgeting",
-    title: "Zero-Based Budgeting: Give Every Dollar a Job",
-    excerpt: "Learn the budgeting method that helps you control every dollar. Perfect for people who've tried other methods and failed.",
-    date: "2025-12-01",
-    readTime: "7 min read",
-    category: "Budgeting"
-  },
-  {
-    slug: "car-insurance-savings",
-    title: "7 Ways to Lower Your Car Insurance Premium Today",
-    excerpt: "Most people overpay for auto insurance by $300-500/year. These strategies can cut your premium without reducing coverage.",
-    date: "2025-11-28",
-    readTime: "6 min read",
-    category: "Auto"
-  },
-  {
-    slug: "w4-form-guide",
-    title: "How to Fill Out Your W-4 for the Perfect Tax Withholding",
-    excerpt: "Stop getting huge refunds or owing at tax time. Adjust your W-4 to keep more money in each paycheck while staying tax-compliant.",
-    date: "2025-11-25",
-    readTime: "8 min read",
-    category: "Taxes"
-  },
-  {
-    slug: "freelance-taxes-guide",
-    title: "Freelance Taxes 101: What Self-Employed Workers Must Know",
-    excerpt: "Quarterly payments, deductions, and record-keeping essentials for freelancers, gig workers, and side hustlers.",
-    date: "2025-11-22",
-    readTime: "10 min read",
-    category: "Taxes"
-  },
-  {
-    slug: "high-yield-savings-accounts",
-    title: "Best High-Yield Savings Accounts in 2026",
-    excerpt: "Compare APYs, fees, and features of the top savings accounts. Some are paying 5%+ right now—is your money working hard enough?",
-    date: "2025-11-20",
-    readTime: "6 min read",
-    category: "Basics"
-  },
-  {
-    slug: "passive-income-ideas",
-    title: "12 Passive Income Ideas That Actually Work",
-    excerpt: "Build income streams that pay you while you sleep. From dividend investing to digital products, ranked by startup effort and earning potential.",
-    date: "2025-11-18",
-    readTime: "12 min read",
-    category: "Side Income"
-  },
-  {
-    slug: "ira-contribution-guide",
-    title: "IRA Contribution Limits and Strategies for 2026",
-    excerpt: "Maximize your IRA contributions with these strategies. Plus, learn the income limits and backdoor Roth conversion techniques.",
-    date: "2025-11-15",
-    readTime: "7 min read",
-    category: "Retirement"
-  },
-  {
-    slug: "credit-score-basics",
-    title: "Credit Score 101: What It Is and How to Improve It",
-    excerpt: "Understand the 5 factors that make up your credit score and actionable steps to boost your number by 50-100 points.",
-    date: "2025-11-12",
-    readTime: "8 min read",
-    category: "Basics"
-  },
-  {
-    slug: "first-time-home-buyer",
-    title: "First-Time Home Buyer's Complete Financial Checklist",
-    excerpt: "Everything you need to know before buying your first home: down payments, closing costs, DTI ratios, and hidden expenses.",
-    date: "2025-11-10",
-    readTime: "14 min read",
-    category: "Calculators"
-  },
-  {
-    slug: "remote-job-salary",
-    title: "How to Negotiate a Higher Remote Job Salary",
-    excerpt: "Remote work changes the negotiation game. Learn how to leverage location flexibility and market rates to maximize your offer.",
-    date: "2025-11-08",
-    readTime: "7 min read",
-    category: "Career"
-  },
-  {
-    slug: "debt-payoff-strategies",
-    title: "Debt Snowball vs Avalanche: Which Payoff Method Wins?",
-    excerpt: "Compare the two most popular debt payoff strategies with real numbers. Find out which saves more money and which keeps you motivated.",
-    date: "2025-11-05",
-    readTime: "9 min read",
-    category: "Budgeting"
-  },
-  {
-    slug: "selling-your-car-guide",
-    title: "How to Sell Your Car for Maximum Value",
-    excerpt: "Private sale vs trade-in vs online buyers: compare your options and get the best price with these preparation and negotiation tips.",
-    date: "2025-11-02",
-    readTime: "8 min read",
-    category: "Auto"
-  },
-  {
-    slug: "etsy-side-hustle",
-    title: "Starting an Etsy Shop: From Zero to $1,000/Month",
-    excerpt: "A step-by-step guide to launching a profitable Etsy business, from product selection to SEO optimization and pricing strategy.",
-    date: "2025-10-30",
-    readTime: "11 min read",
-    category: "Side Income"
-  },
-  {
-    slug: "hsa-benefits-guide",
-    title: "HSA: The Triple Tax-Advantaged Account You're Not Using",
-    excerpt: "Health Savings Accounts offer unique tax benefits most people don't know about. Learn how to use your HSA as a stealth retirement account.",
-    date: "2025-10-28",
-    readTime: "8 min read",
-    category: "Retirement"
-  },
-  {
-    slug: "tax-filing-status",
-    title: "Choosing the Right Tax Filing Status: A Complete Guide",
-    excerpt: "Single, married filing jointly, head of household—your filing status affects your taxes more than you think. Here's how to choose.",
-    date: "2025-10-25",
-    readTime: "7 min read",
     category: "Taxes"
   }
 ];

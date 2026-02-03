@@ -8,7 +8,7 @@ const ARTICLE_META = {
   title: "The 50/30/20 Budget Rule Explained: Complete Guide with Calculator",
   description: "Learn exactly how the 50/30/20 budget rule works, see real examples at every income level, and use our free calculator to build your budget in minutes.",
   datePublished: "2026-01-20",
-  url: "https://autolytiqs.com/blog/503020-budget-rule",
+  url: "https://autolytiqs.com/blog/50-30-20-budget-rule",
   keywords: "50/30/20 budget rule, 50 30 20 rule, budget calculator, how to budget, simple budget method",
 };
 
@@ -371,7 +371,7 @@ export default function BudgetRule503020() {
 
         {/* Feedback */}
         <div className="mt-12 pt-8 border-t border-[#262626]">
-          <BlogFeedback articleSlug="503020-budget-rule" />
+          <BlogFeedback articleSlug="50-30-20-budget-rule" />
         </div>
       </article>
 

@@ -1,0 +1,46 @@
+{
+  "name": "Autolytiq Income Calculator",
+  "short_name": "Income Calc",
+  "description": "Calculate your projected annual income from year-to-date earnings. Free salary calculator for W2 employees, hourly workers, and contractors.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["finance", "utilities", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Calculate Income",
+      "short_name": "Calculate",
+      "description": "Open the income calculator",
+      "url": "/"
+    }
+  ]
+}

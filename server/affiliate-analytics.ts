@@ -272,6 +272,57 @@ router.get("/analytics/export", async (req: Request, res: Response) => {
   }
 });
 
+// Admin: Get Credit Karma specific stats
+router.get("/analytics/credit-karma", async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: "Start and end dates required" });
+    }
+
+    // Get Credit Karma specific data
+    const [totalClicks, dailyClicks, byPage, byDevice] = await Promise.all([
+      affiliateDb.getCreditKarmaStats(startDate as string, endDate as string),
+      affiliateDb.getCreditKarmaDailyClicks(startDate as string, endDate as string),
+      affiliateDb.getCreditKarmaByPage(startDate as string, endDate as string),
+      affiliateDb.getCreditKarmaByDevice(startDate as string, endDate as string),
+    ]);
+
+    // Calculate estimated earnings based on Awin commission structure
+    // $7 per new member, $4 per reactivated member
+    // Assume 2-5% conversion rate as industry average
+    const clicks = totalClicks?.total_clicks || 0;
+    const estimatedConversions = Math.floor(clicks * 0.03); // 3% estimated conversion
+    const estimatedEarnings = estimatedConversions * 7; // $7 per new member
+
+    res.json({
+      summary: {
+        totalClicks: clicks,
+        uniqueSessions: totalClicks?.unique_sessions || 0,
+        estimatedConversions,
+        estimatedEarnings,
+        // Awin commission info
+        commissionNewMember: 7,
+        commissionReactivated: 4,
+        cookieWindow: 30,
+      },
+      dailyClicks,
+      byPage,
+      byDevice,
+      awinInfo: {
+        merchantId: 66532,
+        affiliateId: 2720202,
+        dashboardUrl: "https://ui.awin.com/merchant/66532/reporting/performance",
+        trackingLink: "https://www.awin1.com/cread.php?awinmid=66532&awinaffid=2720202",
+      },
+    });
+  } catch (error) {
+    console.error("Credit Karma analytics error:", error);
+    res.status(500).json({ error: "Failed to fetch Credit Karma analytics" });
+  }
+});
+
 // Export individual handlers for public routes (before CSRF)
 export const trackClickHandler = async (req: Request, res: Response) => {
   try {

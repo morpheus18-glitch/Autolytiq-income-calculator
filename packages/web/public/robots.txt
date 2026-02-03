@@ -1,0 +1,22 @@
+# Autolytiq Robots.txt
+# Canonical: https://autolytiqs.com (no www)
+
+User-agent: *
+
+# Block admin and auth pages from indexing
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /unsubscribe
+Disallow: /desk
+
+# Allow everything else
+Allow: /
+
+# Sitemap
+Sitemap: https://autolytiqs.com/sitemap.xml
+
+# Host directive (helps some crawlers)
+Host: https://autolytiqs.com

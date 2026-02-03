@@ -42,12 +42,13 @@ import { AmortizationChart, AnimatedNumber } from "@/components/charts";
 import { IncomeBanner, NoIncomeCTA } from "@/components/income-banner";
 import { useIncome } from "@/lib/use-income";
 import { RentVsBuyCalculator } from "@/components/rent-vs-buy";
+import { BlogPreview } from "@/components/blog-preview";
 
 // Housing-focused affiliate links
 const HOUSING_AFFILIATES = [
   { name: "LendingTree", desc: "Compare mortgage rates", url: "https://www.lendingtree.com/home/mortgage/", tag: "Top Pick" },
   { name: "Zillow", desc: "Home search & values", url: "https://www.zillow.com/", tag: "Search" },
-  { name: "Credit Karma", desc: "Free credit score", url: "https://www.creditkarma.com/signup", tag: "Free" },
+  { name: "Credit Karma", desc: "Free credit score", url: "https://www.awin1.com/cread.php?awinmid=66532&awinaffid=2720202", tag: "Free" },
   { name: "Lemonade", desc: "Renters insurance $5/mo", url: "https://www.lemonade.com/", tag: "Insurance" },
 ];
 
@@ -1061,6 +1062,9 @@ function Housing() {
           initialDownPercent={parseFloat(downPaymentPercent) || 20}
           initialRate={parseFloat(mortgageRate) || 6.5}
         />
+
+        {/* Blog Preview Section */}
+        <BlogPreview calculatorType="housing" className="mb-6" />
 
         {/* FAQ Section */}
         <FAQ items={HOUSING_FAQ} className="mb-6" />
