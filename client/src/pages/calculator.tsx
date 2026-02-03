@@ -61,6 +61,7 @@ import { AccountPrompt, useCalculationTracker } from "@/components/account-promp
 import { CalculationHistory, useCalculationHistory } from "@/components/calculation-history";
 import { CreditKarmaPopup, useCreditKarmaPopup } from "@/components/credit-karma-popup";
 import { BlogPreview } from "@/components/blog-preview";
+import { InflationImpact } from "@/components/inflation-impact";
 
 const STORAGE_KEY = "income-calc-state";
 
@@ -432,7 +433,6 @@ function Calculator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="max-w-4xl mx-auto"
           >
             <Card className="glass-card border-2 border-primary/30 shadow-2xl shadow-primary/10 overflow-hidden">
               <CardHeader className="pb-4 lg:pb-6 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
@@ -639,6 +639,14 @@ function Calculator() {
                       annualIncome={incomeResults.annual}
                       monthlyIncome={incomeResults.monthly}
                       className="mt-6 pt-4 border-t border-border/50"
+                    />
+
+                    {/* Inflation Impact Widget */}
+                    <InflationImpact
+                      income={incomeResults.annual}
+                      title="Inflation Impact on Your Income"
+                      subtitle="See how inflation erodes your purchasing power over time"
+                      className="mt-6"
                     />
 
                     {/* CTAs - Next Steps */}

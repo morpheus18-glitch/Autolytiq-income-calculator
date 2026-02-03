@@ -37,6 +37,8 @@ const BlogCreditScore = lazy(() => import("@/pages/blog/what-credit-score-do-you
 const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
 const LPCalculator = lazy(() => import("@/pages/lp/calculator"));
 const FreeTools = lazy(() => import("@/pages/free-tools"));
+const GigCalculator = lazy(() => import("@/pages/gig-calculator"));
+const IncomeStreams = lazy(() => import("@/pages/income-streams"));
 
 // Minimal loading fallback
 function PageLoader() {
@@ -90,6 +92,8 @@ function Router() {
       <Route path="/unsubscribe" component={Unsubscribe} />
       <Route path="/lp/calculator" component={LPCalculator} />
       <Route path="/free-tools" component={FreeTools} />
+      <Route path="/gig-calculator" component={GigCalculator} />
+      <Route path="/income-streams" component={IncomeStreams} />
       <Route component={NotFound} />
     </Switch>
   );

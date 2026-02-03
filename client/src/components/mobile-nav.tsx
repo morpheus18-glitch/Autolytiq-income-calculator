@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Calculator, PiggyBank, Home, Car, BookOpen, LogIn, User, ChevronRight } from "lucide-react";
+import { Menu, X, Calculator, PiggyBank, Home, Car, BookOpen, LogIn, User, ChevronRight, Wallet, Briefcase } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { AutolytiqLogo } from "./icons";
 import { useAuth } from "@/lib/auth";
@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/calculator", label: "Income Calculator", icon: Calculator, description: "Calculate take-home pay" },
+  { href: "/gig-calculator", label: "Gig Calculator", icon: Briefcase, description: "1099/freelance income" },
+  { href: "/income-streams", label: "Income Streams", icon: Wallet, description: "Multiple income sources" },
   { href: "/smart-money", label: "Budget Planner", icon: PiggyBank, description: "50/30/20 budgeting" },
   { href: "/housing", label: "Housing Guide", icon: Home, description: "Rent & mortgage planning" },
   { href: "/auto", label: "Auto Guide", icon: Car, description: "Car affordability" },

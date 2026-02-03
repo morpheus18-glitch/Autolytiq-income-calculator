@@ -152,3 +152,41 @@ export const AUTO_FAQ: FAQItem[] = [
     answer: "Beyond your car payment: insurance ($150-300/mo), fuel ($150-250/mo), maintenance ($50-100/mo), registration fees, and depreciation. These can add $400-600+ monthly to your costs.",
   },
 ];
+
+export const GIG_WORKER_FAQ: FAQItem[] = [
+  {
+    question: "How is my true net income calculated?",
+    answer: "We subtract estimated business expenses (based on your platform type) from your gross earnings, then calculate self-employment tax (15.3% on 92.35% of net) and estimated federal income tax to show what you actually keep.",
+  },
+  {
+    question: "What expenses are included in the deduction?",
+    answer: "For rideshare drivers, we estimate ~30% for mileage, phone, and supplies. Delivery drivers typically have ~25% expenses. Freelancers on platforms like Upwork usually have ~10% (mainly platform fees). You can customize the expense rate.",
+  },
+  {
+    question: "What is self-employment tax?",
+    answer: "Self-employment tax is 15.3% (12.4% Social Security + 2.9% Medicare) that you pay as a 1099 worker. W-2 employees split this with their employer, but gig workers pay both halves. It's calculated on 92.35% of your net earnings.",
+  },
+  {
+    question: "Why should I set aside money for quarterly taxes?",
+    answer: "As a gig worker, no taxes are withheld from your payments. The IRS expects quarterly estimated tax payments to avoid penalties. We calculate 25% of each quarter's tax liability to keep you on track.",
+  },
+];
+
+export const INCOME_STREAMS_FAQ: FAQItem[] = [
+  {
+    question: "What is 'reliable income' and how is it calculated?",
+    answer: "Reliable income is your total income weighted by stability. A W-2 job (stability 5) counts at 100%, while variable gig work (stability 2) counts at 65%. This gives lenders and you a realistic view of dependable income.",
+  },
+  {
+    question: "How do I choose a stability rating?",
+    answer: "Rate based on how consistent the income is: 5 (Very Stable) for W-2 employment with steady hours, 4 (Stable) for rental income or long-term contracts, 3 (Moderate) for freelance work, 2 (Variable) for gig work, 1 (Very Variable) for irregular side hustles.",
+  },
+  {
+    question: "Why track multiple income streams?",
+    answer: "Modern workers often have multiple income sources. Combining them gives you a complete picture for budgeting, shows lenders your total earnings, and helps you understand which income sources are most reliable.",
+  },
+  {
+    question: "How does this connect to other calculators?",
+    answer: "Your combined income from all streams can be used in our auto and housing affordability calculators. The reliable income figure is especially useful for understanding what lenders will consider when evaluating you for loans.",
+  },
+];
