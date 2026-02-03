@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Homepage - Marketing Landing Page -->
+  <url>
+    <loc>https://autolytiqs.com/</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://autolytiqs.com/opengraph.jpg</image:loc>
+      <image:title>Autolytiq - Free Income &amp; Budget Calculators</image:title>
+      <image:caption>Free financial calculators for income, auto loans, housing, and budget planning</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Income Calculator - Main Tool -->
+  <url>
+    <loc>https://autolytiqs.com/calculator</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Auto Loan Calculator -->
+  <url>
+    <loc>https://autolytiqs.com/auto</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Smart Money Guide -->
+  <url>
+    <loc>https://autolytiqs.com/smart-money</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Housing Calculator -->
+  <url>
+    <loc>https://autolytiqs.com/housing</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ============================================ -->
+  <!-- PROGRAMMATIC SEO - Affordability Pages      -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/afford</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Affordability by Salary Level -->
+  <url><loc>https://autolytiqs.com/afford/30k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/35k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/40k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/45k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/50k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/afford/55k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/60k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/65k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/70k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/75k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/afford/80k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/85k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/90k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/95k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/afford/100k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/afford/110k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/afford/120k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/afford/150k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/afford/175k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/afford/200k</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <!-- ============================================ -->
+  <!-- BEST-OF Comparison Pages                    -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/best</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://autolytiqs.com/best/budgeting-apps</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/best/credit-monitoring</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/best/high-yield-savings</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/best/auto-loans</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/best/personal-loans</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/best/investment-apps</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- ============================================ -->
+  <!-- VS Comparison Pages                         -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/compare</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url><loc>https://autolytiqs.com/compare/ynab-vs-mint</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/compare/credit-karma-vs-experian</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/compare/sofi-vs-marcus</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/compare/robinhood-vs-acorns</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- ============================================ -->
+  <!-- Salary Pages                                -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/salary</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://autolytiqs.com/salary/software-engineer</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/salary/registered-nurse</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/salary/teacher</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/salary/accountant</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/salary/marketing-manager</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/salary/data-scientist</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/salary/project-manager</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/salary/mechanical-engineer</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/electrician</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/pharmacist</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/web-developer</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/salary/nurse-practitioner</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/physical-therapist</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/graphic-designer</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/financial-analyst</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/human-resources-manager</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/plumber</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary/paralegal</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/salary/dental-hygienist</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/salary/real-estate-agent</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <!-- ============================================ -->
+  <!-- Quiz & Viral Tools                          -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/quiz/financial-health</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ============================================ -->
+  <!-- Calculator Variant Pages (Programmatic SEO) -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/income-calculator</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://autolytiqs.com/income-calculator/hourly</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/salary-to-hourly</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/1099</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/overtime</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/quarterly</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/biweekly</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/take-home</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/gross-to-net</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- ============================================ -->
+  <!-- State Income Tax Calculator Pages           -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/income-calculator/state</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://autolytiqs.com/income-calculator/california</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/texas</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/florida</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/new-york</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/illinois</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/pennsylvania</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/ohio</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/georgia</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/north-carolina</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/michigan</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/new-jersey</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/virginia</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/washington</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/arizona</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/massachusetts</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/tennessee</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/colorado</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/maryland</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/minnesota</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/nevada</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/alabama</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/alaska</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/arkansas</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/connecticut</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/delaware</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/hawaii</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/idaho</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/indiana</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/iowa</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/kansas</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/kentucky</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/louisiana</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/maine</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/mississippi</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/missouri</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/montana</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/nebraska</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/new-hampshire</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/new-mexico</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/north-dakota</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/oklahoma</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/oregon</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/rhode-island</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/south-carolina</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/south-dakota</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/utah</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/vermont</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/west-virginia</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/wisconsin</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator/wyoming</loc><lastmod>2026-02-01</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <!-- ============================================ -->
+  <!-- Blog Index & Posts                          -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/blog</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url><loc>https://autolytiqs.com/blog/50-30-20-budget-rule</loc><lastmod>2026-01-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/first-paycheck-budget</loc><lastmod>2026-01-18</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/how-much-car-can-i-afford</loc><lastmod>2026-01-15</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/how-to-calculate-annual-income</loc><lastmod>2026-01-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/maximize-your-401k</loc><lastmod>2026-01-01</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/salary-negotiation-tips</loc><lastmod>2025-12-28</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/understanding-your-paystub</loc><lastmod>2025-12-25</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/side-hustle-income-ideas</loc><lastmod>2025-12-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog/tax-deductions-you-might-be-missing</loc><lastmod>2025-12-15</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- ============================================ -->
+  <!-- Legal Pages                                 -->
+  <!-- ============================================ -->
+  <url>
+    <loc>https://autolytiqs.com/privacy</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://autolytiqs.com/terms</loc>
+    <lastmod>2026-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

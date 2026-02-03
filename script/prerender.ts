@@ -11,11 +11,113 @@ const __dirname = path.dirname(__filename);
 
 // SEO priority routes to prerender
 const SEO_ROUTES = [
+  // Critical pages
   { path: "/", priority: "critical" },
   { path: "/calculator", priority: "critical" },
   { path: "/auto", priority: "critical" },
   { path: "/smart-money", priority: "critical" },
   { path: "/housing", priority: "critical" },
+
+  // Programmatic SEO - Affordability pages (high traffic potential)
+  { path: "/afford", priority: "high" },
+  { path: "/afford/30k", priority: "high" },
+  { path: "/afford/35k", priority: "high" },
+  { path: "/afford/40k", priority: "high" },
+  { path: "/afford/45k", priority: "high" },
+  { path: "/afford/50k", priority: "critical" },
+  { path: "/afford/55k", priority: "high" },
+  { path: "/afford/60k", priority: "high" },
+  { path: "/afford/65k", priority: "high" },
+  { path: "/afford/70k", priority: "high" },
+  { path: "/afford/75k", priority: "critical" },
+  { path: "/afford/80k", priority: "high" },
+  { path: "/afford/85k", priority: "high" },
+  { path: "/afford/90k", priority: "high" },
+  { path: "/afford/95k", priority: "high" },
+  { path: "/afford/100k", priority: "critical" },
+  { path: "/afford/110k", priority: "high" },
+  { path: "/afford/120k", priority: "high" },
+  { path: "/afford/150k", priority: "high" },
+  { path: "/afford/175k", priority: "medium" },
+  { path: "/afford/200k", priority: "medium" },
+
+  // Best-of comparison pages
+  { path: "/best", priority: "high" },
+  { path: "/best/budgeting-apps", priority: "high" },
+  { path: "/best/credit-monitoring", priority: "high" },
+  { path: "/best/high-yield-savings", priority: "high" },
+  { path: "/best/auto-loans", priority: "high" },
+  { path: "/best/personal-loans", priority: "high" },
+  { path: "/best/investment-apps", priority: "high" },
+
+  // VS comparison pages
+  { path: "/compare", priority: "high" },
+  { path: "/compare/ynab-vs-mint", priority: "high" },
+  { path: "/compare/credit-karma-vs-experian", priority: "high" },
+  { path: "/compare/sofi-vs-marcus", priority: "high" },
+  { path: "/compare/robinhood-vs-acorns", priority: "high" },
+
+  // Salary pages (top jobs)
+  { path: "/salary", priority: "high" },
+  { path: "/salary/software-engineer", priority: "critical" },
+  { path: "/salary/registered-nurse", priority: "high" },
+  { path: "/salary/teacher", priority: "high" },
+  { path: "/salary/accountant", priority: "high" },
+  { path: "/salary/marketing-manager", priority: "high" },
+  { path: "/salary/data-scientist", priority: "high" },
+  { path: "/salary/project-manager", priority: "high" },
+  { path: "/salary/mechanical-engineer", priority: "high" },
+  { path: "/salary/electrician", priority: "high" },
+  { path: "/salary/pharmacist", priority: "high" },
+  { path: "/salary/web-developer", priority: "high" },
+  { path: "/salary/nurse-practitioner", priority: "high" },
+  { path: "/salary/physical-therapist", priority: "medium" },
+  { path: "/salary/graphic-designer", priority: "medium" },
+  { path: "/salary/financial-analyst", priority: "medium" },
+  { path: "/salary/human-resources-manager", priority: "medium" },
+  { path: "/salary/plumber", priority: "medium" },
+  { path: "/salary/paralegal", priority: "medium" },
+  { path: "/salary/dental-hygienist", priority: "medium" },
+  { path: "/salary/real-estate-agent", priority: "medium" },
+
+  // Quiz and viral pages
+  { path: "/quiz/financial-health", priority: "high" },
+
+  // Calculator variant pages (programmatic SEO)
+  { path: "/income-calculator", priority: "high" },
+  { path: "/income-calculator/hourly", priority: "critical" },
+  { path: "/income-calculator/salary-to-hourly", priority: "critical" },
+  { path: "/income-calculator/1099", priority: "critical" },
+  { path: "/income-calculator/overtime", priority: "high" },
+  { path: "/income-calculator/quarterly", priority: "high" },
+  { path: "/income-calculator/biweekly", priority: "high" },
+  { path: "/income-calculator/take-home", priority: "critical" },
+  { path: "/income-calculator/gross-to-net", priority: "high" },
+
+  // State calculator pages (top states by search volume)
+  { path: "/income-calculator/state", priority: "high" },
+  { path: "/income-calculator/california", priority: "critical" },
+  { path: "/income-calculator/texas", priority: "critical" },
+  { path: "/income-calculator/florida", priority: "critical" },
+  { path: "/income-calculator/new-york", priority: "critical" },
+  { path: "/income-calculator/illinois", priority: "high" },
+  { path: "/income-calculator/pennsylvania", priority: "high" },
+  { path: "/income-calculator/ohio", priority: "high" },
+  { path: "/income-calculator/georgia", priority: "high" },
+  { path: "/income-calculator/north-carolina", priority: "high" },
+  { path: "/income-calculator/michigan", priority: "high" },
+  { path: "/income-calculator/new-jersey", priority: "high" },
+  { path: "/income-calculator/virginia", priority: "high" },
+  { path: "/income-calculator/washington", priority: "high" },
+  { path: "/income-calculator/arizona", priority: "high" },
+  { path: "/income-calculator/massachusetts", priority: "high" },
+  { path: "/income-calculator/tennessee", priority: "high" },
+  { path: "/income-calculator/colorado", priority: "high" },
+  { path: "/income-calculator/maryland", priority: "high" },
+  { path: "/income-calculator/minnesota", priority: "medium" },
+  { path: "/income-calculator/nevada", priority: "medium" },
+
+  // Blog pages
   { path: "/blog", priority: "high" },
   { path: "/blog/how-to-calculate-annual-income", priority: "high" },
   { path: "/blog/salary-negotiation-tips", priority: "high" },
@@ -26,6 +128,8 @@ const SEO_ROUTES = [
   { path: "/blog/how-much-car-can-i-afford", priority: "high" },
   { path: "/blog/first-paycheck-budget", priority: "high" },
   { path: "/blog/50-30-20-budget-rule", priority: "high" },
+
+  // Legal pages
   { path: "/privacy", priority: "low" },
   { path: "/terms", priority: "low" },
 ];
