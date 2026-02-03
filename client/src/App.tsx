@@ -40,6 +40,21 @@ const FreeTools = lazy(() => import("@/pages/free-tools"));
 const GigCalculator = lazy(() => import("@/pages/gig-calculator"));
 const IncomeStreams = lazy(() => import("@/pages/income-streams"));
 
+// Programmatic SEO pages
+const AffordIndex = lazy(() => import("@/pages/afford/index"));
+const AffordPage = lazy(() => import("@/pages/afford/[salary]"));
+const BestIndex = lazy(() => import("@/pages/best/index"));
+const BestPage = lazy(() => import("@/pages/best/[category]"));
+const CompareIndex = lazy(() => import("@/pages/compare/index"));
+const ComparePage = lazy(() => import("@/pages/compare/[slug]"));
+const SalaryIndex = lazy(() => import("@/pages/salary/index"));
+const SalaryPage = lazy(() => import("@/pages/salary/[job]"));
+const QuizFinancialHealth = lazy(() => import("@/pages/quiz/financial-health"));
+const SharePage = lazy(() => import("@/pages/share/[type]"));
+const IncomeCalculatorIndex = lazy(() => import("@/pages/income-calculator/index"));
+const IncomeCalculatorStateIndex = lazy(() => import("@/pages/income-calculator/state/index"));
+const IncomeCalculatorDynamic = lazy(() => import("@/pages/income-calculator/[param]"));
+
 // Minimal loading fallback
 function PageLoader() {
   return (
@@ -94,6 +109,20 @@ function Router() {
       <Route path="/free-tools" component={FreeTools} />
       <Route path="/gig-calculator" component={GigCalculator} />
       <Route path="/income-streams" component={IncomeStreams} />
+      {/* Programmatic SEO routes */}
+      <Route path="/afford" component={AffordIndex} />
+      <Route path="/afford/:salary" component={AffordPage} />
+      <Route path="/best" component={BestIndex} />
+      <Route path="/best/:category" component={BestPage} />
+      <Route path="/compare" component={CompareIndex} />
+      <Route path="/compare/:slug" component={ComparePage} />
+      <Route path="/salary" component={SalaryIndex} />
+      <Route path="/salary/:job" component={SalaryPage} />
+      <Route path="/quiz/financial-health" component={QuizFinancialHealth} />
+      <Route path="/share/:type" component={SharePage} />
+      <Route path="/income-calculator" component={IncomeCalculatorIndex} />
+      <Route path="/income-calculator/state" component={IncomeCalculatorStateIndex} />
+      <Route path="/income-calculator/:param" component={IncomeCalculatorDynamic} />
       <Route component={NotFound} />
     </Switch>
   );
