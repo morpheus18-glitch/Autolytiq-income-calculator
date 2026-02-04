@@ -48,7 +48,7 @@ export function serveStatic(app: Express) {
     next();
   });
 
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, { redirect: false }));
 
   // Serve prerendered HTML for SEO routes, fallback to SPA for others
   app.use("*", (req: Request, res: Response, next: NextFunction) => {
