@@ -12,6 +12,18 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Serve critical SEO files directly — never redirect these
+  const SEO_FILES = ["/sitemap.xml", "/sitemap-index.xml", "/robots.txt"];
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (SEO_FILES.includes(req.path)) {
+      const filePath = path.resolve(distPath, req.path.slice(1));
+      if (fs.existsSync(filePath)) {
+        return res.sendFile(filePath);
+      }
+    }
+    next();
+  });
+
   // Canonical URL enforcement middleware (301 permanent redirects)
   // Redirects: www → non-www, http → https
   app.use((req: Request, res: Response, next: NextFunction) => {

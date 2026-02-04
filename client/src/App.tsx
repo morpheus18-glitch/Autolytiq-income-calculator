@@ -55,6 +55,13 @@ const IncomeCalculatorIndex = lazy(() => import("@/pages/income-calculator/index
 const IncomeCalculatorStateIndex = lazy(() => import("@/pages/income-calculator/state/index"));
 const IncomeCalculatorDynamic = lazy(() => import("@/pages/income-calculator/[param]"));
 
+// Auto payment (VLDS) pages
+const AutoPaymentIndex = lazy(() => import("@/pages/auto-payment/index"));
+const AutoPaymentVehicle = lazy(() => import("@/pages/auto-payment/[vehicle]"));
+
+// Resolution Layer — isolated decision-resolution system
+const ResolveVehicle = lazy(() => import("@/pages/resolve/auto-payment/[vehicle]"));
+
 // Minimal loading fallback
 function PageLoader() {
   return (
@@ -123,8 +130,31 @@ function Router() {
       <Route path="/income-calculator" component={IncomeCalculatorIndex} />
       <Route path="/income-calculator/state" component={IncomeCalculatorStateIndex} />
       <Route path="/income-calculator/:param" component={IncomeCalculatorDynamic} />
+      {/* Auto Payment (VLDS) routes */}
+      <Route path="/auto-payment" component={AutoPaymentIndex} />
+      <Route path="/auto-payment/:vehicle" component={AutoPaymentVehicle} />
+      {/* Resolution Layer — isolated, no main site bleed */}
+      <Route path="/resolve/auto-payment/:vehicle" component={ResolveVehicle} />
       <Route component={NotFound} />
     </Switch>
+  );
+}
+
+function AppShell() {
+  const [location] = useLocation();
+  const isResolvePath = location.startsWith("/resolve");
+
+  return (
+    <>
+      <PageViewTracker />
+      <Toaster />
+      <Suspense fallback={<PageLoader />}>
+        <Router />
+      </Suspense>
+      {/* Resolution Layer is isolated — no main site overlays */}
+      {!isResolvePath && <StickyChecklist />}
+      {!isResolvePath && <CookieConsentBanner />}
+    </>
   );
 }
 
@@ -133,13 +163,7 @@ function App() {
     <AuthProvider>
       <ThemeProvider defaultTheme="system" storageKey="income-calc-theme">
         <TooltipProvider>
-          <PageViewTracker />
-          <Toaster />
-          <Suspense fallback={<PageLoader />}>
-            <Router />
-          </Suspense>
-          <StickyChecklist />
-          <CookieConsentBanner />
+          <AppShell />
         </TooltipProvider>
       </ThemeProvider>
     </AuthProvider>

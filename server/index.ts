@@ -29,9 +29,15 @@ app.set("trust proxy", 1);
 // Canonical URL redirect middleware (www → non-www, HTTP → HTTPS)
 // Must be early in the chain to redirect before other processing
 const CANONICAL_HOST = "autolytiqs.com";
+const SEO_BYPASS_PATHS = ["/sitemap.xml", "/sitemap-index.xml", "/robots.txt"];
 app.use((req: Request, res: Response, next: NextFunction) => {
   // Skip in development
   if (process.env.NODE_ENV !== "production") {
+    return next();
+  }
+
+  // Never redirect critical SEO files — bots must always get 200
+  if (SEO_BYPASS_PATHS.includes(req.path)) {
     return next();
   }
 
