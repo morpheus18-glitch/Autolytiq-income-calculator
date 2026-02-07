@@ -1,0 +1,44 @@
+{{define "gig-results"}}
+<div class="space-y-4 animate-fade-in">
+    <!-- Projected Annual Income -->
+    <div class="p-5 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800">
+        <div class="text-sm text-amber-600 dark:text-amber-400 font-medium mb-1">Projected Annual Income</div>
+        <div class="text-3xl font-bold text-amber-700 dark:text-amber-300">${{formatNumber .GrossAnnual}}</div>
+        <div class="text-sm text-gray-500 mt-1">${{formatNumber .GrossMonthly}}/month &middot; {{.DaysWorked}} days tracked</div>
+    </div>
+
+    <!-- Expense Breakdown -->
+    <div class="p-5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <h4 class="font-semibold mb-3">Deductions & Expenses</h4>
+        <div class="space-y-2 text-sm">
+            {{if .MilesDriven}}
+            <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Mileage Deduction ({{formatNumber .MilesDriven}} mi)</span>
+                <span class="font-medium text-emerald-600">-${{formatNumber .MileageDeduction}}</span>
+            </div>
+            {{end}}
+            {{if .OtherExpenses}}
+            <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Other Business Expenses</span>
+                <span class="font-medium text-emerald-600">-${{formatNumber .OtherExpenses}}</span>
+            </div>
+            {{end}}
+            <div class="flex justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+                <span class="text-gray-600 dark:text-gray-400">Net After Expenses</span>
+                <span class="font-semibold">${{formatNumber .NetAfterExpenses}}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Self-Employment Tax (~15.3%)</span>
+                <span class="font-medium text-red-500">-${{formatNumber .SelfEmploymentTax}}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Net Take-Home -->
+    <div class="p-5 rounded-xl bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border border-emerald-200 dark:border-emerald-800">
+        <div class="text-sm text-emerald-600 dark:text-emerald-400 font-medium mb-1">Estimated Take-Home</div>
+        <div class="text-3xl font-bold text-emerald-700 dark:text-emerald-300">${{formatNumber .NetAfterTax}}/yr</div>
+        <div class="text-sm text-gray-500 mt-1">${{formatNumber .NetMonthly}}/month &middot; ~${{formatNumber .EffectiveHourly}}/hr effective</div>
+    </div>
+</div>
+{{end}}

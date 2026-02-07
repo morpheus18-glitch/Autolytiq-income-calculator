@@ -110,7 +110,12 @@ func (h *Handler) FreeTools(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GigCalculator(w http.ResponseWriter, r *http.Request) {
-	h.renderPage(w, "Gig Worker Income Calculator", "gig-calculator-content", nil)
+	now := time.Now()
+	data := map[string]interface{}{
+		"Today":            now.Format("2006-01-02"),
+		"DefaultStartDate": time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location()).Format("2006-01-02"),
+	}
+	h.renderPage(w, "Gig Worker Income Calculator", "gig-calculator-content", data)
 }
 
 func (h *Handler) IncomeStreams(w http.ResponseWriter, r *http.Request) {
@@ -284,4 +289,128 @@ func (h *Handler) CalculateTaxes(w http.ResponseWriter, r *http.Request) {
 
 	result := calc.CalculateTaxes(grossAnnual, retirement401kPct, healthInsurance, stateTaxRate)
 	h.renderPartial(w, "tax-results", result)
+}
+
+func (h *Handler) CalculateGig(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		h.renderError(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+
+	gig1Income, _ := strconv.ParseFloat(cleanMoney(r.FormValue("gig1_income")), 64)
+	gig2Income, _ := strconv.ParseFloat(cleanMoney(r.FormValue("gig2_income")), 64)
+	milesDriven, _ := strconv.ParseFloat(cleanMoney(r.FormValue("miles_driven")), 64)
+	otherExpenses, _ := strconv.ParseFloat(cleanMoney(r.FormValue("other_expenses")), 64)
+
+	totalYTD := gig1Income + gig2Income
+	if totalYTD <= 0 {
+		h.renderError(w, "Please enter at least one gig income source", http.StatusBadRequest)
+		return
+	}
+
+	startDate, err := time.Parse("2006-01-02", r.FormValue("start_date"))
+	if err != nil {
+		h.renderError(w, "Please enter a valid start date", http.StatusBadRequest)
+		return
+	}
+
+	checkDate, err := time.Parse("2006-01-02", r.FormValue("check_date"))
+	if err != nil {
+		h.renderError(w, "Please enter a valid as-of date", http.StatusBadRequest)
+		return
+	}
+
+	// Project annual income
+	incomeResult, err := calc.CalculateIncome(totalYTD, startDate, checkDate)
+	if err != nil {
+		h.renderError(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Calculate deductions
+	mileageDeduction := milesDriven * 0.67
+	totalExpenses := mileageDeduction + otherExpenses
+	selfEmploymentTax := float64(incomeResult.GrossAnnual) * 0.153
+	netAfterExpenses := float64(incomeResult.GrossAnnual) - totalExpenses
+	netAfterTax := netAfterExpenses - selfEmploymentTax
+
+	result := map[string]interface{}{
+		"Gig1Name":          r.FormValue("gig1_name"),
+		"Gig1Income":        int(gig1Income),
+		"Gig2Name":          r.FormValue("gig2_name"),
+		"Gig2Income":        int(gig2Income),
+		"TotalYTD":          int(totalYTD),
+		"GrossAnnual":       incomeResult.GrossAnnual,
+		"GrossMonthly":      incomeResult.GrossMonthly,
+		"DaysWorked":        incomeResult.DaysWorked,
+		"MilesDriven":       int(milesDriven),
+		"MileageDeduction":  int(mileageDeduction),
+		"OtherExpenses":     int(otherExpenses),
+		"TotalExpenses":     int(totalExpenses),
+		"SelfEmploymentTax": int(selfEmploymentTax),
+		"NetAfterExpenses":  int(netAfterExpenses),
+		"NetAfterTax":       int(netAfterTax),
+		"NetMonthly":        int(netAfterTax / 12),
+		"EffectiveHourly":   int(netAfterTax / 2080),
+	}
+	h.renderPartial(w, "gig-results", result)
+}
+
+func (h *Handler) CalculateStreams(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		h.renderError(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+
+	type Stream struct {
+		Name   string
+		Annual int
+	}
+
+	var streams []Stream
+	var totalAnnual float64
+
+	for i := 1; i <= 4; i++ {
+		name := r.FormValue(fmt.Sprintf("stream%d_name", i))
+		incomeStr := cleanMoney(r.FormValue(fmt.Sprintf("stream%d_income", i)))
+		income, _ := strconv.ParseFloat(incomeStr, 64)
+		if income > 0 {
+			streams = append(streams, Stream{Name: name, Annual: int(income)})
+			totalAnnual += income
+		}
+	}
+
+	if totalAnnual <= 0 {
+		h.renderError(w, "Please enter at least one income stream", http.StatusBadRequest)
+		return
+	}
+
+	monthlyTotal := int(totalAnnual / 12)
+
+	// Add percentage of total to each stream
+	type StreamResult struct {
+		Name    string
+		Annual  int
+		Monthly int
+		Percent int
+	}
+	var streamResults []StreamResult
+	for _, s := range streams {
+		pct := int((float64(s.Annual) / totalAnnual) * 100)
+		streamResults = append(streamResults, StreamResult{
+			Name:    s.Name,
+			Annual:  s.Annual,
+			Monthly: s.Annual / 12,
+			Percent: pct,
+		})
+	}
+
+	result := map[string]interface{}{
+		"Streams":      streamResults,
+		"TotalAnnual":  int(totalAnnual),
+		"TotalMonthly": monthlyTotal,
+		"TotalWeekly":  int(totalAnnual / 52),
+		"StreamCount":  len(streams),
+	}
+	h.renderPartial(w, "streams-results", result)
 }

@@ -1,0 +1,36 @@
+{{define "streams-results"}}
+<div class="space-y-4 animate-fade-in">
+    <!-- Total Income Summary -->
+    <div class="p-5 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-800">
+        <div class="text-sm text-emerald-600 dark:text-emerald-400 font-medium mb-1">Total Annual Income ({{.StreamCount}} sources)</div>
+        <div class="text-3xl font-bold text-emerald-700 dark:text-emerald-300">${{formatNumber .TotalAnnual}}</div>
+        <div class="text-sm text-gray-500 mt-1">${{formatNumber .TotalMonthly}}/month &middot; ${{formatNumber .TotalWeekly}}/week</div>
+    </div>
+
+    <!-- Individual Streams -->
+    <div class="p-5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <h4 class="font-semibold mb-3">Income Breakdown</h4>
+        <div class="space-y-3">
+            {{range .Streams}}
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="font-medium text-sm">{{.Name}}</div>
+                    <div class="text-xs text-gray-500">${{formatNumber .Monthly}}/mo</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-semibold">${{formatNumber .Annual}}</div>
+                    <div class="text-xs text-gray-500">{{.Percent}}%</div>
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </div>
+
+    <!-- Diversification Note -->
+    {{if eq .StreamCount 1}}
+    <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+        <p class="text-sm text-amber-700 dark:text-amber-400">Consider adding additional income streams for financial resilience. Experts recommend 3+ sources.</p>
+    </div>
+    {{end}}
+</div>
+{{end}}

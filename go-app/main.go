@@ -71,6 +71,8 @@ func main() {
 	mux.HandleFunc("POST /api/calculate-mortgage", h.CalculateMortgage)
 	mux.HandleFunc("POST /api/calculate-auto", h.CalculateAuto)
 	mux.HandleFunc("POST /api/calculate-taxes", h.CalculateTaxes)
+	mux.HandleFunc("POST /api/calculate-gig", h.CalculateGig)
+	mux.HandleFunc("POST /api/calculate-streams", h.CalculateStreams)
 
 	// Health check
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
