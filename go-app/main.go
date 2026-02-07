@@ -60,6 +60,7 @@ func main() {
 	mux.HandleFunc("GET /smart-money", h.SmartMoney)
 	mux.HandleFunc("GET /housing", h.Housing)
 	mux.HandleFunc("GET /auto", h.Auto)
+	mux.HandleFunc("GET /taxes", h.Taxes)
 	mux.HandleFunc("GET /blog", h.Blog)
 	mux.HandleFunc("GET /free-tools", h.FreeTools)
 	mux.HandleFunc("GET /gig-calculator", h.GigCalculator)
@@ -98,6 +99,7 @@ func main() {
   <url><loc>https://autolytiqs.com/auto</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://autolytiqs.com/gig-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://autolytiqs.com/income-streams</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/taxes</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://autolytiqs.com/free-tools</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
 </urlset>`))

@@ -22,11 +22,11 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
   // Content-Security-Policy: Prevent XSS and other injection attacks
   const cspDirectives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com`,
+    `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com https://www.dwin1.com`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com",
+    "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.dwin1.com",
     "frame-ancestors 'none'",
     "form-action 'self'",
     "base-uri 'self'",

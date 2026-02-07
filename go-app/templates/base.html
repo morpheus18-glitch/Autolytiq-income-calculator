@@ -6,11 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Autolytiq">
-    <meta name="description" content="Free income calculator - Calculate your take-home pay, create budgets, and plan your finances.">
+    <meta name="description" content="{{.Description}}">
+    {{if .Canonical}}<link rel="canonical" href="{{.Canonical}}">{{end}}
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Autolytiq">
+    <meta property="og:title" content="{{.Title}}">
+    <meta property="og:description" content="{{.Description}}">
+    {{if .Canonical}}<meta property="og:url" content="{{.Canonical}}">{{end}}
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{.Title}}">
+    <meta name="twitter:description" content="{{.Description}}">
     <link rel="icon" type="image/svg+xml" href="/static/css/favicon.svg">
     <title>{{.Title}}</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY4FDJP3MW"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-WY4FDJP3MW');
+    </script>
+
+    <!-- JSON-LD Organization Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Autolytiq",
+        "url": "https://autolytiqs.com",
+        "description": "Free financial calculators and tools for income projection, budgeting, mortgage, and auto loan calculations.",
+        "sameAs": []
+    }
+    </script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -72,6 +100,7 @@
                     <a href="/smart-money" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Budget</a>
                     <a href="/housing" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Housing</a>
                     <a href="/auto" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Auto</a>
+                    <a href="/taxes" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Taxes</a>
                     <a href="/blog" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Blog</a>
                 </nav>
 
@@ -110,6 +139,7 @@
                         <li><a href="/smart-money" class="hover:text-primary-500">Budget Planner</a></li>
                         <li><a href="/housing" class="hover:text-primary-500">Housing Calculator</a></li>
                         <li><a href="/auto" class="hover:text-primary-500">Auto Calculator</a></li>
+                        <li><a href="/taxes" class="hover:text-primary-500">Tax Calculator</a></li>
                     </ul>
                 </div>
                 <div>
