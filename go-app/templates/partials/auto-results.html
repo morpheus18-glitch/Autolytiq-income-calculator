@@ -1,0 +1,195 @@
+{{define "auto-results"}}
+{{- /* Auto loan calculation results partial - inserted via HTMX */ -}}
+{{- /* Receives AutoData struct with: MonthlyPayment, TotalCost, TotalInterest, LoanAmount, MaxPayment, Affordable */ -}}
+
+<div class="pt-6 border-t border-gray-200/50 dark:border-gray-700/50 animate-fade-in-up">
+    <!-- Affordability Status -->
+    {{if .Affordable}}
+    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 mb-6 flex items-center gap-3">
+        <div class="p-2 rounded-full bg-emerald-500/20">
+            <svg class="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <div>
+            <p class="font-semibold text-emerald-700 dark:text-emerald-400">This car fits your budget!</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Your payment is within the recommended 12% of gross income</p>
+        </div>
+    </div>
+    {{else}}
+    <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 mb-6 flex items-center gap-3">
+        <div class="p-2 rounded-full bg-red-500/20">
+            <svg class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <div>
+            <p class="font-semibold text-red-700 dark:text-red-400">This car may stretch your budget</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Payment exceeds 12% of income. Consider a lower price, higher down payment, or longer term.</p>
+        </div>
+    </div>
+    {{end}}
+
+    <!-- Monthly Payment Hero -->
+    <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/30 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Your Monthly Payment</p>
+            <p class="text-4xl font-bold mono-value text-blue-600 dark:text-blue-400">${{.MonthlyPaymentFormatted}}<span class="text-lg font-normal text-gray-400">/mo</span></p>
+        </div>
+        <div class="p-6 rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Max Payment (12% Rule)</p>
+            <p class="text-4xl font-bold mono-value text-emerald-600 dark:text-emerald-400">${{.MaxPaymentFormatted}}<span class="text-lg font-normal text-gray-400">/mo</span></p>
+        </div>
+    </div>
+
+    <!-- Payment Comparison Bar -->
+    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 mb-6 animate-fade-in-up" style="animation-delay: 0.1s">
+        <div class="flex justify-between mb-2">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Payment vs 12% Max</span>
+            <span class="text-sm font-medium {{if .Affordable}}text-emerald-600 dark:text-emerald-400{{else}}text-red-600 dark:text-red-400{{end}}">{{.PaymentPercent}}% of max</span>
+        </div>
+        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden relative">
+            <!-- Max marker at 100% -->
+            <div class="absolute right-0 top-0 bottom-0 w-0.5 bg-emerald-500"></div>
+            <!-- Actual payment bar -->
+            <div class="h-full {{if .Affordable}}bg-blue-500{{else}}bg-red-500{{end}} progress-bar" style="width: {{if gt .PaymentPercent 100.0}}100{{else}}{{.PaymentPercent}}{{end}}%"></div>
+        </div>
+        <div class="flex justify-between mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <span>$0</span>
+            <span>${{.MaxPaymentFormatted}} (12%)</span>
+        </div>
+    </div>
+
+    <!-- Loan Details Grid -->
+    <div class="grid sm:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-center animate-fade-in-up" style="animation-delay: 0.15s">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Loan Amount</p>
+            <p class="text-xl font-bold mono-value">${{.LoanAmountFormatted}}</p>
+        </div>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-center animate-fade-in-up" style="animation-delay: 0.2s">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Interest Rate</p>
+            <p class="text-xl font-bold mono-value">{{.InterestRate}}%</p>
+        </div>
+        <div class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-center animate-fade-in-up" style="animation-delay: 0.25s">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Loan Term</p>
+            <p class="text-xl font-bold mono-value">{{.LoanTermMonths}} months</p>
+        </div>
+    </div>
+
+    <!-- Total Cost Breakdown -->
+    <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 animate-fade-in-up" style="animation-delay: 0.3s">
+            <h4 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Purchase Summary
+            </h4>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Vehicle Price</span>
+                    <span class="font-medium mono-value">${{.VehiclePriceFormatted}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Down Payment</span>
+                    <span class="font-medium mono-value text-emerald-600 dark:text-emerald-400">-${{.DownPaymentFormatted}}</span>
+                </div>
+                {{if gt .TradeInValue 0}}
+                <div class="flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Trade-In Value</span>
+                    <span class="font-medium mono-value text-emerald-600 dark:text-emerald-400">-${{.TradeInFormatted}}</span>
+                </div>
+                {{end}}
+                <div class="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-2">
+                    <span class="text-gray-500 dark:text-gray-400">Amount Financed</span>
+                    <span class="font-bold mono-value">${{.LoanAmountFormatted}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 animate-fade-in-up" style="animation-delay: 0.35s">
+            <h4 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Total Cost of Loan
+            </h4>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Total Payments</span>
+                    <span class="font-medium mono-value">${{.TotalPaymentsFormatted}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Total Interest</span>
+                    <span class="font-medium mono-value text-red-500">${{.TotalInterestFormatted}}</span>
+                </div>
+                <div class="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-2">
+                    <span class="text-gray-500 dark:text-gray-400">True Cost</span>
+                    <span class="font-bold mono-value">${{.TrueCostFormatted}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Costs Reminder -->
+    <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6 animate-fade-in-up" style="animation-delay: 0.4s">
+        <h4 class="text-sm font-semibold mb-2 flex items-center gap-2 text-amber-700 dark:text-amber-400">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Don't Forget Additional Costs
+        </h4>
+        <div class="grid sm:grid-cols-4 gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <div class="flex items-center gap-1">
+                <svg class="h-3 w-3 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Insurance</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <svg class="h-3 w-3 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Gas/Charging</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <svg class="h-3 w-3 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Maintenance</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <svg class="h-3 w-3 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Registration</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap gap-3 justify-center animate-fade-in-up" style="animation-delay: 0.45s">
+        <a href="/smart-money" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors text-sm font-medium">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Create Budget
+        </a>
+        <a href="/housing" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors text-sm font-medium">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Housing Calculator
+        </a>
+        <button
+            onclick="window.print()"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+        >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Print Results
+        </button>
+    </div>
+</div>
+{{end}}

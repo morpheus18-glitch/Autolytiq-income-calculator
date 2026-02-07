@@ -1,0 +1,604 @@
+{{- /* Income Streams Tracker page template - extends base.html */ -}}
+
+
+{{define "title"}}Multiple Income Streams Tracker | Track All Your Income Sources{{end}}
+
+{{define "meta"}}
+<meta name="description" content="Track and manage multiple income streams in one place. Add W-2 salary, freelance income, rental income, investments, and more. Visualize your total income breakdown.">
+<meta name="keywords" content="income streams, multiple income sources, income tracker, passive income calculator, side income tracker, income diversification">
+<meta property="og:title" content="Multiple Income Streams Tracker - Track All Your Income">
+<meta property="og:description" content="Manage and visualize income from multiple sources. Track salary, freelance work, investments, and more in one place.">
+<meta property="og:url" content="https://autolytiqs.com/income-streams">
+{{end}}
+
+{{define "head"}}
+<style>
+    /* Glass morphism cards */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .glass-card {
+        background: rgba(30, 30, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Monospace values */
+    .mono-value {
+        font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Money input with dollar sign */
+    .money-input-wrapper {
+        position: relative;
+    }
+
+    .money-input-wrapper::before {
+        content: '$';
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .money-input-wrapper input {
+        padding-left: 2rem;
+    }
+
+    /* Loading spinner */
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Fade in animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.4s ease-out forwards;
+    }
+
+    /* Income stream colors */
+    .stream-primary { background-color: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+    .stream-secondary { background-color: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); }
+    .stream-tertiary { background-color: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+    .stream-quaternary { background-color: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.3); }
+</style>
+{{end}}
+
+{{define "income-streams-content"}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Hero Section -->
+    <div class="text-center mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4">
+            <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Income Diversification</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Track Your <span class="text-indigo-500">Income Streams</span>
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Manage and visualize all your income sources in one place to understand your complete financial picture
+        </p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid lg:grid-cols-5 gap-6 mb-8">
+        <!-- LEFT: Info & Types -->
+        <div class="lg:col-span-2 space-y-5">
+            <!-- Income Types Card -->
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    Types of Income
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3 p-3 rounded-lg stream-primary border">
+                        <div class="p-1.5 rounded bg-emerald-500/20">
+                            <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-sm">Active Income</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Salary, wages, freelance, gig work</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 rounded-lg stream-secondary border">
+                        <div class="p-1.5 rounded bg-indigo-500/20">
+                            <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-sm">Investment Income</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Dividends, interest, capital gains</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 rounded-lg stream-tertiary border">
+                        <div class="p-1.5 rounded bg-amber-500/20">
+                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-sm">Rental Income</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Real estate, Airbnb, room rental</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 rounded-lg stream-quaternary border">
+                        <div class="p-1.5 rounded bg-pink-500/20">
+                            <svg class="h-4 w-4 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-sm">Passive Income</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Royalties, affiliate income, digital products</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Why Diversify Card -->
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h3 class="text-sm font-semibold flex items-center gap-2 mb-4">
+                    <svg class="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    Why Diversify Income?
+                </h3>
+                <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Financial security if one source dries up</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Faster path to financial independence</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Tax optimization opportunities</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Build wealth while you sleep (passive)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Reduce stress about job loss</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h3 class="text-sm font-semibold flex items-center gap-2 mb-4">
+                    <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Did You Know?
+                </h3>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+                        <p class="text-gray-600 dark:text-gray-400">
+                            Millionaires have an average of <span class="font-bold text-indigo-600 dark:text-indigo-400">7 income streams</span>
+                        </p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                        <p class="text-gray-600 dark:text-gray-400">
+                            <span class="font-bold text-emerald-600 dark:text-emerald-400">65%</span> of self-made millionaires have 3+ income sources
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Income Streams Form -->
+        <div class="lg:col-span-3">
+            <div class="glass-card rounded-2xl border-2 border-indigo-500/20 shadow-2xl overflow-hidden">
+                <!-- Card Header -->
+                <div class="px-6 py-4 bg-gradient-to-r from-indigo-500/5 to-transparent border-b border-gray-200/50 dark:border-gray-700/50">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg lg:text-xl font-semibold flex items-center gap-2">
+                            <div class="p-1.5 rounded-lg bg-indigo-500/10">
+                                <svg class="h-5 w-5 lg:h-6 lg:w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            Income Streams Tracker
+                        </h2>
+                        <button
+                            type="button"
+                            onclick="document.getElementById('streams-form').reset(); document.getElementById('streams-results').innerHTML = '';"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                        >
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Content -->
+                <div class="p-6">
+                    <form
+                        id="streams-form"
+                        hx-post="/api/calculate-streams"
+                        hx-target="#streams-results"
+                        hx-swap="innerHTML"
+                        hx-indicator="#loading-indicator"
+                        class="space-y-4"
+                    >
+                        <!-- Stream 1: Primary Job -->
+                        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 rounded-full bg-emerald-500 text-white text-sm flex items-center justify-center font-medium">1</span>
+                                <h3 class="font-medium text-emerald-700 dark:text-emerald-400">Primary Job (W-2)</h3>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="stream1_name" class="text-sm font-medium">Source Name</label>
+                                    <input
+                                        type="text"
+                                        id="stream1_name"
+                                        name="stream1_name"
+                                        value="Primary Job"
+                                        placeholder="e.g., Software Engineer"
+                                        class="w-full h-11 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 outline-none transition-all"
+                                    >
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="stream1_income" class="text-sm font-medium">Annual Income</label>
+                                    <div class="money-input-wrapper">
+                                        <input
+                                            type="text"
+                                            id="stream1_income"
+                                            name="stream1_income"
+                                            inputmode="decimal"
+                                            placeholder="60,000"
+                                            class="w-full h-11 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 outline-none transition-all mono-value"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stream 2: Side Hustle -->
+                        <div class="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 rounded-full bg-indigo-500 text-white text-sm flex items-center justify-center font-medium">2</span>
+                                <h3 class="font-medium text-indigo-700 dark:text-indigo-400">Side Hustle / Freelance</h3>
+                                <span class="text-xs text-gray-500">(optional)</span>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="stream2_name" class="text-sm font-medium">Source Name</label>
+                                    <input
+                                        type="text"
+                                        id="stream2_name"
+                                        name="stream2_name"
+                                        placeholder="e.g., Freelance Design"
+                                        class="w-full h-11 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all"
+                                    >
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="stream2_income" class="text-sm font-medium">Annual Income</label>
+                                    <div class="money-input-wrapper">
+                                        <input
+                                            type="text"
+                                            id="stream2_income"
+                                            name="stream2_income"
+                                            inputmode="decimal"
+                                            placeholder="0"
+                                            class="w-full h-11 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all mono-value"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stream 3: Investments -->
+                        <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center font-medium">3</span>
+                                <h3 class="font-medium text-amber-700 dark:text-amber-400">Investments / Dividends</h3>
+                                <span class="text-xs text-gray-500">(optional)</span>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="stream3_name" class="text-sm font-medium">Source Name</label>
+                                    <input
+                                        type="text"
+                                        id="stream3_name"
+                                        name="stream3_name"
+                                        placeholder="e.g., Stock Dividends"
+                                        class="w-full h-11 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 outline-none transition-all"
+                                    >
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="stream3_income" class="text-sm font-medium">Annual Income</label>
+                                    <div class="money-input-wrapper">
+                                        <input
+                                            type="text"
+                                            id="stream3_income"
+                                            name="stream3_income"
+                                            inputmode="decimal"
+                                            placeholder="0"
+                                            class="w-full h-11 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 outline-none transition-all mono-value"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stream 4: Rental/Other -->
+                        <div class="p-4 rounded-xl bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 rounded-full bg-pink-500 text-white text-sm flex items-center justify-center font-medium">4</span>
+                                <h3 class="font-medium text-pink-700 dark:text-pink-400">Rental / Other Income</h3>
+                                <span class="text-xs text-gray-500">(optional)</span>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="stream4_name" class="text-sm font-medium">Source Name</label>
+                                    <input
+                                        type="text"
+                                        id="stream4_name"
+                                        name="stream4_name"
+                                        placeholder="e.g., Rental Property"
+                                        class="w-full h-11 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500/50 outline-none transition-all"
+                                    >
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="stream4_income" class="text-sm font-medium">Annual Income</label>
+                                    <div class="money-input-wrapper">
+                                        <input
+                                            type="text"
+                                            id="stream4_income"
+                                            name="stream4_income"
+                                            inputmode="decimal"
+                                            placeholder="0"
+                                            class="w-full h-11 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500/50 outline-none transition-all mono-value"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Calculate Button -->
+                        <div class="flex justify-center pt-4">
+                            <button
+                                type="submit"
+                                class="relative flex items-center justify-center gap-2 px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30 transition-all focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2"
+                            >
+                                <span class="htmx-indicator absolute inset-0 flex items-center justify-center" id="loading-indicator">
+                                    <div class="spinner"></div>
+                                </span>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                Calculate Total Income
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Results Container -->
+                    <div id="streams-results" class="mt-6">
+                        <!-- Results will be inserted here by HTMX -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Income Ideas Section -->
+    <div class="mt-12 glass-card rounded-2xl p-6 lg:p-8">
+        <h2 class="text-xl font-bold mb-6 text-center">Ideas to Add Income Streams</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <h3 class="font-semibold text-emerald-600 dark:text-emerald-400 mb-3">Side Hustles</h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>Freelancing (writing, design)</li>
+                    <li>Consulting</li>
+                    <li>Tutoring/Teaching</li>
+                    <li>Gig economy (Uber, DoorDash)</li>
+                </ul>
+            </div>
+            <div class="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                <h3 class="font-semibold text-indigo-600 dark:text-indigo-400 mb-3">Investments</h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>Dividend stocks</li>
+                    <li>Index funds</li>
+                    <li>REITs</li>
+                    <li>Bonds/CDs</li>
+                </ul>
+            </div>
+            <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                <h3 class="font-semibold text-amber-600 dark:text-amber-400 mb-3">Rental Income</h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>Room rental</li>
+                    <li>Airbnb hosting</li>
+                    <li>Rental property</li>
+                    <li>Storage space rental</li>
+                </ul>
+            </div>
+            <div class="p-4 rounded-xl bg-pink-500/10 border border-pink-500/20">
+                <h3 class="font-semibold text-pink-600 dark:text-pink-400 mb-3">Passive Income</h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>Digital products</li>
+                    <li>Online courses</li>
+                    <li>Affiliate marketing</li>
+                    <li>Royalties (books, music)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
+        <div class="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto" x-data="{ openFaq: null }">
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 1 ? null : 1"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">How many income streams should I have?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 1 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 1" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    Start with 2-3 income streams and grow from there. Quality matters more than quantity. Focus on streams that align with your skills and time availability. Millionaires average 7 streams, but they built them over time.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 2 ? null : 2"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">Active vs passive income?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 2 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 2" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    Active income requires your time (job, freelance). Passive income earns while you sleep (dividends, rentals). Most passive income requires upfront work or capital. Start with active income to fund passive investments.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 3 ? null : 3"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">How are multiple incomes taxed?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 3 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 3" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    All income is taxable, but rates vary. W-2 wages have taxes withheld. Self-employment income has 15.3% SE tax plus income tax. Investment income may qualify for lower capital gains rates. Rental income has unique deductions.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 4 ? null : 4"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">Where should I start?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 4 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 4" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    Start by maximizing your primary income. Then add a side hustle using skills you already have. Invest in index funds for passive growth. As you earn more, explore rental properties or building digital products.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Tools -->
+    <div class="mt-12">
+        <h2 class="text-xl font-bold mb-6 text-center">Related Tools</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <a href="/calculator" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-primary-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="text-sm font-medium">Income Calculator</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">W-2 income</div>
+            </a>
+            <a href="/gig-calculator" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-amber-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <div class="text-sm font-medium">Gig Calculator</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Freelance income</div>
+            </a>
+            <a href="/smart-money" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-emerald-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-emerald-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <div class="text-sm font-medium">Budget Planner</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">50/30/20 rule</div>
+            </a>
+            <a href="/blog" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-purple-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <div class="text-sm font-medium">Blog</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Income tips</div>
+            </a>
+        </div>
+    </div>
+</div>
+{{end}}
+
+{{define "scripts"}}
+<script>
+    // Format money inputs
+    ['stream1_income', 'stream2_income', 'stream3_income', 'stream4_income'].forEach(function(id) {
+        document.getElementById(id)?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            if (parts[0]) {
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+            e.target.value = parts.join('.');
+        });
+    });
+
+    // HTMX after request handler
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'streams-results') {
+            evt.detail.target.querySelectorAll('.animate-fade-in-up').forEach(function(el, i) {
+                el.style.animationDelay = (i * 0.1) + 's';
+            });
+        }
+    });
+</script>
+{{end}}

@@ -1,0 +1,171 @@
+{{define "tax-results"}}
+{{- /* Tax breakdown results partial - inserted via HTMX */ -}}
+{{- /* Receives TaxData struct with: GrossIncome, FederalTax, StateTax, SocialSecurity, Medicare, NetIncome, EffectiveRate */ -}}
+
+<div class="pt-6 border-t border-gray-200/50 dark:border-gray-700/50 animate-fade-in-up">
+    <!-- Net Income Hero -->
+    <div class="p-6 rounded-xl bg-gradient-to-br from-primary-500/10 to-primary-500/5 border-2 border-primary-500/30 mb-6 text-center">
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Estimated Take-Home Pay</p>
+        <p class="text-4xl font-bold mono-value text-primary-600 dark:text-primary-400">${{.NetIncomeFormatted}}<span class="text-lg font-normal text-gray-400">/year</span></p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            <span class="mono-value">${{.MonthlyNetFormatted}}</span>/month |
+            <span class="mono-value">${{.BiweeklyNetFormatted}}</span>/biweekly
+        </p>
+    </div>
+
+    <!-- Income vs Taxes Comparison -->
+    <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center animate-fade-in-up" style="animation-delay: 0.1s">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Gross Income</p>
+            <p class="text-2xl font-bold mono-value text-emerald-600 dark:text-emerald-400">${{.GrossIncomeFormatted}}</p>
+        </div>
+        <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center animate-fade-in-up" style="animation-delay: 0.15s">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Taxes</p>
+            <p class="text-2xl font-bold mono-value text-red-600 dark:text-red-400">${{.TotalTaxesFormatted}}</p>
+        </div>
+    </div>
+
+    <!-- Tax Breakdown -->
+    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 mb-6 animate-fade-in-up" style="animation-delay: 0.2s">
+        <h4 class="text-sm font-semibold mb-4 flex items-center gap-2">
+            <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Tax Breakdown (Annual)
+        </h4>
+        <div class="space-y-3">
+            <!-- Federal Tax -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Federal Income Tax</span>
+                </div>
+                <span class="text-sm font-medium mono-value">${{.FederalTaxFormatted}}</span>
+            </div>
+            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-500 progress-bar" style="width: {{.FederalTaxPercent}}%"></div>
+            </div>
+
+            <!-- State Tax -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">State Income Tax ({{.State}})</span>
+                </div>
+                <span class="text-sm font-medium mono-value">${{.StateTaxFormatted}}</span>
+            </div>
+            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-purple-500 progress-bar" style="width: {{.StateTaxPercent}}%"></div>
+            </div>
+
+            <!-- Social Security -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Social Security (6.2%)</span>
+                </div>
+                <span class="text-sm font-medium mono-value">${{.SocialSecurityFormatted}}</span>
+            </div>
+            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-amber-500 progress-bar" style="width: {{.SocialSecurityPercent}}%"></div>
+            </div>
+
+            <!-- Medicare -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-teal-500"></div>
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Medicare (1.45%)</span>
+                </div>
+                <span class="text-sm font-medium mono-value">${{.MedicareFormatted}}</span>
+            </div>
+            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div class="h-full bg-teal-500 progress-bar" style="width: {{.MedicarePercent}}%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Effective Tax Rate -->
+    <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 animate-fade-in-up" style="animation-delay: 0.25s">
+            <div class="flex items-center gap-2 mb-2">
+                <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="text-sm font-medium text-blue-700 dark:text-blue-400">Effective Tax Rate</span>
+            </div>
+            <p class="text-3xl font-bold mono-value text-blue-600 dark:text-blue-400">{{.EffectiveRate}}%</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total taxes / Gross income</p>
+        </div>
+        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 animate-fade-in-up" style="animation-delay: 0.3s">
+            <div class="flex items-center gap-2 mb-2">
+                <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-sm font-medium text-emerald-700 dark:text-emerald-400">Take-Home Rate</span>
+            </div>
+            <p class="text-3xl font-bold mono-value text-emerald-600 dark:text-emerald-400">{{.TakeHomeRate}}%</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Net income / Gross income</p>
+        </div>
+    </div>
+
+    <!-- Monthly/Biweekly Breakdown -->
+    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 mb-6 animate-fade-in-up" style="animation-delay: 0.35s">
+        <h4 class="text-sm font-semibold mb-3 flex items-center gap-2">
+            <svg class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Pay Period Breakdown
+        </h4>
+        <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Monthly</p>
+                <p class="text-lg font-bold mono-value">${{.MonthlyNetFormatted}}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Biweekly</p>
+                <p class="text-lg font-bold mono-value">${{.BiweeklyNetFormatted}}</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Weekly</p>
+                <p class="text-lg font-bold mono-value">${{.WeeklyNetFormatted}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs text-gray-500 dark:text-gray-400 mb-6 animate-fade-in-up" style="animation-delay: 0.4s">
+        <p><strong>Disclaimer:</strong> These calculations are estimates based on standard deductions and tax brackets. Actual taxes may vary based on deductions, credits, filing status, and other factors. Consult a tax professional for accurate tax advice.</p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap gap-3 justify-center animate-fade-in-up" style="animation-delay: 0.45s">
+        <a href="/smart-money" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors text-sm font-medium">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Create Budget
+        </a>
+        <a href="/housing" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-colors text-sm font-medium">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Housing Calculator
+        </a>
+        <a href="/auto" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors text-sm font-medium">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-6 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+            </svg>
+            Auto Calculator
+        </a>
+        <button
+            onclick="window.print()"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+        >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Print Results
+        </button>
+    </div>
+</div>
+{{end}}

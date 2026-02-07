@@ -1,0 +1,676 @@
+{{- /* Housing Affordability Calculator page template - extends base.html */ -}}
+
+
+{{define "title"}}Housing Affordability Calculator | Mortgage & Rent Calculator{{end}}
+
+{{define "meta"}}
+<meta name="description" content="Calculate how much house you can afford based on your income. Estimate monthly mortgage payments including PITI. Compare renting vs buying. Free housing calculator.">
+<meta name="keywords" content="housing calculator, mortgage calculator, how much house can I afford, rent calculator, PITI calculator, home affordability">
+<meta property="og:title" content="Housing Affordability Calculator - How Much House Can You Afford?">
+<meta property="og:description" content="Find out how much house you can afford based on your income. Calculate mortgage payments, compare rent vs buy options.">
+<meta property="og:url" content="https://autolytiqs.com/housing">
+{{end}}
+
+{{define "head"}}
+<style>
+    /* Glass morphism cards */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .glass-card {
+        background: rgba(30, 30, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Stat card */
+    .stat-card {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .dark .stat-card {
+        background: rgba(40, 40, 40, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Monospace values */
+    .mono-value {
+        font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Money input with dollar sign */
+    .money-input-wrapper {
+        position: relative;
+    }
+
+    .money-input-wrapper::before {
+        content: '$';
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .money-input-wrapper input {
+        padding-left: 2rem;
+    }
+
+    /* Percent input */
+    .percent-input-wrapper {
+        position: relative;
+    }
+
+    .percent-input-wrapper::after {
+        content: '%';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .percent-input-wrapper input {
+        padding-right: 2rem;
+    }
+
+    /* Loading spinner */
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(168, 85, 247, 0.3);
+        border-top-color: #a855f7;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Fade in animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.4s ease-out forwards;
+    }
+</style>
+{{end}}
+
+{{define "housing-content"}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Hero Section -->
+    <div class="text-center mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-4">
+            <svg class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span class="text-sm font-medium text-purple-600 dark:text-purple-400">Housing Affordability</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            How Much <span class="text-purple-500">House</span> Can You Afford?
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Calculate your mortgage payment and find out if a home is within your budget using the 28/36 rule
+        </p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid lg:grid-cols-5 gap-6 mb-8">
+        <!-- LEFT: Guidelines & Tips -->
+        <div class="lg:col-span-2 space-y-5">
+            <!-- Key Rules Card -->
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    The 28/36 Rule
+                </h2>
+                <div class="space-y-4">
+                    <!-- 28% Rule -->
+                    <div class="flex items-start gap-3 p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                        <div class="p-2 rounded-lg bg-purple-500/20">
+                            <span class="text-lg font-bold text-purple-600 dark:text-purple-400">28%</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-purple-600 dark:text-purple-400">Housing Costs</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Max 28% of gross monthly income on housing (PITI: Principal, Interest, Taxes, Insurance)
+                            </p>
+                        </div>
+                    </div>
+                    <!-- 36% Rule -->
+                    <div class="flex items-start gap-3 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <div class="p-2 rounded-lg bg-blue-500/20">
+                            <span class="text-lg font-bold text-blue-600 dark:text-blue-400">36%</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-blue-600 dark:text-blue-400">Total Debt</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Max 36% of gross income on all debt (housing + car + student loans + credit cards)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PITI Breakdown Card -->
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h3 class="text-sm font-semibold flex items-center gap-2 mb-4">
+                    <svg class="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    What is PITI?
+                </h3>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-start gap-2">
+                        <span class="font-bold text-purple-500 w-6">P</span>
+                        <div>
+                            <span class="font-medium">Principal</span>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">The amount that goes toward paying off your loan</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="font-bold text-purple-500 w-6">I</span>
+                        <div>
+                            <span class="font-medium">Interest</span>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">The cost of borrowing money from the lender</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="font-bold text-purple-500 w-6">T</span>
+                        <div>
+                            <span class="font-medium">Taxes</span>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Property taxes (usually 1-2% of home value/year)</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="font-bold text-purple-500 w-6">I</span>
+                        <div>
+                            <span class="font-medium">Insurance</span>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Homeowner's insurance to protect your investment</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Down Payment Tips -->
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h3 class="text-sm font-semibold flex items-center gap-2 mb-4">
+                    <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Down Payment Guide
+                </h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between p-2 rounded bg-gray-100 dark:bg-gray-700/50">
+                        <span>Conventional</span>
+                        <span class="font-medium">20% ideal</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded bg-gray-100 dark:bg-gray-700/50">
+                        <span>FHA Loan</span>
+                        <span class="font-medium">3.5% minimum</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded bg-gray-100 dark:bg-gray-700/50">
+                        <span>VA Loan</span>
+                        <span class="font-medium">0% down</span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                        Less than 20% down typically requires PMI (Private Mortgage Insurance)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Mortgage Calculator Form -->
+        <div class="lg:col-span-3">
+            <div class="glass-card rounded-2xl border-2 border-purple-500/20 shadow-2xl overflow-hidden">
+                <!-- Card Header -->
+                <div class="px-6 py-4 bg-gradient-to-r from-purple-500/5 to-transparent border-b border-gray-200/50 dark:border-gray-700/50">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg lg:text-xl font-semibold flex items-center gap-2">
+                            <div class="p-1.5 rounded-lg bg-purple-500/10">
+                                <svg class="h-5 w-5 lg:h-6 lg:w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                            </div>
+                            Mortgage Calculator
+                        </h2>
+                        <button
+                            type="button"
+                            onclick="document.getElementById('mortgage-form').reset(); document.getElementById('mortgage-results').innerHTML = '';"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                        >
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Content -->
+                <div class="p-6">
+                    <form
+                        id="mortgage-form"
+                        hx-post="/api/calculate-mortgage"
+                        hx-target="#mortgage-results"
+                        hx-swap="innerHTML"
+                        hx-indicator="#loading-indicator"
+                        class="space-y-6"
+                    >
+                        <!-- Row 1: Annual Income & Home Price -->
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <!-- Annual Gross Income -->
+                            <div class="space-y-2">
+                                <label for="annual_income" class="text-sm lg:text-base font-medium flex items-center gap-2">
+                                    Annual Gross Income
+                                    <span class="relative group">
+                                        <svg class="h-4 w-4 text-gray-400 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity w-48 pointer-events-none z-10">
+                                            Your yearly income before taxes
+                                        </span>
+                                    </span>
+                                </label>
+                                <div class="money-input-wrapper">
+                                    <input
+                                        type="text"
+                                        id="annual_income"
+                                        name="annual_income"
+                                        inputmode="decimal"
+                                        placeholder="75,000"
+                                        required
+                                        class="w-full h-12 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none transition-all mono-value"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Home Price -->
+                            <div class="space-y-2">
+                                <label for="home_price" class="text-sm lg:text-base font-medium flex items-center gap-2">
+                                    Home Price
+                                </label>
+                                <div class="money-input-wrapper">
+                                    <input
+                                        type="text"
+                                        id="home_price"
+                                        name="home_price"
+                                        inputmode="decimal"
+                                        placeholder="350,000"
+                                        required
+                                        class="w-full h-12 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none transition-all mono-value"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Down Payment & Interest Rate -->
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <!-- Down Payment -->
+                            <div class="space-y-2">
+                                <label for="down_payment" class="text-sm lg:text-base font-medium flex items-center gap-2">
+                                    Down Payment
+                                </label>
+                                <div class="money-input-wrapper">
+                                    <input
+                                        type="text"
+                                        id="down_payment"
+                                        name="down_payment"
+                                        inputmode="decimal"
+                                        placeholder="70,000"
+                                        required
+                                        class="w-full h-12 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none transition-all mono-value"
+                                    >
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="button" onclick="setDownPaymentPercent(5)" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-700 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">5%</button>
+                                    <button type="button" onclick="setDownPaymentPercent(10)" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-700 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">10%</button>
+                                    <button type="button" onclick="setDownPaymentPercent(20)" class="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-700 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">20%</button>
+                                </div>
+                            </div>
+
+                            <!-- Interest Rate -->
+                            <div class="space-y-2">
+                                <label for="interest_rate" class="text-sm lg:text-base font-medium flex items-center gap-2">
+                                    Interest Rate
+                                    <span class="relative group">
+                                        <svg class="h-4 w-4 text-gray-400 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity w-48 pointer-events-none z-10">
+                                            Annual interest rate on the mortgage
+                                        </span>
+                                    </span>
+                                </label>
+                                <div class="percent-input-wrapper">
+                                    <input
+                                        type="text"
+                                        id="interest_rate"
+                                        name="interest_rate"
+                                        inputmode="decimal"
+                                        placeholder="6.5"
+                                        required
+                                        class="w-full h-12 pl-4 pr-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none transition-all mono-value"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Loan Term & Property Tax -->
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <!-- Loan Term -->
+                            <div class="space-y-2">
+                                <label for="loan_term" class="text-sm lg:text-base font-medium">
+                                    Loan Term
+                                </label>
+                                <select
+                                    id="loan_term"
+                                    name="loan_term"
+                                    required
+                                    class="w-full h-12 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none transition-all"
+                                >
+                                    <option value="30">30 years</option>
+                                    <option value="20">20 years</option>
+                                    <option value="15">15 years</option>
+                                    <option value="10">10 years</option>
+                                </select>
+                            </div>
+
+                            <!-- Property Tax Rate -->
+                            <div class="space-y-2">
+                                <label for="property_tax_rate" class="text-sm lg:text-base font-medium flex items-center gap-2">
+                                    Property Tax Rate
+                                    <span class="text-xs text-gray-500">(annual)</span>
+                                </label>
+                                <div class="percent-input-wrapper">
+                                    <input
+                                        type="text"
+                                        id="property_tax_rate"
+                                        name="property_tax_rate"
+                                        inputmode="decimal"
+                                        placeholder="1.2"
+                                        value="1.2"
+                                        class="w-full h-12 pl-4 pr-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none transition-all mono-value"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Calculate Button -->
+                        <div class="flex justify-center pt-2">
+                            <button
+                                type="submit"
+                                class="relative flex items-center justify-center gap-2 px-8 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2"
+                            >
+                                <span class="htmx-indicator absolute inset-0 flex items-center justify-center" id="loading-indicator">
+                                    <div class="spinner"></div>
+                                </span>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                                Calculate Mortgage
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Results Container -->
+                    <div id="mortgage-results" class="mt-6">
+                        <!-- Results will be inserted here by HTMX -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rent vs Buy Section -->
+    <div class="mt-12 glass-card rounded-2xl p-6 lg:p-8">
+        <h2 class="text-xl font-bold mb-6 text-center">Rent vs. Buy: Key Considerations</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Rent Column -->
+            <div class="p-5 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                <h3 class="font-semibold text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Renting May Be Better If...
+                </h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You plan to move within 3-5 years</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You need flexibility for job changes</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You don't have savings for down payment + emergency fund</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Rent is significantly cheaper than buying in your area</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You want to avoid maintenance responsibilities</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Buy Column -->
+            <div class="p-5 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                <h3 class="font-semibold text-purple-600 dark:text-purple-400 mb-4 flex items-center gap-2">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Buying May Be Better If...
+                </h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-purple-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You plan to stay 5+ years</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-purple-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You have stable income and job security</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-purple-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You have 20% down + 6 months emergency fund</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-purple-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>You want to build equity and wealth</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-purple-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Monthly payment fits the 28/36 rule comfortably</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
+        <div class="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto" x-data="{ openFaq: null }">
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 1 ? null : 1"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">How much should I put down?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 1 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 1" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    20% is ideal to avoid PMI (Private Mortgage Insurance). However, many first-time buyers put down 5-10%. FHA loans require just 3.5% down, and VA loans offer 0% down for eligible veterans.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 2 ? null : 2"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">What other costs should I budget for?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 2 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 2" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    Beyond PITI, budget for: closing costs (2-5% of loan), HOA fees, maintenance (1% of home value/year), utilities, and moving expenses. Keep 6 months of expenses as an emergency fund.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 3 ? null : 3"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">Is a 15 or 30 year mortgage better?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 3 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 3" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    15-year mortgages have lower rates and save huge interest, but higher payments. 30-year mortgages offer lower payments and flexibility. Choose 30-year if you want payment flexibility but can make extra payments when possible.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 4 ? null : 4"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                    <span class="font-medium">What credit score do I need?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 4 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 4" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    Conventional loans typically need 620+, but 740+ gets the best rates. FHA loans accept scores as low as 580 (or 500 with 10% down). VA and USDA loans don't have minimum scores but lenders typically want 620+.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Tools -->
+    <div class="mt-12">
+        <h2 class="text-xl font-bold mb-6 text-center">Related Tools</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <a href="/calculator" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-primary-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="text-sm font-medium">Income Calculator</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Know your income</div>
+            </a>
+            <a href="/smart-money" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-emerald-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-emerald-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <div class="text-sm font-medium">Budget Planner</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">50/30/20 rule</div>
+            </a>
+            <a href="/auto" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-blue-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-6 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                </svg>
+                <div class="text-sm font-medium">Auto Calculator</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Car affordability</div>
+            </a>
+            <a href="/blog" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-amber-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <div class="text-sm font-medium">Blog</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Housing guides</div>
+            </a>
+        </div>
+    </div>
+</div>
+{{end}}
+
+{{define "scripts"}}
+<script>
+    // Format money inputs
+    ['annual_income', 'home_price', 'down_payment'].forEach(function(id) {
+        document.getElementById(id)?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            if (parts[0]) {
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+            e.target.value = parts.join('.');
+        });
+    });
+
+    // Set down payment based on percentage of home price
+    function setDownPaymentPercent(percent) {
+        const homePrice = parseFloat(document.getElementById('home_price').value.replace(/,/g, '')) || 0;
+        const downPayment = Math.round(homePrice * percent / 100);
+        document.getElementById('down_payment').value = downPayment.toLocaleString();
+    }
+
+    // HTMX after request handler
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'mortgage-results') {
+            evt.detail.target.querySelectorAll('.animate-fade-in-up').forEach(function(el, i) {
+                el.style.animationDelay = (i * 0.1) + 's';
+            });
+        }
+    });
+</script>
+{{end}}

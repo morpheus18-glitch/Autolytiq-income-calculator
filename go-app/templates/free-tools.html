@@ -1,0 +1,422 @@
+{{- /* Free Tools Directory page template - extends base.html */ -}}
+
+
+{{define "title"}}Free Financial Calculators & Tools | Income Calculator{{end}}
+
+{{define "meta"}}
+<meta name="description" content="Free financial calculators and tools to help you manage your money. Income calculator, budget planner, mortgage calculator, auto loan calculator, and more. No signup required.">
+<meta name="keywords" content="free financial calculators, budget tools, income calculator, mortgage calculator, car payment calculator, personal finance tools">
+<meta property="og:title" content="Free Financial Calculators & Tools">
+<meta property="og:description" content="All the free tools you need to manage your finances. Calculate income, create budgets, plan for housing and auto purchases.">
+<meta property="og:url" content="https://autolytiqs.com/free-tools">
+{{end}}
+
+{{define "head"}}
+<style>
+    /* Glass morphism cards */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .glass-card {
+        background: rgba(30, 30, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Tool card */
+    .tool-card {
+        transition: all 0.2s ease;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{{end}}
+
+{{define "free-tools-content"}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-4">
+            <svg class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+            <span class="text-sm font-medium text-primary-600 dark:text-primary-400">100% Free - No Signup Required</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Free <span class="text-primary-500">Financial Tools</span>
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Everything you need to understand your finances and make smarter money decisions
+        </p>
+    </div>
+
+    <!-- Main Calculators Section -->
+    <div class="mb-12">
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <svg class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            Calculators
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Income Calculator -->
+            <a href="/calculator" class="glass-card rounded-2xl p-6 tool-card group">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="p-3 rounded-xl bg-primary-500/10 group-hover:bg-primary-500/20 transition-colors">
+                        <svg class="h-8 w-8 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <h3 class="font-bold text-lg group-hover:text-primary-500 transition-colors">Income Calculator</h3>
+                            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">Popular</span>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Calculate your projected annual income from year-to-date earnings</p>
+                    </div>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>YTD to annual projection</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Daily, weekly, monthly breakdown</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Max rent & car payment (30%/12% rules)</span>
+                    </li>
+                </ul>
+                <span class="inline-flex items-center text-primary-500 font-medium text-sm">
+                    Try it now
+                    <svg class="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </span>
+            </a>
+
+            <!-- Budget Planner -->
+            <a href="/smart-money" class="glass-card rounded-2xl p-6 tool-card group">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="p-3 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
+                        <svg class="h-8 w-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg group-hover:text-emerald-500 transition-colors mb-1">Budget Planner</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Create a personalized budget using the 50/30/20 rule</p>
+                    </div>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>50% Needs allocation</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>30% Wants allocation</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>20% Savings allocation</span>
+                    </li>
+                </ul>
+                <span class="inline-flex items-center text-emerald-500 font-medium text-sm">
+                    Start planning
+                    <svg class="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </span>
+            </a>
+
+            <!-- Housing Calculator -->
+            <a href="/housing" class="glass-card rounded-2xl p-6 tool-card group">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="p-3 rounded-xl bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
+                        <svg class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg group-hover:text-purple-500 transition-colors mb-1">Housing Calculator</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Calculate mortgage payments and housing affordability</p>
+                    </div>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>PITI breakdown</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>28/36 rule analysis</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Down payment calculator</span>
+                    </li>
+                </ul>
+                <span class="inline-flex items-center text-purple-500 font-medium text-sm">
+                    Calculate mortgage
+                    <svg class="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </span>
+            </a>
+
+            <!-- Auto Calculator -->
+            <a href="/auto" class="glass-card rounded-2xl p-6 tool-card group">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="p-3 rounded-xl bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                        <svg class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-6 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg group-hover:text-blue-500 transition-colors mb-1">Auto Loan Calculator</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Calculate car payments and find what you can afford</p>
+                    </div>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>12% rule affordability</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Monthly payment calculator</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Total cost of ownership</span>
+                    </li>
+                </ul>
+                <span class="inline-flex items-center text-blue-500 font-medium text-sm">
+                    Calculate payment
+                    <svg class="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </span>
+            </a>
+
+            <!-- Gig Calculator -->
+            <a href="/gig-calculator" class="glass-card rounded-2xl p-6 tool-card group">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="p-3 rounded-xl bg-amber-500/10 group-hover:bg-amber-500/20 transition-colors">
+                        <svg class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg group-hover:text-amber-500 transition-colors mb-1">Gig Calculator</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Calculate income for freelancers and gig workers</p>
+                    </div>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Multiple platform income</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Self-employment tax estimate</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Net income projection</span>
+                    </li>
+                </ul>
+                <span class="inline-flex items-center text-amber-500 font-medium text-sm">
+                    Calculate gig income
+                    <svg class="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </span>
+            </a>
+
+            <!-- Income Streams -->
+            <a href="/income-streams" class="glass-card rounded-2xl p-6 tool-card group">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="p-3 rounded-xl bg-indigo-500/10 group-hover:bg-indigo-500/20 transition-colors">
+                        <svg class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg group-hover:text-indigo-500 transition-colors mb-1">Income Streams</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Track and manage multiple sources of income</p>
+                    </div>
+                </div>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Multiple income sources</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Total income visualization</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Income breakdown by source</span>
+                    </li>
+                </ul>
+                <span class="inline-flex items-center text-indigo-500 font-medium text-sm">
+                    Track income
+                    <svg class="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Why Choose Our Tools Section -->
+    <div class="glass-card rounded-2xl p-8 mb-12">
+        <h2 class="text-2xl font-bold text-center mb-8">Why Choose Our Tools?</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-7 w-7 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="font-semibold mb-2">100% Free</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">No hidden fees, no premium tiers. All features are completely free.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-7 w-7 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <h3 class="font-semibold mb-2">No Signup</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Start using tools instantly. No email, no account, no hassle.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-7 w-7 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h3 class="font-semibold mb-2">Instant Results</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Get your calculations immediately. No waiting, no loading.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-14 h-14 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-7 w-7 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="font-semibold mb-2">Mobile Friendly</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Works perfectly on any device. Calculate on the go.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Educational Resources Section -->
+    <div class="mb-12">
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <svg class="h-5 w-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            Educational Resources
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6">
+            <a href="/blog" class="glass-card rounded-xl p-5 tool-card group">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2 rounded-lg bg-amber-500/10">
+                        <svg class="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold group-hover:text-amber-500 transition-colors">Blog Articles</h3>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">In-depth guides on budgeting, saving, and financial planning.</p>
+            </a>
+            <a href="/blog/503020-budget-rule" class="glass-card rounded-xl p-5 tool-card group">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2 rounded-lg bg-emerald-500/10">
+                        <svg class="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold group-hover:text-emerald-500 transition-colors">50/30/20 Guide</h3>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Learn the popular budgeting rule and how to apply it.</p>
+            </a>
+            <a href="/blog/how-much-car-can-i-afford" class="glass-card rounded-xl p-5 tool-card group">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2 rounded-lg bg-blue-500/10">
+                        <svg class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-6 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold group-hover:text-blue-500 transition-colors">Car Buying Guide</h3>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">How much car can you really afford? Find out here.</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="glass-card rounded-2xl p-8 text-center bg-gradient-to-br from-primary-500/10 to-emerald-500/10">
+        <h2 class="text-2xl font-bold mb-3">Ready to Take Control of Your Finances?</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-xl mx-auto">
+            Start with our most popular tool - the Income Calculator - and discover what you can truly afford.
+        </p>
+        <a href="/calculator" class="inline-flex items-center px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-xl transition-all">
+            Start Calculating
+            <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+        </a>
+    </div>
+</div>
+{{end}}
