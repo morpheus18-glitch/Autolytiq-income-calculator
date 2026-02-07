@@ -80,6 +80,29 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
+	// robots.txt
+	mux.HandleFunc("GET /robots.txt", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte("User-agent: *\nAllow: /\n\nSitemap: https://autolytiqs.com/sitemap.xml\n"))
+	})
+
+	// sitemap.xml
+	mux.HandleFunc("GET /sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/xml")
+		w.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://autolytiqs.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://autolytiqs.com/calculator</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/smart-money</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/housing</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/auto</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/gig-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-streams</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/free-tools</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+</urlset>`))
+	})
+
 	// Apply middleware
 	chain := middleware.Chain(
 		middleware.Logger(nil),
