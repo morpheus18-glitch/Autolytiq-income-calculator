@@ -146,6 +146,7 @@ func main() {
 		middleware.Logger(nil),
 		middleware.Recover(nil),
 		middleware.SecurityHeaders,
+		middleware.CSRFToken,
 		middleware.RateLimiter(30, time.Minute), // 30 POST requests per IP per minute
 		middleware.Compress,
 	)

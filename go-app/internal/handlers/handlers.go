@@ -2,6 +2,10 @@
 package handlers
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
@@ -43,6 +47,7 @@ type PageMeta struct {
 	Title       string
 	Description string
 	Canonical   string
+	NoIndex     bool
 }
 
 // renderPage renders a page using the base template with page-specific content
@@ -61,11 +66,13 @@ func (h *Handler) renderPage(w http.ResponseWriter, meta PageMeta, contentTempla
 		Title       string
 		Description string
 		Canonical   string
+		NoIndex     bool
 		Content     template.HTML
 	}{
 		Title:       meta.Title,
 		Description: meta.Description,
 		Canonical:   meta.Canonical,
+		NoIndex:     meta.NoIndex,
 		Content:     template.HTML(contentBuf.String()),
 	}
 
@@ -905,6 +912,7 @@ func (h *Handler) Share(w http.ResponseWriter, r *http.Request) {
 		Title:       fmt.Sprintf("$%s Annual Income Breakdown | Autolytiq", formatMoney(annual)),
 		Description: fmt.Sprintf("Income breakdown: $%s annual, $%s monthly. Calculate your own projected income at Autolytiq.", formatMoney(annual), formatMoney(monthly)),
 		Canonical:   baseURL + "/share",
+		NoIndex:     true,
 	}, "share-content", pageData)
 }
 
@@ -1104,60 +1112,53 @@ func (h *Handler) Unsubscribe(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/xml")
+	today := time.Now().Format("2006-01-02")
+
 	var b strings.Builder
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://autolytiqs.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://autolytiqs.com/calculator</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://autolytiqs.com/smart-money</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/housing</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/auto</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/gig-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/income-streams</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/taxes</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/free-tools</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://autolytiqs.com/quiz</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://autolytiqs.com/rent-vs-buy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/inflation</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://autolytiqs.com/income-calculator</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://autolytiqs.com/desk</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://autolytiqs.com/pricing</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://autolytiqs.com/afford</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://autolytiqs.com/salary</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`)
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`)
+	// Core pages
+	corePages := []string{
+		"/", "/calculator", "/smart-money", "/housing", "/auto",
+		"/gig-calculator", "/income-streams", "/taxes", "/free-tools",
+		"/quiz", "/rent-vs-buy", "/inflation", "/income-calculator",
+		"/desk", "/pricing", "/blog",
+		"/afford", "/salary", "/best", "/compare",
+	}
+	for _, p := range corePages {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com%s</loc><lastmod>%s</lastmod></url>", p, today)
+	}
 	// Blog articles
 	for _, slug := range data.AllBlogSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/blog/%s</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>", slug)
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/blog/%s</loc><lastmod>%s</lastmod></url>", slug, today)
 	}
 	// Afford pages
 	for _, slug := range data.AllAffordSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/afford/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/afford/%s</loc><lastmod>%s</lastmod></url>", slug, today)
 	}
 	// Salary pages
 	for _, slug := range data.AllSalarySlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/salary/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/salary/%s</loc><lastmod>%s</lastmod></url>", slug, today)
 	}
 	// State tax pages
 	for _, slug := range data.AllStateSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/taxes/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/taxes/%s</loc><lastmod>%s</lastmod></url>", slug, today)
 	}
 	// Calculator variant pages
 	for _, slug := range data.AllCalcVariantSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/income-calculator/%s</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>", slug)
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/income-calculator/%s</loc><lastmod>%s</lastmod></url>", slug, today)
 	}
 	// Best/Compare pages
-	b.WriteString("\n  <url><loc>https://autolytiqs.com/best</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
-	b.WriteString("\n  <url><loc>https://autolytiqs.com/compare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
 	for _, slug := range data.AllCategorySlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/best/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/best/%s</loc><lastmod>%s</lastmod></url>", slug, today)
 	}
 	for _, slug := range data.AllVersusSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/compare/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/compare/%s</loc><lastmod>%s</lastmod></url>", slug, today)
 	}
-	b.WriteString(`
-  <url><loc>https://autolytiqs.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://autolytiqs.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-</urlset>`)
+	// Legal pages
+	fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/privacy</loc><lastmod>%s</lastmod></url>", today)
+	fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/terms</loc><lastmod>%s</lastmod></url>", today)
+	b.WriteString("\n</urlset>")
 	w.Write([]byte(b.String()))
 }
 
@@ -1181,6 +1182,7 @@ func (h *Handler) CheckoutSuccess(w http.ResponseWriter, r *http.Request) {
 	h.renderPage(w, PageMeta{
 		Title:       "Payment Successful | Autolytiq",
 		Description: "Your Pro Report purchase was successful.",
+		NoIndex:     true,
 	}, "checkout-success-content", nil)
 }
 
@@ -1188,6 +1190,7 @@ func (h *Handler) CheckoutCancel(w http.ResponseWriter, r *http.Request) {
 	h.renderPage(w, PageMeta{
 		Title:       "Payment Cancelled | Autolytiq",
 		Description: "Your payment was cancelled.",
+		NoIndex:     true,
 	}, "checkout-cancel-content", nil)
 }
 
@@ -1246,7 +1249,7 @@ func (h *Handler) CreateCheckout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, checkoutURL, http.StatusSeeOther)
 }
 
-// StripeWebhook handles Stripe webhook events
+// StripeWebhook handles Stripe webhook events with signature verification.
 func (h *Handler) StripeWebhook(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(io.LimitReader(r.Body, 65536))
 	if err != nil {
@@ -1254,15 +1257,104 @@ func (h *Handler) StripeWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log the webhook event for now
-	log.Printf("Stripe webhook received: %d bytes", len(body))
+	// Verify signature if STRIPE_WEBHOOK_SECRET is configured
+	secret := os.Getenv("STRIPE_WEBHOOK_SECRET")
+	if secret != "" {
+		sigHeader := r.Header.Get("Stripe-Signature")
+		if !verifyStripeSignature(body, sigHeader, secret) {
+			log.Printf("Stripe webhook: invalid signature")
+			http.Error(w, "Invalid signature", http.StatusBadRequest)
+			return
+		}
+	} else {
+		log.Printf("WARNING: STRIPE_WEBHOOK_SECRET not set, skipping signature verification")
+	}
 
-	// TODO: Verify signature with STRIPE_WEBHOOK_SECRET
-	// TODO: Process checkout.session.completed events
-	// TODO: Deliver pro report
+	// Parse the event
+	var event struct {
+		Type string `json:"type"`
+		Data struct {
+			Object json.RawMessage `json:"object"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(body, &event); err != nil {
+		log.Printf("Stripe webhook: failed to parse event: %v", err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Stripe webhook received: type=%s", event.Type)
+
+	switch event.Type {
+	case "checkout.session.completed":
+		var session struct {
+			ID                string `json:"id"`
+			CustomerEmail     string `json:"customer_email"`
+			CustomerDetails   struct {
+				Email string `json:"email"`
+			} `json:"customer_details"`
+			PaymentStatus     string `json:"payment_status"`
+			AmountTotal       int    `json:"amount_total"`
+		}
+		if err := json.Unmarshal(event.Data.Object, &session); err != nil {
+			log.Printf("Stripe webhook: failed to parse session: %v", err)
+			break
+		}
+		customerEmail := session.CustomerEmail
+		if customerEmail == "" {
+			customerEmail = session.CustomerDetails.Email
+		}
+		log.Printf("Checkout completed: session=%s email=%s payment=%s amount=%d",
+			session.ID, customerEmail, session.PaymentStatus, session.AmountTotal)
+
+		// TODO: Generate and deliver pro report PDF to customerEmail
+	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"received": true}`))
+}
+
+// verifyStripeSignature verifies a Stripe webhook signature using HMAC-SHA256.
+// The Stripe-Signature header format: t=timestamp,v1=signature
+func verifyStripeSignature(payload []byte, sigHeader, secret string) bool {
+	if sigHeader == "" {
+		return false
+	}
+
+	var timestamp, signature string
+	for _, part := range strings.Split(sigHeader, ",") {
+		kv := strings.SplitN(part, "=", 2)
+		if len(kv) != 2 {
+			continue
+		}
+		switch kv[0] {
+		case "t":
+			timestamp = kv[1]
+		case "v1":
+			signature = kv[1]
+		}
+	}
+
+	if timestamp == "" || signature == "" {
+		return false
+	}
+
+	// Reject timestamps older than 5 minutes to prevent replay attacks
+	ts, err := strconv.ParseInt(timestamp, 10, 64)
+	if err != nil {
+		return false
+	}
+	if time.Now().Unix()-ts > 300 {
+		return false
+	}
+
+	// Compute expected signature: HMAC-SHA256(secret, "timestamp.payload")
+	signed := fmt.Sprintf("%s.%s", timestamp, string(payload))
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(signed))
+	expected := hex.EncodeToString(mac.Sum(nil))
+
+	return hmac.Equal([]byte(expected), []byte(signature))
 }
 
 // =============================================================================

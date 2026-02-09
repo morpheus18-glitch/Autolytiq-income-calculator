@@ -1,24 +1,24 @@
 module.exports = {
   apps: [
     {
-      name: "autolytiq",
-      script: "dist/index.cjs",
+      name: "autolytiq-go",
+      script: "./go-app/server",
+      args: "-port 5000",
       cwd: "/root/income-calculator-autolytiq",
-      instances: "max", // Use all available CPU cores
-      exec_mode: "cluster", // Enable cluster mode
+      exec_mode: "fork",
       env: {
-        NODE_ENV: "production",
         PORT: 5000,
-        WASM_ENABLED: "true",
-        OTEL_ENABLED: "true",
-        OTEL_SERVICE_NAME: "autolytiq-server",
-        OTEL_EXPORTER_OTLP_ENDPOINT: "http://localhost:4318",
-      },
-      env_development: {
-        NODE_ENV: "development",
-        PORT: 5000,
-        WASM_ENABLED: "true",
-        OTEL_ENABLED: "false",
+        ADMIN_KEY: "autolytiq-admin-2026",
+        // Stripe — set these to enable checkout and webhook verification
+        STRIPE_SECRET_KEY: "",
+        STRIPE_PRICE_ID: "",
+        STRIPE_WEBHOOK_SECRET: "",
+        // SMTP — set these to enable drip email campaigns
+        SMTP_HOST: "",
+        SMTP_PORT: "587",
+        SMTP_USER: "",
+        SMTP_PASS: "",
+        SMTP_FROM: "Autolytiq <hello@autolytiqs.com>",
       },
       // Auto-restart configuration
       max_memory_restart: "500M",
@@ -28,14 +28,10 @@ module.exports = {
 
       // Logging
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
-      error_file: "./logs/error.log",
-      out_file: "./logs/out.log",
       merge_logs: true,
 
       // Graceful shutdown
       kill_timeout: 5000,
-      wait_ready: true,
-      listen_timeout: 10000,
 
       // Health monitoring
       exp_backoff_restart_delay: 100,
