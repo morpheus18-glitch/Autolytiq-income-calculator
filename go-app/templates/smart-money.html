@@ -12,99 +12,7 @@
 {{end}}
 
 {{define "head"}}
-<style>
-    /* Glass morphism cards */
-    .glass-card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .dark .glass-card {
-        background: rgba(30, 30, 30, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Budget category cards */
-    .budget-card {
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border-radius: 1rem;
-        transition: all 0.2s ease;
-    }
-
-    .dark .budget-card {
-        background: rgba(40, 40, 40, 0.6);
-    }
-
-    .budget-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Monospace values */
-    .mono-value {
-        font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-        font-variant-numeric: tabular-nums;
-    }
-
-    /* Money input with dollar sign */
-    .money-input-wrapper {
-        position: relative;
-    }
-
-    .money-input-wrapper::before {
-        content: '$';
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6b7280;
-        font-weight: 500;
-    }
-
-    .money-input-wrapper input {
-        padding-left: 2rem;
-    }
-
-    /* Loading spinner */
-    .spinner {
-        width: 20px;
-        height: 20px;
-        border: 2px solid rgba(16, 185, 129, 0.3);
-        border-top-color: #10b981;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    /* Fade in animation */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .animate-fade-in-up {
-        animation: fadeInUp 0.4s ease-out forwards;
-    }
-
-    /* Progress bar animation */
-    .progress-bar {
-        transition: width 0.5s ease-out;
-    }
-</style>
+<!-- Styles provided by global app.css -->
 {{end}}
 
 {{define "smart-money-content"}}
@@ -118,7 +26,7 @@
             <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Smart Budget Planning</span>
         </div>
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
-            The <span class="text-emerald-500">50/30/20</span> Budget Rule
+            The <span class="text-emerald-500 neon-text">50/30/20</span> Budget Rule
         </h1>
         <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Build a balanced budget that covers your essentials, allows for fun, and grows your savings
@@ -318,6 +226,337 @@
         </div>
     </div>
 
+    <!-- Savings Goals Tracker -->
+    <div class="mt-12" x-data="savingsGoals()">
+        <div class="glass-card rounded-2xl p-6 lg:p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    Savings Goals
+                </h2>
+                <button @click="showAdd = !showAdd" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Add Goal
+                </button>
+            </div>
+
+            <!-- Add Goal Form -->
+            <div x-show="showAdd" x-collapse class="mb-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <div class="grid sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Goal Name</label>
+                        <input x-model="newGoal.name" type="text" placeholder="e.g. Vacation Fund" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Target Amount ($)</label>
+                        <input x-model="newGoal.target" type="number" placeholder="5000" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Saved So Far ($)</label>
+                        <input x-model="newGoal.current" type="number" placeholder="0" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Weekly Contribution ($)</label>
+                        <input x-model="newGoal.weekly" type="number" placeholder="50" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30">
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="text-xs text-slate-500 dark:text-slate-400">Presets:</span>
+                    <button @click="applyPreset('Emergency Fund', 10000)" type="button" class="px-2 py-1 text-xs rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 transition-colors">Emergency Fund</button>
+                    <button @click="applyPreset('Vacation', 3000)" type="button" class="px-2 py-1 text-xs rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-200 transition-colors">Vacation</button>
+                    <button @click="applyPreset('New Car', 15000)" type="button" class="px-2 py-1 text-xs rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-200 transition-colors">Car</button>
+                    <button @click="applyPreset('Down Payment', 30000)" type="button" class="px-2 py-1 text-xs rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 hover:bg-violet-200 transition-colors">Down Payment</button>
+                    <button @click="applyPreset('New Phone', 1200)" type="button" class="px-2 py-1 text-xs rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400 hover:bg-pink-200 transition-colors">Phone</button>
+                </div>
+                <div class="flex gap-2">
+                    <button @click="addGoal()" class="px-4 py-2 text-sm font-medium bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors">Save Goal</button>
+                    <button @click="showAdd = false" class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Goals List -->
+            <div x-show="goals.length === 0" class="text-center py-8 text-slate-400 dark:text-slate-500">
+                <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                <p class="text-sm">No savings goals yet. Add one to start tracking!</p>
+            </div>
+
+            <div class="space-y-4">
+                <template x-for="goal in goals" :key="goal.id">
+                    <div class="p-4 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold" x-text="goal.name"></span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-mono text-emerald-500" x-text="'$' + Number(goal.current).toLocaleString() + ' / $' + Number(goal.target).toLocaleString()"></span>
+                                <button @click="removeGoal(goal.id)" class="p-1 text-slate-400 hover:text-red-500 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Progress bar -->
+                        <div class="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-2">
+                            <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500"
+                                 :style="'width:' + Math.min(100, (goal.current / goal.target * 100)) + '%'"></div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                            <span x-text="Math.round(goal.current / goal.target * 100) + '% complete'"></span>
+                            <span x-show="goal.weekly > 0" x-text="'~' + Math.ceil((goal.target - goal.current) / goal.weekly) + ' weeks left at $' + goal.weekly + '/wk'"></span>
+                        </div>
+                        <!-- Quick add -->
+                        <div class="flex gap-2 mt-3">
+                            <button @click="addAmount(goal.id, 10)" class="px-2 py-1 text-xs rounded bg-slate-100 dark:bg-slate-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">+$10</button>
+                            <button @click="addAmount(goal.id, 25)" class="px-2 py-1 text-xs rounded bg-slate-100 dark:bg-slate-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">+$25</button>
+                            <button @click="addAmount(goal.id, 50)" class="px-2 py-1 text-xs rounded bg-slate-100 dark:bg-slate-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">+$50</button>
+                            <button @click="addAmount(goal.id, 100)" class="px-2 py-1 text-xs rounded bg-slate-100 dark:bg-slate-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors">+$100</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Savings Tips -->
+            <div x-show="goals.length > 0" class="mt-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                <h4 class="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2">Quick Savings Tips</h4>
+                <ul class="text-xs text-emerald-600 dark:text-emerald-400 space-y-1">
+                    <li>Skip 2 coffees/week = $520/year saved</li>
+                    <li>Cancel 1 unused subscription = $120-180/year</li>
+                    <li>Cook 2 more meals at home = $1,200/year</li>
+                    <li>Use the 24-hour rule for purchases over $50</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Tracker (Transactions) -->
+    <div class="mt-8" x-data="budgetTracker()">
+        <div class="glass-card rounded-2xl p-6 lg:p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    Budget Tracker
+                </h2>
+                <button @click="showAddTx = !showAddTx" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Add Transaction
+                </button>
+            </div>
+
+            <!-- Budget Progress (if income set) -->
+            <div x-show="monthlyIncome > 0" class="grid sm:grid-cols-3 gap-3 mb-6">
+                <div class="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <div class="text-xs text-blue-600 dark:text-blue-400 mb-1">Needs (50%)</div>
+                    <div class="flex items-center justify-between">
+                        <span class="font-mono font-semibold" x-text="'$' + spending.needs.toLocaleString(undefined, {maximumFractionDigits:0})"></span>
+                        <span class="text-xs" x-text="'/ $' + Math.round(monthlyIncome * 0.5).toLocaleString()"></span>
+                    </div>
+                    <div class="w-full h-2 bg-blue-100 dark:bg-blue-800 rounded-full mt-2">
+                        <div class="h-full rounded-full transition-all" :class="spending.needs > monthlyIncome * 0.5 ? 'bg-red-500' : 'bg-blue-500'" :style="'width:' + Math.min(100, spending.needs / (monthlyIncome * 0.5) * 100) + '%'"></div>
+                    </div>
+                </div>
+                <div class="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                    <div class="text-xs text-purple-600 dark:text-purple-400 mb-1">Wants (30%)</div>
+                    <div class="flex items-center justify-between">
+                        <span class="font-mono font-semibold" x-text="'$' + spending.wants.toLocaleString(undefined, {maximumFractionDigits:0})"></span>
+                        <span class="text-xs" x-text="'/ $' + Math.round(monthlyIncome * 0.3).toLocaleString()"></span>
+                    </div>
+                    <div class="w-full h-2 bg-purple-100 dark:bg-purple-800 rounded-full mt-2">
+                        <div class="h-full rounded-full transition-all" :class="spending.wants > monthlyIncome * 0.3 ? 'bg-red-500' : 'bg-purple-500'" :style="'width:' + Math.min(100, spending.wants / (monthlyIncome * 0.3) * 100) + '%'"></div>
+                    </div>
+                </div>
+                <div class="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                    <div class="text-xs text-emerald-600 dark:text-emerald-400 mb-1">Savings (20%)</div>
+                    <div class="flex items-center justify-between">
+                        <span class="font-mono font-semibold" x-text="'$' + spending.savings.toLocaleString(undefined, {maximumFractionDigits:0})"></span>
+                        <span class="text-xs" x-text="'/ $' + Math.round(monthlyIncome * 0.2).toLocaleString()"></span>
+                    </div>
+                    <div class="w-full h-2 bg-emerald-100 dark:bg-emerald-800 rounded-full mt-2">
+                        <div class="h-full rounded-full transition-all" :class="'bg-emerald-500'" :style="'width:' + Math.min(100, spending.savings / (monthlyIncome * 0.2) * 100) + '%'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Set Monthly Income Prompt -->
+            <div x-show="monthlyIncome === 0" class="mb-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-center">
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Set your monthly income to track budget progress</p>
+                <div class="flex items-center gap-2 justify-center">
+                    <input x-model="incomeInput" type="number" placeholder="5000" class="w-32 px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none text-center">
+                    <button @click="setIncome()" class="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">Set</button>
+                </div>
+            </div>
+
+            <!-- Add Transaction Form -->
+            <div x-show="showAddTx" x-collapse class="mb-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <div class="grid sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Amount ($)</label>
+                        <input x-model="newTx.amount" type="number" step="0.01" placeholder="0.00" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-blue-500/30">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Merchant</label>
+                        <input x-model="newTx.merchant" type="text" placeholder="e.g. Grocery Store" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-2 focus:ring-blue-500/30">
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Category</label>
+                        <select x-model="newTx.category" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                            <option value="needs">Needs</option>
+                            <option value="wants">Wants</option>
+                            <option value="savings">Savings</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 block">Date</label>
+                        <input x-model="newTx.date" type="date" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button @click="addTransaction()" class="px-4 py-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">Add</button>
+                    <button @click="showAddTx = false" class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Transaction List -->
+            <div x-show="transactions.length === 0 && monthlyIncome > 0" class="text-center py-6 text-slate-400">
+                <p class="text-sm">No transactions yet. Start tracking your spending!</p>
+            </div>
+            <div class="space-y-2">
+                <template x-for="tx in transactions.slice(0, showAll ? transactions.length : 5)" :key="tx.id">
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full" :class="tx.category === 'needs' ? 'bg-blue-500' : tx.category === 'wants' ? 'bg-purple-500' : 'bg-emerald-500'"></div>
+                            <div>
+                                <div class="text-sm font-medium" x-text="tx.merchant || tx.category"></div>
+                                <div class="text-xs text-slate-400" x-text="tx.date"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-sm font-semibold" x-text="'-$' + Number(tx.amount).toFixed(2)"></span>
+                            <button @click="removeTx(tx.id)" class="p-1 text-slate-400 hover:text-red-500 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <button x-show="transactions.length > 5" @click="showAll = !showAll" class="mt-3 w-full text-center text-sm text-blue-500 hover:text-blue-600 py-2">
+                <span x-text="showAll ? 'Show Less' : 'Show All (' + transactions.length + ')'"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Subscription Tracker -->
+    <div class="mt-8" x-data="subscriptionTracker()">
+        <div class="glass-card rounded-2xl p-6 lg:p-8">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Subscription Tracker
+                </h2>
+                <div class="text-right">
+                    <p class="text-lg font-bold text-purple-500" x-text="'$' + totalMonthly.toFixed(2) + '/mo'"></p>
+                    <p class="text-xs text-slate-500" x-text="'$' + (totalMonthly * 12).toFixed(0) + '/year'"></p>
+                </div>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Toggle your active subscriptions to see true monthly cost</p>
+
+            <!-- Category Tabs -->
+            <div class="flex flex-wrap gap-1.5 mb-4">
+                <template x-for="cat in categories" :key="cat.id">
+                    <button @click="activeCategory = cat.id" :class="activeCategory === cat.id ? 'bg-purple-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'" class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors">
+                        <span x-text="cat.name"></span>
+                        <span x-show="catCount(cat.id) > 0" class="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] rounded-full" :class="activeCategory === cat.id ? 'bg-white/20' : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'" x-text="catCount(cat.id)"></span>
+                    </button>
+                </template>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <template x-for="svc in filteredServices" :key="svc.id">
+                    <label class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all" :class="svc.active ? 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800' : 'bg-slate-50 dark:bg-slate-800/50 border border-transparent hover:border-slate-200 dark:hover:border-slate-700'">
+                        <input type="checkbox" :checked="svc.active" @change="toggleService(svc.id)" class="w-4 h-4 rounded border-slate-300 text-purple-500 focus:ring-purple-500">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate" x-text="svc.name"></p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <input type="number" step="0.01" :value="svc.price" @input="updatePrice(svc.id, $event.target.value)" @click.stop class="w-16 text-right text-sm font-mono px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:ring-1 focus:ring-purple-500">
+                        </div>
+                    </label>
+                </template>
+            </div>
+
+            <!-- Summary -->
+            <div x-show="totalMonthly > 0" class="mt-4 p-4 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <p class="text-xs text-purple-600 dark:text-purple-400">Monthly</p>
+                        <p class="text-lg font-bold" x-text="'$' + totalMonthly.toFixed(2)"></p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-purple-600 dark:text-purple-400">Annual</p>
+                        <p class="text-lg font-bold" x-text="'$' + (totalMonthly * 12).toFixed(0)"></p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-purple-600 dark:text-purple-400">Active</p>
+                        <p class="text-lg font-bold" x-text="activeCount + ' services'"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Progress Dashboard -->
+    <div class="mt-8" x-data="budgetDashboard()">
+        <div class="glass-card rounded-2xl p-6 lg:p-8" x-show="hasData">
+            <h2 class="text-xl font-bold flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Budget Progress
+                <span class="text-sm font-normal text-slate-500" x-text="monthLabel"></span>
+            </h2>
+
+            <!-- Month Progress Bar -->
+            <div class="mb-4">
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                    <span x-text="'Day ' + dayOfMonth + ' of ' + daysInMonth"></span>
+                    <span x-text="Math.round(monthProgress) + '% through month'"></span>
+                </div>
+                <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full">
+                    <div class="h-full bg-slate-400 rounded-full transition-all" :style="'width:' + monthProgress + '%'"></div>
+                </div>
+            </div>
+
+            <!-- Safe to Spend Card -->
+            <div class="p-4 rounded-xl mb-4" :class="safeToSpend > 0 ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium" :class="safeToSpend > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'">Safe to Spend Today</p>
+                        <p class="text-2xl font-bold" x-text="'$' + Math.max(0, safeToSpend).toFixed(0)"></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500" x-text="daysRemaining + ' days left'"></p>
+                        <p class="text-xs" :class="velocityStatus === 'ok' ? 'text-emerald-600' : velocityStatus === 'caution' ? 'text-amber-600' : 'text-red-600'" x-text="velocityMessage"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Progress -->
+            <div class="space-y-3">
+                <template x-for="cat in budgetCategories" :key="cat.key">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-medium" x-text="cat.label"></span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-mono" x-text="'$' + cat.spent.toLocaleString(undefined,{maximumFractionDigits:0})"></span>
+                                <span class="text-xs text-slate-500" x-text="'/ $' + cat.budget.toLocaleString(undefined,{maximumFractionDigits:0})"></span>
+                                <span class="text-xs px-1.5 py-0.5 rounded-full" :class="cat.status === 'over' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : cat.status === 'ahead' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'" x-text="cat.statusLabel"></span>
+                            </div>
+                        </div>
+                        <div class="relative w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all" :class="cat.barColor" :style="'width:' + Math.min(100, cat.percent) + '%'"></div>
+                            <div class="absolute top-0 h-full w-0.5 bg-slate-400 dark:bg-slate-500" :style="'left:' + monthProgress + '%'" title="Month progress"></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
     <!-- Example Breakdown Section -->
     <div class="mt-12 glass-card rounded-2xl p-6 lg:p-8">
         <h2 class="text-xl font-bold mb-6 text-center">Example: $5,000/month Budget</h2>
@@ -453,6 +692,19 @@
         </div>
     </div>
 
+    <!-- Recommended Tools (Affiliates) -->
+    <div class="mt-12">
+        <h2 class="text-xl font-bold mb-2 text-center">Recommended Tools</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">Smart tools to help you manage your budget</p>
+        <div class="grid sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
+            {{template "affiliate-ynab"}}
+            {{template "affiliate-sofi"}}
+            {{template "affiliate-credit-karma"}}
+            {{template "affiliate-robinhood"}}
+        </div>
+        {{template "affiliate-disclosure"}}
+    </div>
+
     <!-- Related Tools -->
     <div class="mt-12">
         <h2 class="text-xl font-bold mb-6 text-center">Related Tools</h2>
@@ -526,5 +778,235 @@
             });
         }
     });
+
+    // Savings Goals Alpine.js Component
+    function savingsGoals() {
+        return {
+            goals: [],
+            showAdd: false,
+            newGoal: { name: '', target: '', current: '0', weekly: '50' },
+            init() {
+                const saved = localStorage.getItem('savings-goals');
+                if (saved) { try { this.goals = JSON.parse(saved); } catch(e) {} }
+            },
+            save() { localStorage.setItem('savings-goals', JSON.stringify(this.goals)); },
+            applyPreset(name, target) {
+                this.newGoal.name = name;
+                this.newGoal.target = target;
+                this.newGoal.current = '0';
+            },
+            addGoal() {
+                if (!this.newGoal.name || !this.newGoal.target) return;
+                this.goals.push({
+                    id: Date.now().toString(),
+                    name: this.newGoal.name,
+                    target: parseFloat(this.newGoal.target),
+                    current: parseFloat(this.newGoal.current) || 0,
+                    weekly: parseFloat(this.newGoal.weekly) || 0
+                });
+                this.save();
+                this.newGoal = { name: '', target: '', current: '0', weekly: '50' };
+                this.showAdd = false;
+            },
+            removeGoal(id) {
+                this.goals = this.goals.filter(g => g.id !== id);
+                this.save();
+            },
+            addAmount(id, amount) {
+                const goal = this.goals.find(g => g.id === id);
+                if (goal) {
+                    goal.current = Math.min(goal.target, goal.current + amount);
+                    this.save();
+                }
+            }
+        };
+    }
+
+    // Subscription Tracker Alpine.js Component
+    function subscriptionTracker() {
+        const allServices = [
+            // TV & Video
+            {id:'netflix',name:'Netflix',price:15.49,cat:'tv'},{id:'hulu',name:'Hulu',price:17.99,cat:'tv'},{id:'disney',name:'Disney+',price:13.99,cat:'tv'},{id:'max',name:'Max (HBO)',price:15.99,cat:'tv'},{id:'prime',name:'Prime Video',price:14.99,cat:'tv'},{id:'appletv',name:'Apple TV+',price:9.99,cat:'tv'},{id:'peacock',name:'Peacock',price:7.99,cat:'tv'},{id:'paramount',name:'Paramount+',price:12.99,cat:'tv'},{id:'ytpremium',name:'YouTube Premium',price:13.99,cat:'tv'},{id:'espn',name:'ESPN+',price:10.99,cat:'tv'},
+            // Music
+            {id:'spotify',name:'Spotify',price:11.99,cat:'music'},{id:'applemusic',name:'Apple Music',price:10.99,cat:'music'},{id:'amazonmusic',name:'Amazon Music',price:9.99,cat:'music'},{id:'tidal',name:'Tidal',price:10.99,cat:'music'},{id:'audible',name:'Audible',price:14.95,cat:'music'},{id:'sirius',name:'SiriusXM',price:16.99,cat:'music'},
+            // AI & Productivity
+            {id:'chatgpt',name:'ChatGPT Plus',price:20.00,cat:'ai'},{id:'claude',name:'Claude Pro',price:20.00,cat:'ai'},{id:'copilot',name:'GitHub Copilot',price:10.00,cat:'ai'},{id:'mscopilot',name:'MS Copilot Pro',price:20.00,cat:'ai'},{id:'midjourney',name:'Midjourney',price:10.00,cat:'ai'},{id:'canva',name:'Canva Pro',price:12.99,cat:'ai'},{id:'grammarly',name:'Grammarly',price:12.00,cat:'ai'},{id:'adobe',name:'Adobe CC',price:59.99,cat:'ai'},
+            // Gaming
+            {id:'gamepass',name:'Xbox Game Pass',price:16.99,cat:'gaming'},{id:'psplus',name:'PlayStation Plus',price:17.99,cat:'gaming'},{id:'nintendo',name:'Nintendo Online',price:3.99,cat:'gaming'},{id:'eaplay',name:'EA Play',price:5.99,cat:'gaming'},
+            // Fitness
+            {id:'gym',name:'Gym Membership',price:49.99,cat:'fitness'},{id:'peloton',name:'Peloton',price:44.00,cat:'fitness'},{id:'classpass',name:'ClassPass',price:49.00,cat:'fitness'},{id:'headspace',name:'Headspace',price:12.99,cat:'fitness'},{id:'calm',name:'Calm',price:14.99,cat:'fitness'},{id:'noom',name:'Noom',price:59.00,cat:'fitness'},
+            // Meal & Boxes
+            {id:'hellofresh',name:'HelloFresh',price:59.95,cat:'boxes'},{id:'factor',name:'Factor Meals',price:68.99,cat:'boxes'},{id:'barkbox',name:'BarkBox',price:35.99,cat:'boxes'},{id:'fabfitfun',name:'FabFitFun',price:49.99,cat:'boxes'},
+            // News & Reading
+            {id:'nyt',name:'NY Times',price:17.00,cat:'news'},{id:'wsj',name:'Wall Street Journal',price:12.99,cat:'news'},{id:'athletic',name:'The Athletic',price:9.99,cat:'news'},{id:'kindle',name:'Kindle Unlimited',price:11.99,cat:'news'},{id:'medium',name:'Medium',price:5.00,cat:'news'},
+            // Cloud & Tech
+            {id:'icloud',name:'iCloud+',price:2.99,cat:'cloud'},{id:'googleone',name:'Google One',price:2.99,cat:'cloud'},{id:'dropbox',name:'Dropbox',price:11.99,cat:'cloud'},{id:'1password',name:'1Password',price:2.99,cat:'cloud'},{id:'vpn',name:'VPN Service',price:12.99,cat:'cloud'},
+            // Auto & Vehicle
+            {id:'carwash',name:'Car Wash Pass',price:29.99,cat:'auto'},{id:'aaa',name:'AAA',price:5.50,cat:'auto'},{id:'parking',name:'Parking',price:150.00,cat:'auto'},
+            // Services
+            {id:'cleaning',name:'House Cleaning',price:150.00,cat:'services'},{id:'lawn',name:'Lawn Care',price:80.00,cat:'services'},{id:'security',name:'Home Security',price:29.99,cat:'services'},{id:'drycleaning',name:'Dry Cleaning',price:60.00,cat:'services'},
+            // Education
+            {id:'coursera',name:'Coursera Plus',price:59.00,cat:'education'},{id:'linkedin',name:'LinkedIn Learning',price:29.99,cat:'education'},{id:'duolingo',name:'Duolingo Plus',price:6.99,cat:'education'},{id:'brilliant',name:'Brilliant',price:24.99,cat:'education'},
+        ];
+        const catDefs = [
+            {id:'tv',name:'TV & Video'},{id:'music',name:'Music'},{id:'ai',name:'AI & Productivity'},{id:'gaming',name:'Gaming'},{id:'fitness',name:'Fitness'},{id:'boxes',name:'Meal & Boxes'},{id:'news',name:'News & Reading'},{id:'cloud',name:'Cloud & Tech'},{id:'auto',name:'Auto'},{id:'services',name:'Services'},{id:'education',name:'Education'}
+        ];
+        return {
+            services: [],
+            categories: catDefs,
+            activeCategory: 'tv',
+            init() {
+                const saved = localStorage.getItem('subscription-tracker');
+                let activeMap = {};
+                let priceMap = {};
+                if (saved) { try { const d = JSON.parse(saved); activeMap = d.active || {}; priceMap = d.prices || {}; } catch(e) {} }
+                this.services = allServices.map(s => ({
+                    ...s,
+                    active: activeMap[s.id] || false,
+                    price: priceMap[s.id] !== undefined ? priceMap[s.id] : s.price
+                }));
+            },
+            save() {
+                const active = {}; const prices = {};
+                this.services.forEach(s => { if (s.active) active[s.id] = true; if (s.price !== allServices.find(a => a.id === s.id).price) prices[s.id] = s.price; });
+                localStorage.setItem('subscription-tracker', JSON.stringify({active, prices}));
+            },
+            get filteredServices() { return this.services.filter(s => s.cat === this.activeCategory); },
+            get totalMonthly() { return this.services.filter(s => s.active).reduce((sum, s) => sum + parseFloat(s.price || 0), 0); },
+            get activeCount() { return this.services.filter(s => s.active).length; },
+            catCount(catId) { return this.services.filter(s => s.cat === catId && s.active).length; },
+            toggleService(id) { const s = this.services.find(s => s.id === id); if (s) { s.active = !s.active; this.save(); } },
+            updatePrice(id, val) { const s = this.services.find(s => s.id === id); if (s) { s.price = parseFloat(val) || 0; this.save(); } }
+        };
+    }
+
+    // Budget Progress Dashboard Alpine.js Component
+    function budgetDashboard() {
+        return {
+            hasData: false,
+            monthlyIncome: 0,
+            spending: {needs:0, wants:0, savings:0},
+            dayOfMonth: 0,
+            daysInMonth: 0,
+            monthProgress: 0,
+            daysRemaining: 0,
+            safeToSpend: 0,
+            velocityStatus: 'ok',
+            velocityMessage: '',
+            monthLabel: '',
+            budgetCategories: [],
+            init() {
+                const income = parseFloat(localStorage.getItem('budget-monthly-income') || '0');
+                if (!income) return;
+                this.monthlyIncome = income;
+                this.hasData = true;
+                const now = new Date();
+                this.dayOfMonth = now.getDate();
+                this.daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                this.daysRemaining = this.daysInMonth - this.dayOfMonth;
+                this.monthProgress = (this.dayOfMonth / this.daysInMonth) * 100;
+                this.monthLabel = now.toLocaleDateString('en-US', {month:'long', year:'numeric'});
+
+                // Load transactions
+                const txRaw = localStorage.getItem('budget-transactions');
+                let transactions = [];
+                if (txRaw) { try { transactions = JSON.parse(txRaw); } catch(e) {} }
+                const month = now.getMonth(); const year = now.getFullYear();
+                this.spending = {needs:0, wants:0, savings:0};
+                transactions.forEach(tx => {
+                    const d = new Date(tx.date);
+                    if (d.getMonth() === month && d.getFullYear() === year) {
+                        this.spending[tx.category] = (this.spending[tx.category] || 0) + parseFloat(tx.amount);
+                    }
+                });
+
+                const budgets = {needs: income * 0.5, wants: income * 0.3, savings: income * 0.2};
+                const wantsRemaining = budgets.wants - this.spending.wants;
+                this.safeToSpend = this.daysRemaining > 0 ? wantsRemaining / this.daysRemaining : wantsRemaining;
+
+                // Spending velocity
+                const expectedSpent = budgets.wants * (this.monthProgress / 100);
+                const actualSpent = this.spending.wants;
+                if (expectedSpent > 0) {
+                    const velocity = ((actualSpent - expectedSpent) / expectedSpent) * 100;
+                    if (velocity > 50) { this.velocityStatus = 'danger'; this.velocityMessage = Math.round(velocity) + '% faster than pace'; }
+                    else if (velocity > 15) { this.velocityStatus = 'caution'; this.velocityMessage = Math.round(velocity) + '% faster than pace'; }
+                    else if (velocity < -10) { this.velocityStatus = 'ok'; this.velocityMessage = Math.round(Math.abs(velocity)) + '% under pace'; }
+                    else { this.velocityStatus = 'ok'; this.velocityMessage = 'On track'; }
+                } else { this.velocityStatus = 'ok'; this.velocityMessage = 'Start of month'; }
+
+                this.budgetCategories = [
+                    this.makeCat('Needs (50%)', 'needs', budgets.needs, 'bg-blue-500'),
+                    this.makeCat('Wants (30%)', 'wants', budgets.wants, 'bg-purple-500'),
+                    this.makeCat('Savings (20%)', 'savings', budgets.savings, 'bg-emerald-500'),
+                ];
+            },
+            makeCat(label, key, budget, barColor) {
+                const spent = this.spending[key] || 0;
+                const percent = budget > 0 ? (spent / budget) * 100 : 0;
+                let status, statusLabel;
+                if (percent > 100) { status = 'over'; statusLabel = 'Over budget'; barColor = 'bg-red-500'; }
+                else if (percent < this.monthProgress - 10) { status = 'ahead'; statusLabel = 'Under budget'; }
+                else { status = 'ok'; statusLabel = 'On track'; }
+                return {label, key, budget, spent, percent, status, statusLabel, barColor};
+            }
+        };
+    }
+
+    // Budget Tracker Alpine.js Component
+    function budgetTracker() {
+        return {
+            transactions: [],
+            monthlyIncome: 0,
+            incomeInput: '',
+            showAddTx: false,
+            showAll: false,
+            newTx: { amount: '', merchant: '', category: 'needs', date: new Date().toISOString().split('T')[0] },
+            spending: { needs: 0, wants: 0, savings: 0 },
+            init() {
+                const savedTx = localStorage.getItem('budget-transactions');
+                if (savedTx) { try { this.transactions = JSON.parse(savedTx); } catch(e) {} }
+                const savedIncome = localStorage.getItem('budget-monthly-income');
+                if (savedIncome) this.monthlyIncome = parseFloat(savedIncome);
+                this.calcSpending();
+            },
+            save() { localStorage.setItem('budget-transactions', JSON.stringify(this.transactions)); },
+            setIncome() {
+                this.monthlyIncome = parseFloat(this.incomeInput) || 0;
+                localStorage.setItem('budget-monthly-income', this.monthlyIncome.toString());
+            },
+            calcSpending() {
+                const now = new Date();
+                const month = now.getMonth();
+                const year = now.getFullYear();
+                this.spending = { needs: 0, wants: 0, savings: 0 };
+                this.transactions.forEach(tx => {
+                    const d = new Date(tx.date);
+                    if (d.getMonth() === month && d.getFullYear() === year) {
+                        this.spending[tx.category] = (this.spending[tx.category] || 0) + parseFloat(tx.amount);
+                    }
+                });
+            },
+            addTransaction() {
+                if (!this.newTx.amount) return;
+                this.transactions.unshift({
+                    id: Date.now().toString(),
+                    amount: parseFloat(this.newTx.amount),
+                    merchant: this.newTx.merchant,
+                    category: this.newTx.category,
+                    date: this.newTx.date
+                });
+                this.save();
+                this.calcSpending();
+                this.newTx = { amount: '', merchant: '', category: 'needs', date: new Date().toISOString().split('T')[0] };
+                this.showAddTx = false;
+            },
+            removeTx(id) {
+                this.transactions = this.transactions.filter(t => t.id !== id);
+                this.save();
+                this.calcSpending();
+            }
+        };
+    }
 </script>
 {{end}}

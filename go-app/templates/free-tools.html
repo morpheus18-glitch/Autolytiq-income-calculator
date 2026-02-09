@@ -13,21 +13,7 @@
 
 {{define "head"}}
 <style>
-    /* Glass morphism cards */
-    .glass-card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .dark .glass-card {
-        background: rgba(30, 30, 30, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    /* Tool card */
+    /* Tool card — unique to free-tools page */
     .tool-card {
         transition: all 0.2s ease;
     }
@@ -357,6 +343,45 @@
                 <h3 class="font-semibold mb-2">Mobile Friendly</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400">Works perfectly on any device. Calculate on the go.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Product Comparisons Section -->
+    <div class="mb-12">
+        <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+            <svg class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Product Comparisons
+        </h2>
+        <div class="grid md:grid-cols-3 gap-4">
+            <a href="/best/budgeting-apps" class="glass-card rounded-xl p-5 tool-card group">
+                <h3 class="font-semibold group-hover:text-primary-500 transition-colors mb-1">Best Budgeting Apps</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">YNAB, Mint, EveryDollar & more</p>
+            </a>
+            <a href="/best/high-yield-savings" class="glass-card rounded-xl p-5 tool-card group">
+                <h3 class="font-semibold group-hover:text-primary-500 transition-colors mb-1">Best Savings Accounts</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">SoFi, Marcus, Ally & more</p>
+            </a>
+            <a href="/best/investment-apps" class="glass-card rounded-xl p-5 tool-card group">
+                <h3 class="font-semibold group-hover:text-primary-500 transition-colors mb-1">Best Investment Apps</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Fidelity, Robinhood, Acorns & more</p>
+            </a>
+            <a href="/best/credit-monitoring" class="glass-card rounded-xl p-5 tool-card group">
+                <h3 class="font-semibold group-hover:text-primary-500 transition-colors mb-1">Best Credit Monitoring</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Credit Karma, Experian & more</p>
+            </a>
+            <a href="/best/auto-loans" class="glass-card rounded-xl p-5 tool-card group">
+                <h3 class="font-semibold group-hover:text-primary-500 transition-colors mb-1">Best Auto Loans</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">LendingTree, Capital One & more</p>
+            </a>
+            <a href="/best/personal-loans" class="glass-card rounded-xl p-5 tool-card group">
+                <h3 class="font-semibold group-hover:text-primary-500 transition-colors mb-1">Best Personal Loans</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">SoFi, LendingTree, Prosper & more</p>
+            </a>
+        </div>
+        <div class="text-center mt-4">
+            <a href="/best" class="text-sm text-primary-500 hover:text-primary-600 font-medium">View all comparisons &rarr;</a>
         </div>
     </div>
 

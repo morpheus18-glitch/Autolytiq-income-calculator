@@ -11,16 +11,23 @@ import (
 	"time"
 
 	"github.com/autolytiq/income-calculator/internal/calc"
+	"github.com/autolytiq/income-calculator/internal/data"
+	"github.com/autolytiq/income-calculator/internal/db"
 )
 
 // Handler holds dependencies for HTTP handlers.
 type Handler struct {
 	tmpl *template.Template
+	db   *db.DB
 }
 
-// New creates a new Handler with the given template.
-func New(tmpl *template.Template) *Handler {
-	return &Handler{tmpl: tmpl}
+// New creates a new Handler with the given template and optional database.
+func New(tmpl *template.Template, database ...*db.DB) *Handler {
+	h := &Handler{tmpl: tmpl}
+	if len(database) > 0 {
+		h.db = database[0]
+	}
+	return h
 }
 
 // PageMeta holds SEO and layout metadata for a page.
@@ -85,8 +92,8 @@ const baseURL = "https://autolytiqs.com"
 
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 	h.renderPage(w, PageMeta{
-		Title:       "Free Income Calculator - Know Your True Take-Home Pay | Autolytiq",
-		Description: "Calculate your real take-home pay from your YTD income. Free income projector with tax breakdown, budget planner, and housing affordability tools.",
+		Title:       "Free Income Calculator 2026 | Calculate Annual Salary from YTD Pay | Autolytiq",
+		Description: "Calculate your projected annual income from year-to-date earnings in seconds. Free salary calculator for W2 employees, hourly workers & contractors. No signup required.",
 		Canonical:   baseURL + "/",
 	}, "home-content", nil)
 }
@@ -137,6 +144,56 @@ func (h *Handler) Blog(w http.ResponseWriter, r *http.Request) {
 	}, "blog-content", nil)
 }
 
+func (h *Handler) BlogArticle(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	article := data.GetArticle(slug)
+	if article == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Get related articles (same category, different slug, max 3)
+	var related []data.BlogArticle
+	for _, s := range data.AllBlogSlugs() {
+		if s != slug {
+			if a := data.GetArticle(s); a != nil {
+				related = append(related, *a)
+				if len(related) >= 3 {
+					break
+				}
+			}
+		}
+	}
+
+	pageData := map[string]interface{}{
+		"Slug":            article.Slug,
+		"Title":           article.Title,
+		"Description":     article.Description,
+		"Category":        article.Category,
+		"ReadTime":        article.ReadTime,
+		"Date":            article.Date,
+		"DateFormatted":   formatDate(article.Date),
+		"RelatedTool":     article.RelatedTool,
+		"HTMLContent":     template.HTML(article.Content),
+		"FAQSchema":       article.FAQs,
+		"RelatedArticles": related,
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       article.MetaTitle,
+		Description: article.Description,
+		Canonical:   baseURL + "/blog/" + article.Slug,
+	}, "blog-article-content", pageData)
+}
+
+func formatDate(dateStr string) string {
+	t, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return dateStr
+	}
+	return t.Format("January 2, 2006")
+}
+
 func (h *Handler) FreeTools(w http.ResponseWriter, r *http.Request) {
 	h.renderPage(w, PageMeta{
 		Title:       "Free Financial Calculators & Tools | Autolytiq",
@@ -166,12 +223,536 @@ func (h *Handler) GigCalculator(w http.ResponseWriter, r *http.Request) {
 	}, "gig-calculator-content", data)
 }
 
+func (h *Handler) Privacy(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Privacy Policy | Autolytiq",
+		Description: "Learn how Autolytiq protects your data. Our income calculator stores data locally in your browser for maximum privacy.",
+		Canonical:   baseURL + "/privacy",
+	}, "privacy-content", nil)
+}
+
+func (h *Handler) Terms(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Terms of Service | Autolytiq",
+		Description: "Terms of Service for using Autolytiq income calculator and financial tools.",
+		Canonical:   baseURL + "/terms",
+	}, "terms-content", nil)
+}
+
+func (h *Handler) AffordIndex(w http.ResponseWriter, r *http.Request) {
+	type levelView struct {
+		Slug               string
+		Display            string
+		TakeHomeFormatted  string
+		MonthlyNetFormatted string
+		MaxRentFormatted   string
+	}
+	var levels []levelView
+	for _, slug := range data.AllAffordSlugs() {
+		d := data.GetAffordBySlug(slug)
+		if d != nil {
+			levels = append(levels, levelView{
+				Slug:               d.Slug,
+				Display:            d.Display,
+				TakeHomeFormatted:  formatMoney(d.TakeHome),
+				MonthlyNetFormatted: formatMoney(d.MonthlyNet),
+				MaxRentFormatted:   formatMoney(d.MaxRent),
+			})
+		}
+	}
+	h.renderPage(w, PageMeta{
+		Title:       "Salary Budget Guides 2026 - What Can You Afford? | Autolytiq",
+		Description: "See what you can afford on any salary from $30K to $200K. Budget breakdowns, take-home pay, housing and car affordability limits.",
+		Canonical:   baseURL + "/afford",
+	}, "afford-index-content", map[string]interface{}{"Levels": levels})
+}
+
+func (h *Handler) Afford(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("salary")
+	d := data.GetAffordBySlug(slug)
+	if d == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	type relatedView struct {
+		Slug               string
+		Display            string
+		MonthlyNetFormatted string
+	}
+	var related []relatedView
+	allSlugs := data.AllAffordSlugs()
+	for _, s := range allSlugs {
+		rd := data.GetAffordBySlug(s)
+		if rd != nil && rd.Slug != slug {
+			diff := rd.Salary - d.Salary
+			if diff < 0 { diff = -diff }
+			if diff <= 30000 {
+				related = append(related, relatedView{Slug: rd.Slug, Display: rd.Display, MonthlyNetFormatted: formatMoney(rd.MonthlyNet)})
+				if len(related) >= 4 { break }
+			}
+		}
+	}
+
+	// Prev/next navigation
+	var prevSlug, prevDisplay, nextSlug, nextDisplay string
+	for i, s := range allSlugs {
+		if s == slug {
+			if i > 0 {
+				pd := data.GetAffordBySlug(allSlugs[i-1])
+				if pd != nil { prevSlug = pd.Slug; prevDisplay = pd.Display }
+			}
+			if i < len(allSlugs)-1 {
+				nd := data.GetAffordBySlug(allSlugs[i+1])
+				if nd != nil { nextSlug = nd.Slug; nextDisplay = nd.Display }
+			}
+			break
+		}
+	}
+
+	pageData := map[string]interface{}{
+		"Display":              d.Display,
+		"Slug":                 d.Slug,
+		"TakeHomeFormatted":    formatMoney(d.TakeHome),
+		"MonthlyNetFormatted":  formatMoney(d.MonthlyNet),
+		"MaxRentFormatted":     formatMoney(d.MaxRent),
+		"SavingsFormatted":     formatMoney(d.Savings),
+		"NeedsFormatted":       formatMoney(d.Needs),
+		"WantsFormatted":       formatMoney(d.Wants),
+		"MaxMortgageFormatted": formatMoney(d.MaxMortgage),
+		"MaxCarFormatted":      formatMoney(d.MaxCar),
+		"EmergencyFundFormatted": formatMoney(d.EmergencyFund),
+		"HourlyFormatted":      formatMoney(d.HourlyRate),
+		"WeeklyFormatted":      formatMoney(d.WeeklyPay),
+		"Related":              related,
+		"PrevSlug":             prevSlug,
+		"PrevDisplay":          prevDisplay,
+		"NextSlug":             nextSlug,
+		"NextDisplay":          nextDisplay,
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       fmt.Sprintf("Budget on %s Salary - What Can You Afford? | Autolytiq", d.Display),
+		Description: fmt.Sprintf("Complete budget breakdown for a %s salary. Take-home pay: $%s, max rent: $%s/mo, savings: $%s/mo.", d.Display, formatMoney(d.TakeHome), formatMoney(d.MaxRent), formatMoney(d.Savings)),
+		Canonical:   baseURL + "/afford/" + d.Slug,
+	}, "afford-content", pageData)
+}
+
+func (h *Handler) SalaryIndex(w http.ResponseWriter, r *http.Request) {
+	type jobView struct {
+		Slug           string
+		Title          string
+		Category       string
+		GrowthOutlook  string
+		MedianFormatted string
+		EntryFormatted string
+		SeniorFormatted string
+	}
+	var jobs []jobView
+	for _, slug := range data.AllSalarySlugs() {
+		s := data.GetSalary(slug)
+		if s != nil {
+			jobs = append(jobs, jobView{
+				Slug:           s.Slug,
+				Title:          s.Title,
+				Category:       s.Category,
+				GrowthOutlook:  s.GrowthOutlook,
+				MedianFormatted: formatMoney(s.Median),
+				EntryFormatted: formatMoney(s.Entry),
+				SeniorFormatted: formatMoney(s.Senior),
+			})
+		}
+	}
+	h.renderPage(w, PageMeta{
+		Title:       "Salary Guide 2026 - How Much Do Jobs Pay? | Autolytiq",
+		Description: "Explore 2026 salary data for 20+ jobs. See median pay, entry-to-senior ranges, top states, and growth outlook.",
+		Canonical:   baseURL + "/salary",
+	}, "salary-index-content", map[string]interface{}{"Jobs": jobs})
+}
+
+func (h *Handler) Salary(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("job")
+	s := data.GetSalary(slug)
+	if s == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	type stateView struct {
+		Rank            int
+		State           string
+		SalaryFormatted string
+	}
+	var topStates []stateView
+	for i, ts := range s.TopStates {
+		topStates = append(topStates, stateView{Rank: i + 1, State: ts.State, SalaryFormatted: formatMoney(ts.Salary)})
+	}
+
+	type relatedJobView struct {
+		Slug           string
+		Title          string
+		MedianFormatted string
+	}
+	var relatedJobs []relatedJobView
+	for _, rSlug := range s.RelatedJobs {
+		rj := data.GetSalary(rSlug)
+		if rj != nil {
+			relatedJobs = append(relatedJobs, relatedJobView{Slug: rj.Slug, Title: rj.Title, MedianFormatted: formatMoney(rj.Median)})
+		}
+	}
+
+	// Affordability data for sidebar
+	type affordView struct {
+		Slug               string
+		MaxRentFormatted   string
+		MaxCarFormatted    string
+		SavingsFormatted   string
+	}
+	var afford *affordView
+	ad := data.GetAffordBySlug(data.ClosestAffordSlug(s.Median))
+	if ad != nil {
+		afford = &affordView{
+			Slug:             ad.Slug,
+			MaxRentFormatted: formatMoney(ad.MaxRent),
+			MaxCarFormatted:  formatMoney(ad.MaxCar),
+			SavingsFormatted: formatMoney(ad.Savings),
+		}
+	}
+
+	growthLabels := map[string]string{
+		"declining": "Declining", "stable": "Stable",
+		"growing": "Above Average", "fast": "Much Faster Than Average",
+	}
+
+	pageData := map[string]interface{}{
+		"Title":           s.Title,
+		"TitleLower":      strings.ToLower(s.Title),
+		"Description":     s.Description,
+		"Category":        s.Category,
+		"Education":       s.Education,
+		"GrowthRate":      s.GrowthRate,
+		"GrowthLabel":     growthLabels[s.GrowthOutlook],
+		"MedianFormatted": formatMoney(s.Median),
+		"EntryFormatted":  formatMoney(s.Entry),
+		"MidFormatted":    formatMoney(s.Mid),
+		"SeniorFormatted": formatMoney(s.Senior),
+		"P10Formatted":    formatMoney(s.Percentile10),
+		"P25Formatted":    formatMoney(s.Percentile25),
+		"P75Formatted":    formatMoney(s.Percentile75),
+		"P90Formatted":    formatMoney(s.Percentile90),
+		"TopStates":       topStates,
+		"RelatedJobs":     relatedJobs,
+		"Afford":          afford,
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       fmt.Sprintf("%s Salary 2026 - How Much Do %ss Make? | Autolytiq", s.Title, s.Title),
+		Description: fmt.Sprintf("%s salary guide for 2026. Median salary: $%s. Entry-level to senior pay ranges, top-paying states, and job outlook.", s.Title, formatMoney(s.Median)),
+		Canonical:   baseURL + "/salary/" + s.Slug,
+	}, "salary-content", pageData)
+}
+
+func (h *Handler) BestIndex(w http.ResponseWriter, r *http.Request) {
+	type catView struct {
+		Slug         string
+		Name         string
+		Description  string
+		WinnerName   string
+		WinnerRating float64
+		ProductCount int
+	}
+	var cats []catView
+	for _, c := range data.AllCategories() {
+		winnerName := ""
+		var winnerRating float64
+		for _, p := range c.Products {
+			if p.ID == c.WinnerID {
+				winnerName = p.Name
+				winnerRating = p.Rating
+				break
+			}
+		}
+		cats = append(cats, catView{
+			Slug:         c.Slug,
+			Name:         c.Name,
+			Description:  c.Description,
+			WinnerName:   winnerName,
+			WinnerRating: winnerRating,
+			ProductCount: len(c.Products),
+		})
+	}
+
+	type vsView struct {
+		Slug  string
+		Title string
+	}
+	var versus []vsView
+	for _, v := range data.AllVersusComparisons() {
+		versus = append(versus, vsView{Slug: v.Slug, Title: v.Title})
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       "Best Financial Products 2026 - Expert Comparisons | Autolytiq",
+		Description: "Compare the best budgeting apps, credit monitoring, savings accounts, auto loans, personal loans, and investment apps of 2026.",
+		Canonical:   baseURL + "/best",
+	}, "best-index-content", map[string]interface{}{"Categories": cats, "Versus": versus})
+}
+
+func (h *Handler) BestCategory(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("category")
+	cat := data.GetCategory(slug)
+	if cat == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	type prodView struct {
+		Name        string
+		Description string
+		Rating      float64
+		Pricing     string
+		Pros        []string
+		Cons        []string
+		BestFor     []string
+		AffURL      string
+		IsWinner    bool
+		IsRunnerUp  bool
+	}
+	var products []prodView
+	for _, p := range cat.Products {
+		products = append(products, prodView{
+			Name: p.Name, Description: p.Description, Rating: p.Rating,
+			Pricing: p.Pricing, Pros: p.Pros, Cons: p.Cons, BestFor: p.BestFor,
+			AffURL: p.AffURL, IsWinner: p.ID == cat.WinnerID, IsRunnerUp: p.ID == cat.RunnerUpID,
+		})
+	}
+
+	type featureRow struct {
+		Name   string
+		Values []string
+	}
+	var features []featureRow
+	for _, fname := range cat.ComparisonFeatures {
+		row := featureRow{Name: fname}
+		for _, p := range cat.Products {
+			v := p.Features[fname]
+			if v == "" {
+				v = "—"
+			}
+			row.Values = append(row.Values, v)
+		}
+		features = append(features, row)
+	}
+
+	type relatedCat struct {
+		Slug string
+		Name string
+	}
+	var related []relatedCat
+	for _, c := range data.AllCategories() {
+		if c.Slug != slug {
+			related = append(related, relatedCat{Slug: c.Slug, Name: c.Name})
+		}
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       cat.MetaTitle,
+		Description: cat.MetaDescription,
+		Canonical:   baseURL + "/best/" + cat.Slug,
+	}, "best-category-content", map[string]interface{}{
+		"Name":               cat.Name,
+		"Description":        cat.Description,
+		"Products":           products,
+		"Features":           features,
+		"RelatedCategories":  related,
+	})
+}
+
+func (h *Handler) CompareIndex(w http.ResponseWriter, r *http.Request) {
+	type vsView struct {
+		Slug     string
+		Title    string
+		Verdict  string
+		Category string
+	}
+	var versus []vsView
+	for _, v := range data.AllVersusComparisons() {
+		catName := ""
+		cat := data.GetCategory(v.RelatedCategory)
+		if cat != nil {
+			catName = cat.Name
+		}
+		versus = append(versus, vsView{Slug: v.Slug, Title: v.Title, Verdict: v.Verdict, Category: catName})
+	}
+
+	type catView struct {
+		Slug string
+		Name string
+	}
+	var cats []catView
+	for _, c := range data.AllCategories() {
+		cats = append(cats, catView{Slug: c.Slug, Name: c.Name})
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       "Product Comparisons 2026 - Head-to-Head Reviews | Autolytiq",
+		Description: "Side-by-side comparisons of popular financial products. YNAB vs Mint, Credit Karma vs Experian, SoFi vs Marcus, and more.",
+		Canonical:   baseURL + "/compare",
+	}, "compare-index-content", map[string]interface{}{"Versus": versus, "Categories": cats})
+}
+
+func (h *Handler) CompareDetail(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("slug")
+	vs := data.GetVersus(slug)
+	if vs == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	type prodView struct {
+		Name        string
+		Description string
+		Rating      float64
+		Pricing     string
+		Pros        []string
+		Cons        []string
+		AffURL      string
+	}
+
+	type relatedVS struct {
+		Slug  string
+		Title string
+	}
+	var related []relatedVS
+	for _, v := range data.AllVersusComparisons() {
+		if v.Slug != slug {
+			related = append(related, relatedVS{Slug: v.Slug, Title: v.Title})
+		}
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       vs.MetaTitle,
+		Description: vs.MetaDescription,
+		Canonical:   baseURL + "/compare/" + vs.Slug,
+	}, "compare-detail-content", map[string]interface{}{
+		"Title":           vs.Title,
+		"Verdict":         vs.Verdict,
+		"ProductA":        prodView{Name: vs.ProductA.Name, Description: vs.ProductA.Description, Rating: vs.ProductA.Rating, Pricing: vs.ProductA.Pricing, Pros: vs.ProductA.Pros, Cons: vs.ProductA.Cons, AffURL: vs.ProductA.AffURL},
+		"ProductB":        prodView{Name: vs.ProductB.Name, Description: vs.ProductB.Description, Rating: vs.ProductB.Rating, Pricing: vs.ProductB.Pricing, Pros: vs.ProductB.Pros, Cons: vs.ProductB.Cons, AffURL: vs.ProductB.AffURL},
+		"ChooseAIf":       vs.ChooseAIf,
+		"ChooseBIf":       vs.ChooseBIf,
+		"RelatedCategory": vs.RelatedCategory,
+		"RelatedVersus":   related,
+	})
+}
+
 func (h *Handler) IncomeStreams(w http.ResponseWriter, r *http.Request) {
 	h.renderPage(w, PageMeta{
 		Title:       "Income Streams Tracker - Multiple Income Calculator | Autolytiq",
 		Description: "Track and total all your income sources: salary, freelance, investments, and rental income. See your complete annual and monthly picture.",
 		Canonical:   baseURL + "/income-streams",
 	}, "income-streams-content", nil)
+}
+
+func (h *Handler) Subscribe(w http.ResponseWriter, r *http.Request) {
+	if h.db == nil {
+		h.renderError(w, "Service unavailable", http.StatusServiceUnavailable)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		h.renderError(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+	email := r.FormValue("email")
+	source := r.FormValue("source")
+	if source == "" {
+		source = "newsletter"
+	}
+	_, isNew, err := h.db.CreateLead(email, "", "", source)
+	if err != nil {
+		h.renderError(w, "Please enter a valid email address", http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if isNew {
+		fmt.Fprint(w, `<div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-center">
+			<p class="text-emerald-600 dark:text-emerald-400 font-medium">You're subscribed! Check your inbox for tips.</p>
+		</div>`)
+	} else {
+		fmt.Fprint(w, `<div class="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-center">
+			<p class="text-blue-600 dark:text-blue-400 font-medium">You're already subscribed!</p>
+		</div>`)
+	}
+}
+
+func (h *Handler) Unsubscribe(w http.ResponseWriter, r *http.Request) {
+	token := r.PathValue("token")
+	if h.db == nil {
+		http.Error(w, "Service unavailable", http.StatusServiceUnavailable)
+		return
+	}
+	email, err := h.db.Unsubscribe(token)
+	if err != nil {
+		h.renderPage(w, PageMeta{
+			Title: "Unsubscribe | Autolytiq",
+		}, "unsubscribe-content", map[string]interface{}{
+			"Success": false,
+			"Message": "Invalid or expired unsubscribe link.",
+		})
+		return
+	}
+	h.renderPage(w, PageMeta{
+		Title: "Unsubscribed | Autolytiq",
+	}, "unsubscribe-content", map[string]interface{}{
+		"Success": true,
+		"Email":   email,
+		"Message": "You have been unsubscribed.",
+	})
+}
+
+func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/xml")
+	var b strings.Builder
+	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://autolytiqs.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://autolytiqs.com/calculator</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://autolytiqs.com/smart-money</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/housing</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/auto</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/gig-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/income-streams</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/taxes</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/free-tools</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://autolytiqs.com/afford</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/salary</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`)
+	// Blog articles
+	for _, slug := range data.AllBlogSlugs() {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/blog/%s</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>", slug)
+	}
+	// Afford pages
+	for _, slug := range data.AllAffordSlugs() {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/afford/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+	}
+	// Salary pages
+	for _, slug := range data.AllSalarySlugs() {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/salary/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+	}
+	// Best/Compare pages
+	b.WriteString("\n  <url><loc>https://autolytiqs.com/best</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
+	b.WriteString("\n  <url><loc>https://autolytiqs.com/compare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
+	for _, slug := range data.AllCategorySlugs() {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/best/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+	}
+	for _, slug := range data.AllVersusSlugs() {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/compare/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+	}
+	b.WriteString(`
+  <url><loc>https://autolytiqs.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://autolytiqs.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>`)
+	w.Write([]byte(b.String()))
 }
 
 // =============================================================================

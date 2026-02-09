@@ -1,5 +1,6 @@
 {{define "income-results"}}
-<div class="pt-6 border-t border-slate-200 dark:border-slate-700 space-y-6 animate-fade-in">
+<div class="pt-6 border-t border-slate-200 dark:border-slate-700 space-y-6 animate-fade-in"
+     data-annual="{{.GrossAnnual}}" data-monthly="{{.GrossMonthly}}" data-weekly="{{.GrossWeekly}}" data-daily="{{.GrossDaily}}" data-days="{{.DaysWorked}}">
     <!-- Main Result -->
     <div class="text-center">
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Projected Annual Income</p>

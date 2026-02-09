@@ -1,0 +1,214 @@
+{{define "afford-content"}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <a href="/" class="hover:text-primary-500 transition-colors">Home</a>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <a href="/afford" class="hover:text-primary-500 transition-colors">Salary Guides</a>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-medium text-slate-900 dark:text-white">{{.Display}}</span>
+    </div>
+
+    <!-- Hero -->
+    <div class="text-center mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-4">
+            <svg class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-sm font-medium">2026 Budget Guide</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Budget on <span class="text-primary-500">{{.Display}}</span> Salary
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Complete budget breakdown, take-home pay, and affordability limits for a {{.Display}} annual income.
+        </p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Take-Home Pay</div>
+            <div class="text-xl font-bold font-mono text-emerald-500">${{.TakeHomeFormatted}}</div>
+        </div>
+        <div class="p-4 rounded-xl bg-primary-500/10 border border-primary-500/20 text-center">
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Monthly Net</div>
+            <div class="text-xl font-bold font-mono text-primary-500">${{.MonthlyNetFormatted}}</div>
+        </div>
+        <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center">
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Max Rent</div>
+            <div class="text-xl font-bold font-mono text-blue-500">${{.MaxRentFormatted}}/mo</div>
+        </div>
+        <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-center">
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Save Monthly</div>
+            <div class="text-xl font-bold font-mono text-purple-500">${{.SavingsFormatted}}</div>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- 50/30/20 Budget Breakdown -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">50/30/20 Budget on {{.Display}}</h2>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Needs (50%)</span>
+                            <span class="font-mono font-medium">${{.NeedsFormatted}}/mo</span>
+                        </div>
+                        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full" style="width: 50%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Housing, utilities, groceries, insurance, transportation</p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Wants (30%)</span>
+                            <span class="font-mono font-medium">${{.WantsFormatted}}/mo</span>
+                        </div>
+                        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-purple-500 rounded-full" style="width: 30%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Dining, entertainment, subscriptions, shopping</p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Savings (20%)</span>
+                            <span class="font-mono font-medium">${{.SavingsFormatted}}/mo</span>
+                        </div>
+                        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 rounded-full" style="width: 20%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Emergency fund, retirement, investments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Affordability Limits -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">What Can You Afford on {{.Display}}?</h2>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Maximum Rent</div>
+                        <div class="text-2xl font-bold font-mono text-blue-600 dark:text-blue-400">${{.MaxRentFormatted}}/mo</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">30% of gross monthly</div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Max Mortgage</div>
+                        <div class="text-2xl font-bold font-mono text-purple-600 dark:text-purple-400">${{.MaxMortgageFormatted}}/mo</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">28% front-end DTI</div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Max Car Payment</div>
+                        <div class="text-2xl font-bold font-mono text-amber-600 dark:text-amber-400">${{.MaxCarFormatted}}/mo</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">12% of gross (with insurance)</div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Emergency Fund</div>
+                        <div class="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">${{.EmergencyFundFormatted}}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">6 months of expenses</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Content -->
+            <div class="glass-card rounded-xl p-6 prose-article">
+                <h2>How to Budget a {{.Display}} Salary</h2>
+                <p>
+                    Earning {{.Display}} per year puts you at approximately ${{.HourlyFormatted}} per hour
+                    (assuming 40 hours/week, 52 weeks/year). After federal taxes, state taxes (estimated at 5%),
+                    and FICA contributions, your take-home pay is approximately ${{.TakeHomeFormatted}}.
+                </p>
+                <h3>Monthly Budget Breakdown</h3>
+                <p>With a monthly net income of ${{.MonthlyNetFormatted}}, the 50/30/20 rule suggests:</p>
+                <ul>
+                    <li><strong>Needs (${{.NeedsFormatted}}):</strong> Housing, utilities, groceries, insurance, transportation</li>
+                    <li><strong>Wants (${{.WantsFormatted}}):</strong> Dining, entertainment, subscriptions, shopping</li>
+                    <li><strong>Savings (${{.SavingsFormatted}}):</strong> Emergency fund, retirement, investments</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Calculator CTA -->
+            <div class="glass-card rounded-xl p-6 border-2 border-primary-500/30">
+                <h3 class="font-semibold mb-2 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Get Exact Numbers
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    This is an estimate. Use our calculator with your actual pay details for precise results.
+                </p>
+                <a href="/calculator" class="block w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-center text-sm font-medium rounded-lg transition-all">
+                    Open Calculator
+                </a>
+            </div>
+
+            <!-- Tool Links -->
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">Useful Tools</h3>
+                <div class="space-y-2">
+                    <a href="/housing" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div>
+                            <div class="text-sm font-medium">Housing Calculator</div>
+                            <div class="text-xs text-gray-500">Max rent: ${{.MaxRentFormatted}}/mo</div>
+                        </div>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/auto" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div>
+                            <div class="text-sm font-medium">Auto Calculator</div>
+                            <div class="text-xs text-gray-500">Max payment: ${{.MaxCarFormatted}}/mo</div>
+                        </div>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/smart-money" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div>
+                            <div class="text-sm font-medium">Budget Planner</div>
+                            <div class="text-xs text-gray-500">50/30/20 breakdown</div>
+                        </div>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Related Salary Guides -->
+            {{if .Related}}
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">Related Salary Guides</h3>
+                <div class="space-y-2">
+                    {{range .Related}}
+                    <a href="/afford/{{.Slug}}" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div>
+                            <div class="text-sm font-medium">{{.Display}}</div>
+                            <div class="text-xs text-gray-500">${{.MonthlyNetFormatted}}/mo net</div>
+                        </div>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex items-center justify-between mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        {{if .PrevSlug}}
+        <a href="/afford/{{.PrevSlug}}" class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium transition-colors">
+            &larr; {{.PrevDisplay}}
+        </a>
+        {{else}}<div></div>{{end}}
+        <a href="/afford" class="text-sm text-gray-500 hover:text-primary-500 transition-colors">All Salary Guides</a>
+        {{if .NextSlug}}
+        <a href="/afford/{{.NextSlug}}" class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium transition-colors">
+            {{.NextDisplay}} &rarr;
+        </a>
+        {{else}}<div></div>{{end}}
+    </div>
+</div>
+{{end}}

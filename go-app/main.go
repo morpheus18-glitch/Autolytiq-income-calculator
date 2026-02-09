@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/autolytiq/income-calculator/internal/db"
 	"github.com/autolytiq/income-calculator/internal/handlers"
 	"github.com/autolytiq/income-calculator/internal/middleware"
 	"golang.org/x/text/language"
@@ -44,8 +45,14 @@ func main() {
 		log.Fatal("Failed to parse templates:", err)
 	}
 
-	// Create handler with templates
-	h := handlers.New(tmpl)
+	// Open database for lead capture
+	database, err := db.Open()
+	if err != nil {
+		log.Printf("Warning: could not open leads database: %v (lead capture disabled)", err)
+	}
+
+	// Create handler with templates and database
+	h := handlers.New(tmpl, database)
 
 	// Create router
 	mux := http.NewServeMux()
@@ -62,9 +69,20 @@ func main() {
 	mux.HandleFunc("GET /auto", h.Auto)
 	mux.HandleFunc("GET /taxes", h.Taxes)
 	mux.HandleFunc("GET /blog", h.Blog)
+	mux.HandleFunc("GET /blog/{slug}", h.BlogArticle)
 	mux.HandleFunc("GET /free-tools", h.FreeTools)
 	mux.HandleFunc("GET /gig-calculator", h.GigCalculator)
 	mux.HandleFunc("GET /income-streams", h.IncomeStreams)
+	mux.HandleFunc("GET /best", h.BestIndex)
+	mux.HandleFunc("GET /best/{category}", h.BestCategory)
+	mux.HandleFunc("GET /compare", h.CompareIndex)
+	mux.HandleFunc("GET /compare/{slug}", h.CompareDetail)
+	mux.HandleFunc("GET /privacy", h.Privacy)
+	mux.HandleFunc("GET /terms", h.Terms)
+	mux.HandleFunc("GET /afford", h.AffordIndex)
+	mux.HandleFunc("GET /afford/{salary}", h.Afford)
+	mux.HandleFunc("GET /salary", h.SalaryIndex)
+	mux.HandleFunc("GET /salary/{job}", h.Salary)
 
 	// HTMX API endpoints (partials)
 	mux.HandleFunc("POST /api/calculate-income", h.CalculateIncome)
@@ -74,6 +92,8 @@ func main() {
 	mux.HandleFunc("POST /api/calculate-taxes", h.CalculateTaxes)
 	mux.HandleFunc("POST /api/calculate-gig", h.CalculateGig)
 	mux.HandleFunc("POST /api/calculate-streams", h.CalculateStreams)
+	mux.HandleFunc("POST /api/subscribe", h.Subscribe)
+	mux.HandleFunc("GET /unsubscribe/{token}", h.Unsubscribe)
 
 	// Health check
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
@@ -87,23 +107,8 @@ func main() {
 		w.Write([]byte("User-agent: *\nAllow: /\n\nSitemap: https://autolytiqs.com/sitemap.xml\n"))
 	})
 
-	// sitemap.xml
-	mux.HandleFunc("GET /sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/xml")
-		w.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://autolytiqs.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://autolytiqs.com/calculator</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://autolytiqs.com/smart-money</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/housing</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/auto</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/gig-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/income-streams</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/taxes</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://autolytiqs.com/free-tools</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-</urlset>`))
-	})
+	// sitemap.xml (dynamic: includes programmatic afford/salary/blog pages)
+	mux.HandleFunc("GET /sitemap.xml", h.Sitemap)
 
 	// Apply middleware
 	chain := middleware.Chain(

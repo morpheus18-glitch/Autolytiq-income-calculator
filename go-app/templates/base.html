@@ -19,6 +19,11 @@
     <link rel="icon" type="image/svg+xml" href="/static/css/favicon.svg">
     <title>{{.Title}}</title>
 
+    <!-- Google Fonts: Inter + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY4FDJP3MW"></script>
     <script>
@@ -47,12 +52,21 @@
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'monospace'],
+                    },
                     colors: {
                         primary: {
                             50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7',
                             400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857',
                             800: '#065f46', 900: '#064e3b', 950: '#022c22',
                         }
+                    },
+                    borderRadius: {
+                        'xl': '0.75rem',
+                        '2xl': '1rem',
+                        '3xl': '1.5rem',
                     }
                 }
             }
@@ -67,7 +81,7 @@
     <!-- HTMX -->
     <script defer src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-    <!-- Custom CSS -->
+    <!-- Custom CSS (Neon Elite Design System) -->
     <link rel="stylesheet" href="/static/css/app.css">
 
     <style>
@@ -76,38 +90,38 @@
         .htmx-indicator { display: none; }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors">
+<body class="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors">
     <!-- Skip Link -->
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary-500 text-white px-4 py-2 rounded-lg z-50">Skip to content</a>
 
     <!-- Header -->
-    <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
+    <header class="site-header sticky top-0 z-40 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
-                <a href="/" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                <a href="/" class="flex items-center gap-2 group">
+                    <div class="logo-icon w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <span class="font-bold text-xl">Autolytiq</span>
+                    <span class="logo-text font-bold text-xl">Autolytiq</span>
                 </a>
 
                 <!-- Desktop Nav -->
                 <nav class="hidden md:flex items-center gap-6">
-                    <a href="/calculator" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Calculator</a>
-                    <a href="/smart-money" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Budget</a>
-                    <a href="/housing" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Housing</a>
-                    <a href="/auto" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Auto</a>
-                    <a href="/taxes" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Taxes</a>
-                    <a href="/blog" class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Blog</a>
+                    <a href="/calculator" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Calculator</a>
+                    <a href="/smart-money" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Budget</a>
+                    <a href="/housing" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Housing</a>
+                    <a href="/auto" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Auto</a>
+                    <a href="/taxes" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Taxes</a>
+                    <a href="/blog" class="nav-link text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Blog</a>
                 </nav>
 
                 <!-- Right Side -->
                 <div class="flex items-center gap-3">
                     <!-- Dark Mode Toggle -->
-                    <button @click="darkMode = !darkMode" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button @click="darkMode = !darkMode" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" aria-label="Toggle dark mode">
                         <svg x-show="!darkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                         </svg>
@@ -115,7 +129,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                     </button>
-                    <a href="/calculator" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors">
+                    <a href="/calculator" class="btn-primary hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all">
                         Open Calculator
                     </a>
                 </div>
@@ -129,31 +143,31 @@
     </main>
 
     <!-- Footer -->
-    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+    <footer class="site-footer mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                 <div>
                     <h4 class="font-semibold mb-4">Tools</h4>
                     <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                        <li><a href="/calculator" class="hover:text-primary-500">Income Calculator</a></li>
-                        <li><a href="/smart-money" class="hover:text-primary-500">Budget Planner</a></li>
-                        <li><a href="/housing" class="hover:text-primary-500">Housing Calculator</a></li>
-                        <li><a href="/auto" class="hover:text-primary-500">Auto Calculator</a></li>
-                        <li><a href="/taxes" class="hover:text-primary-500">Tax Calculator</a></li>
+                        <li><a href="/calculator" class="nav-link hover:text-primary-500">Income Calculator</a></li>
+                        <li><a href="/smart-money" class="nav-link hover:text-primary-500">Budget Planner</a></li>
+                        <li><a href="/housing" class="nav-link hover:text-primary-500">Housing Calculator</a></li>
+                        <li><a href="/auto" class="nav-link hover:text-primary-500">Auto Calculator</a></li>
+                        <li><a href="/taxes" class="nav-link hover:text-primary-500">Tax Calculator</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-4">Resources</h4>
                     <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                        <li><a href="/blog" class="hover:text-primary-500">Blog</a></li>
-                        <li><a href="/free-tools" class="hover:text-primary-500">All Tools</a></li>
+                        <li><a href="/blog" class="nav-link hover:text-primary-500">Blog</a></li>
+                        <li><a href="/free-tools" class="nav-link hover:text-primary-500">All Tools</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-4">More Tools</h4>
                     <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                        <li><a href="/gig-calculator" class="hover:text-primary-500">Gig Calculator</a></li>
-                        <li><a href="/income-streams" class="hover:text-primary-500">Income Streams</a></li>
+                        <li><a href="/gig-calculator" class="nav-link hover:text-primary-500">Gig Calculator</a></li>
+                        <li><a href="/income-streams" class="nav-link hover:text-primary-500">Income Streams</a></li>
                     </ul>
                 </div>
                 <div>
@@ -161,33 +175,37 @@
                     <p class="text-sm text-slate-600 dark:text-slate-400">Free financial tools for smarter money decisions.</p>
                 </div>
             </div>
-            <div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800 text-center text-sm text-slate-500">
-                &copy; 2026 Autolytiq. All rights reserved.
+            <div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+                <span>&copy; 2026 Autolytiq. All rights reserved.</span>
+                <div class="flex items-center gap-4">
+                    <a href="/privacy" class="hover:text-primary-500 transition-colors">Privacy Policy</a>
+                    <a href="/terms" class="hover:text-primary-500 transition-colors">Terms of Service</a>
+                </div>
             </div>
         </div>
     </footer>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 pb-safe">
+    <nav class="mobile-nav md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 pb-safe">
         <div class="flex items-center justify-around py-2">
-            <a href="/" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400">
+            <a href="/" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400 transition-colors">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span class="text-[10px]">Home</span>
             </a>
-            <a href="/calculator" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400">
+            <a href="/calculator" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400 transition-colors">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                 <span class="text-[10px]">Calc</span>
             </a>
-            <a href="/smart-money" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400">
+            <a href="/smart-money" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400 transition-colors">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                 <span class="text-[10px]">Budget</span>
             </a>
-            <a href="/housing" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400">
+            <a href="/housing" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400 transition-colors">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span class="text-[10px]">Housing</span>
             </a>
-            <a href="/auto" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-6 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
+            <a href="/auto" class="flex flex-col items-center gap-1 px-3 py-2 text-slate-500 dark:text-slate-400 transition-colors">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 <span class="text-[10px]">Auto</span>
             </a>
         </div>
@@ -195,6 +213,9 @@
 
     <!-- Bottom padding for mobile nav -->
     <div class="md:hidden h-20"></div>
+
+    {{template "cookie-consent"}}
+    {{template "exit-intent"}}
 </body>
 </html>
 {{end}}

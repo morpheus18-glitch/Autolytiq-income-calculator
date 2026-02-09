@@ -1,0 +1,44 @@
+{{define "afford-index-content"}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-4">
+            <svg class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-sm font-medium text-primary-600 dark:text-primary-400">2026 Budget Guides</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Salary <span class="text-primary-500">Budget Guides</span>
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            See exactly what you can afford on any salary. Budget breakdowns, take-home pay, housing and car limits.
+        </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {{range .Levels}}
+        <a href="/afford/{{.Slug}}" class="glass-card rounded-xl p-5 hover:shadow-lg transition-all group">
+            <div class="text-2xl font-bold text-primary-500 mb-2">{{.Display}}</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <div class="flex justify-between">
+                    <span>Take-Home</span>
+                    <span class="font-medium">${{.TakeHomeFormatted}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Monthly</span>
+                    <span class="font-medium">${{.MonthlyNetFormatted}}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Max Rent</span>
+                    <span class="font-medium">${{.MaxRentFormatted}}/mo</span>
+                </div>
+            </div>
+            <div class="mt-3 text-xs text-primary-500 font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                View Guide
+                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </a>
+        {{end}}
+    </div>
+</div>
+{{end}}

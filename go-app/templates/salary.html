@@ -1,0 +1,225 @@
+{{define "salary-content"}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <a href="/" class="hover:text-primary-500 transition-colors">Home</a>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <a href="/salary" class="hover:text-primary-500 transition-colors">Salary Guide</a>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-medium text-slate-900 dark:text-white">{{.Title}}</span>
+    </div>
+
+    <!-- Hero -->
+    <div class="mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-4">
+            <svg class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span class="text-sm font-medium">{{.Category}}</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            <span class="text-primary-500">{{.Title}}</span> Salary
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mb-4">
+            {{.Description}}
+        </p>
+        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+            <span class="flex items-center gap-1">
+                <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Median: ${{.MedianFormatted}}
+            </span>
+            <span class="flex items-center gap-1">
+                <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Growth: {{.GrowthRate}}%
+            </span>
+            <span class="flex items-center gap-1">
+                <svg class="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                BLS Data
+            </span>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Pay Range -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">{{.Title}} Salary Range</h2>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Entry Level</div>
+                        <div class="text-xl font-bold font-mono">${{.EntryFormatted}}</div>
+                        <div class="text-xs text-gray-500">0-2 years</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Mid Career</div>
+                        <div class="text-xl font-bold font-mono text-primary-600 dark:text-primary-400">${{.MidFormatted}}</div>
+                        <div class="text-xs text-gray-500">5-10 years</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Senior Level</div>
+                        <div class="text-xl font-bold font-mono">${{.SeniorFormatted}}</div>
+                        <div class="text-xs text-gray-500">10+ years</div>
+                    </div>
+                </div>
+
+                <!-- Percentile Range -->
+                <h3 class="text-sm font-semibold mb-3">Salary Percentiles</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                        <span>10th Percentile</span>
+                        <span class="font-mono">${{.P10Formatted}}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span>25th Percentile</span>
+                        <span class="font-mono">${{.P25Formatted}}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm font-medium text-primary-600 dark:text-primary-400">
+                        <span>Median (50th)</span>
+                        <span class="font-mono">${{.MedianFormatted}}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span>75th Percentile</span>
+                        <span class="font-mono">${{.P75Formatted}}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span>90th Percentile</span>
+                        <span class="font-mono">${{.P90Formatted}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Paying States -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">Top Paying States for {{.Title}}s</h2>
+                <div class="space-y-3">
+                    {{range $i, $s := .TopStates}}
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-primary-500/10 text-primary-500 text-xs font-bold flex items-center justify-center">{{$s.Rank}}</span>
+                            <span class="font-medium">{{$s.State}}</span>
+                        </div>
+                        <span class="font-mono font-medium">${{$s.SalaryFormatted}}</span>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+
+            <!-- Job Outlook -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">Job Outlook & Education</h2>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Growth Rate</div>
+                        <div class="text-xl font-bold {{if gt .GrowthRate 0}}text-emerald-500{{else}}text-red-500{{end}}">
+                            {{if gt .GrowthRate 0}}+{{end}}{{.GrowthRate}}%
+                        </div>
+                        <div class="text-xs text-gray-500">{{.GrowthLabel}}</div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Education</div>
+                        <div class="text-sm font-medium">{{.Education}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Content -->
+            <div class="glass-card rounded-xl p-6 prose-article">
+                <h2>How Much Do {{.Title}}s Make?</h2>
+                <p>
+                    The median annual salary for a {{.TitleLower}} in the United States
+                    is ${{.MedianFormatted}} as of 2026. This means half of {{.TitleLower}}s
+                    earn more than this amount, and half earn less.
+                </p>
+                <h3>Salary by Experience Level</h3>
+                <ul>
+                    <li><strong>Entry Level (0-2 years):</strong> ${{.EntryFormatted}}</li>
+                    <li><strong>Mid Career (5-10 years):</strong> ${{.MidFormatted}}</li>
+                    <li><strong>Senior Level (10+ years):</strong> ${{.SeniorFormatted}}</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Calculator CTA -->
+            <div class="glass-card rounded-xl p-6 border-2 border-primary-500/30">
+                <h3 class="font-semibold mb-2 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Calculate Your Take-Home
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    See exactly how much you'll take home after taxes with our income calculator.
+                </p>
+                <a href="/calculator" class="block w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-center text-sm font-medium rounded-lg transition-all">
+                    Calculate ${{.MedianFormatted}} Salary
+                </a>
+            </div>
+
+            <!-- Affordability -->
+            {{if .Afford}}
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">What Can a {{.Title}} Afford?</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Based on median salary of ${{.MedianFormatted}}</p>
+                <div class="space-y-2">
+                    <div class="flex justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Max Rent</span>
+                        <span class="font-mono font-medium text-primary-500">${{.Afford.MaxRentFormatted}}/mo</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Max Car Payment</span>
+                        <span class="font-mono font-medium">${{.Afford.MaxCarFormatted}}/mo</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Monthly Savings</span>
+                        <span class="font-mono font-medium text-emerald-500">${{.Afford.SavingsFormatted}}/mo</span>
+                    </div>
+                </div>
+                <a href="/afford/{{.Afford.Slug}}" class="block w-full mt-3 px-4 py-2 border border-gray-200 dark:border-gray-700 text-center text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    See Full Budget Breakdown
+                </a>
+            </div>
+            {{end}}
+
+            <!-- Tool Links -->
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">Useful Tools</h3>
+                <div class="space-y-2">
+                    <a href="/housing" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="text-sm font-medium">Housing Calculator</span>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/auto" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="text-sm font-medium">Auto Calculator</span>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/smart-money" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="text-sm font-medium">Budget Planner</span>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Related Jobs -->
+            {{if .RelatedJobs}}
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">Related Careers</h3>
+                <div class="space-y-2">
+                    {{range .RelatedJobs}}
+                    <a href="/salary/{{.Slug}}" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div>
+                            <div class="text-sm font-medium">{{.Title}}</div>
+                            <div class="text-xs text-gray-500">${{.MedianFormatted}} median</div>
+                        </div>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</div>
+{{end}}

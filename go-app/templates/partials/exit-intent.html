@@ -1,0 +1,74 @@
+{{define "exit-intent"}}
+<!-- Exit Intent Credit Karma Popup -->
+<div x-data="exitIntent()" x-show="show" x-cloak
+     class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+     @mouseleave.window="handleMouseLeave($event)">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="close()"></div>
+    <!-- Modal -->
+    <div class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full p-8 text-center"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100">
+        <button @click="close()" class="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Before You Go...</h3>
+        <p class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">Do you know your credit score?</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Check your credit score in 2 minutes &mdash; completely free, no credit card required.</p>
+        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400 mb-6">
+            <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Free credit scores
+            </span>
+            <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Weekly updates
+            </span>
+            <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Credit monitoring
+            </span>
+            <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                100% free forever
+            </span>
+        </div>
+        <a href="https://www.awin1.com/cread.php?awinmid=66532&awinaffid=2720202" target="_blank" rel="noopener sponsored"
+           class="inline-flex items-center gap-2 px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 transition-all w-full justify-center">
+            Check My Score Free
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+        <p class="text-[10px] text-slate-400 mt-3">Affiliate link &mdash; we may earn a commission at no cost to you</p>
+    </div>
+</div>
+<script>
+function exitIntent() {
+    return {
+        show: false,
+        triggered: false,
+        init() {
+            this.triggered = !!localStorage.getItem('exitIntentShown');
+        },
+        handleMouseLeave(e) {
+            if (this.triggered || this.show) return;
+            if (e.clientY <= 0) {
+                setTimeout(() => {
+                    if (!this.triggered) {
+                        this.show = true;
+                        this.triggered = true;
+                        localStorage.setItem('exitIntentShown', Date.now().toString());
+                    }
+                }, 500);
+            }
+        },
+        close() {
+            this.show = false;
+        }
+    };
+}
+</script>
+{{end}}

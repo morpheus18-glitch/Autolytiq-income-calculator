@@ -1,0 +1,142 @@
+{{define "compare-detail-content"}}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-slate-500 mb-6">
+        <a href="/" class="hover:text-primary-500">Home</a>
+        <span class="mx-1">/</span>
+        <a href="/compare" class="hover:text-primary-500">Compare</a>
+        <span class="mx-1">/</span>
+        <span>{{.Title}}</span>
+    </nav>
+
+    <!-- Hero -->
+    <div class="text-center mb-10">
+        <h1 class="text-3xl sm:text-4xl font-bold mb-3">{{.Title}}</h1>
+        <p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">{{.Verdict}}</p>
+    </div>
+
+    <!-- Side by Side -->
+    <div class="grid sm:grid-cols-2 gap-6 mb-10">
+        <!-- Product A -->
+        <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xl font-bold">{{.ProductA.Name}}</h2>
+                <div class="flex items-center gap-1">
+                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span class="font-bold">{{.ProductA.Rating}}</span>
+                </div>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">{{.ProductA.Description}}</p>
+            <p class="text-sm mb-4"><span class="text-slate-500">Pricing:</span> <span class="font-medium">{{.ProductA.Pricing}}</span></p>
+
+            <div class="mb-4">
+                <p class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">Pros</p>
+                <ul class="space-y-1">
+                    {{range .ProductA.Pros}}
+                    <li class="flex items-start gap-1.5 text-sm">
+                        <svg class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        {{.}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+            <div class="mb-4">
+                <p class="text-xs font-semibold text-red-600 dark:text-red-400 mb-2">Cons</p>
+                <ul class="space-y-1">
+                    {{range .ProductA.Cons}}
+                    <li class="flex items-start gap-1.5 text-sm">
+                        <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        {{.}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+
+            <a href="{{.ProductA.AffURL}}" target="_blank" rel="noopener sponsored" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-xl shadow transition-all">
+                Visit {{.ProductA.Name}}
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+        </div>
+
+        <!-- Product B -->
+        <div class="glass-card rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-xl font-bold">{{.ProductB.Name}}</h2>
+                <div class="flex items-center gap-1">
+                    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span class="font-bold">{{.ProductB.Rating}}</span>
+                </div>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">{{.ProductB.Description}}</p>
+            <p class="text-sm mb-4"><span class="text-slate-500">Pricing:</span> <span class="font-medium">{{.ProductB.Pricing}}</span></p>
+
+            <div class="mb-4">
+                <p class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">Pros</p>
+                <ul class="space-y-1">
+                    {{range .ProductB.Pros}}
+                    <li class="flex items-start gap-1.5 text-sm">
+                        <svg class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        {{.}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+            <div class="mb-4">
+                <p class="text-xs font-semibold text-red-600 dark:text-red-400 mb-2">Cons</p>
+                <ul class="space-y-1">
+                    {{range .ProductB.Cons}}
+                    <li class="flex items-start gap-1.5 text-sm">
+                        <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        {{.}}
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+
+            <a href="{{.ProductB.AffURL}}" target="_blank" rel="noopener sponsored" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-xl shadow transition-all">
+                Visit {{.ProductB.Name}}
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Choose If -->
+    <div class="grid sm:grid-cols-2 gap-6 mb-10">
+        <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold mb-3">Choose {{.ProductA.Name}} if...</h3>
+            <ul class="space-y-2">
+                {{range .ChooseAIf}}
+                <li class="flex items-start gap-2 text-sm">
+                    <svg class="w-4 h-4 text-primary-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {{.}}
+                </li>
+                {{end}}
+            </ul>
+        </div>
+        <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-bold mb-3">Choose {{.ProductB.Name}} if...</h3>
+            <ul class="space-y-2">
+                {{range .ChooseBIf}}
+                <li class="flex items-start gap-2 text-sm">
+                    <svg class="w-4 h-4 text-primary-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {{.}}
+                </li>
+                {{end}}
+            </ul>
+        </div>
+    </div>
+
+    {{template "affiliate-disclosure"}}
+
+    <!-- Related -->
+    <div class="mt-12 text-center">
+        <p class="text-sm text-slate-500 mb-4">More Comparisons</p>
+        <div class="flex flex-wrap justify-center gap-3">
+            {{range .RelatedVersus}}
+            <a href="/compare/{{.Slug}}" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition-all">{{.Title}}</a>
+            {{end}}
+            <a href="/best/{{.RelatedCategory}}" class="px-4 py-2 rounded-lg bg-primary-100 dark:bg-primary-900/30 hover:bg-primary-200 text-primary-700 dark:text-primary-300 text-sm font-medium transition-all">See all in category</a>
+        </div>
+    </div>
+</div>
+{{end}}

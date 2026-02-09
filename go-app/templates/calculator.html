@@ -1,5 +1,5 @@
 {{define "calculator-content"}}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="calcHistory()">
     <!-- Hero -->
     <div class="text-center mb-8">
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-4">
@@ -9,7 +9,7 @@
             100% Free - No Signup
         </div>
         <h1 class="text-3xl sm:text-4xl font-bold mb-3">
-            Income <span class="text-primary-500">Calculator</span>
+            Income <span class="text-primary-500 neon-text">Calculator</span>
         </h1>
         <p class="text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
             Calculate your projected annual salary from your year-to-date earnings
@@ -17,9 +17,9 @@
     </div>
 
     <!-- Calculator Card -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div class="glass-card rounded-2xl overflow-hidden">
         <div class="p-6 sm:p-8">
-            <form hx-post="/api/calculate-income" hx-target="#results" hx-swap="innerHTML" hx-indicator="#loading">
+            <form id="calc-form" hx-post="/api/calculate-income" hx-target="#results" hx-swap="innerHTML" hx-indicator="#loading">
                 <div class="grid sm:grid-cols-3 gap-4 mb-6">
                     <!-- Start Date -->
                     <div>
@@ -29,7 +29,7 @@
                         <input
                             type="date"
                             name="start_date"
-                            value="{{.DefaultStartDate}}"
+                            x-model="formStartDate"
                             class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                             required
                         >
@@ -46,6 +46,7 @@
                                 type="text"
                                 name="ytd_income"
                                 id="ytd_income"
+                                x-model="formYtdIncome"
                                 placeholder="25,000"
                                 inputmode="decimal"
                                 class="w-full pl-8 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
@@ -62,11 +63,46 @@
                         <input
                             type="date"
                             name="check_date"
-                            value="{{.Today}}"
+                            x-model="formCheckDate"
                             class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                             required
                         >
                     </div>
+                </div>
+
+                <!-- Scenario Save/Load -->
+                <div class="flex items-center gap-2 mb-4">
+                    <button type="button" @click="showSaveModal = true" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                        Save Scenario
+                    </button>
+                    <div class="relative" x-data="{ open: false }">
+                        <button type="button" @click="open = !open" x-show="scenarios.length > 0" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            Load (<span x-text="scenarios.length"></span>)
+                        </button>
+                        <div x-show="open" @click.outside="open = false" x-transition class="absolute left-0 top-full mt-1 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-20 py-1">
+                            <template x-for="s in scenarios" :key="s.id">
+                                <div class="flex items-center justify-between px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 group">
+                                    <button type="button" @click="loadScenario(s); open = false" class="text-left flex-1 min-w-0">
+                                        <p class="text-sm font-medium truncate" x-text="s.name"></p>
+                                        <p class="text-xs text-slate-500" x-text="'$' + Number(s.ytdIncome.replace(/[^0-9.]/g,'')).toLocaleString()"></p>
+                                    </button>
+                                    <button type="button" @click.stop="deleteScenario(s.id)" class="ml-2 p-1 rounded text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <span x-show="saveConfirm" x-transition class="text-xs text-emerald-600 font-medium">Saved!</span>
+                </div>
+
+                <!-- Save Scenario Modal -->
+                <div x-show="showSaveModal" x-transition class="mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+                    <input type="text" x-model="scenarioName" x-ref="scenarioInput" @keydown.enter.prevent="saveScenario()" @keydown.escape="showSaveModal = false" placeholder="Scenario name (e.g. Main Job)" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary-500">
+                    <button type="button" @click="saveScenario()" class="px-3 py-2 text-sm font-medium bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">Save</button>
+                    <button type="button" @click="showSaveModal = false" class="px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Cancel</button>
                 </div>
 
                 <button
@@ -90,6 +126,37 @@
         </div>
     </div>
 
+    <!-- Calculation History -->
+    <div class="mt-8" x-show="history.length > 0" x-transition>
+        <div class="glass-card rounded-2xl overflow-hidden">
+            <button @click="showHistory = !showHistory" class="w-full p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span class="font-semibold text-sm">Recent Calculations</span>
+                    <span class="text-xs text-slate-500" x-text="'(' + history.length + ')'"></span>
+                </div>
+                <svg class="w-5 h-5 text-slate-400 transition-transform" :class="{ 'rotate-180': showHistory }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div x-show="showHistory" x-collapse>
+                <div class="px-4 pb-4 space-y-2">
+                    <template x-for="h in history" :key="h.id">
+                        <button @click="restoreFromHistory(h)" class="w-full text-left p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors flex items-center justify-between group">
+                            <div>
+                                <span class="text-lg font-bold text-primary-500" x-text="'$' + Number(h.annualIncome).toLocaleString()"></span>
+                                <span class="text-sm text-slate-500 ml-2" x-text="'$' + Number(h.monthlyIncome).toLocaleString() + '/mo'"></span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-slate-500" x-text="h.daysWorked + ' days worked'"></p>
+                                <p class="text-xs text-slate-400" x-text="formatTimestamp(h.date)"></p>
+                            </div>
+                        </button>
+                    </template>
+                    <button @click="clearHistory()" class="text-xs text-slate-400 hover:text-red-500 transition-colors mt-1">Clear history</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- How It Works -->
     <div class="mt-12 grid sm:grid-cols-3 gap-6 text-center">
         <div class="p-4">
@@ -109,16 +176,102 @@
         </div>
     </div>
 
+    <!-- Recommended Tools (Affiliates) -->
+    <div class="mt-12">
+        <h2 class="text-xl font-bold mb-2 text-center">Recommended Tools</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">Maximize your financial potential</p>
+        <div class="grid sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
+            {{template "affiliate-credit-karma"}}
+            {{template "affiliate-sofi"}}
+            {{template "affiliate-robinhood"}}
+            {{template "affiliate-ynab"}}
+        </div>
+        {{template "affiliate-disclosure"}}
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="mt-16">
+        <h2 class="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
+        <div class="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto" x-data="{ openFaq: null }">
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 1 ? null : 1"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <span class="font-medium text-sm">How is my annual income calculated?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 1 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 1" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    We take your year-to-date (YTD) gross income and divide it by the number of days you've worked, then multiply by 365 to project your annual income. This accounts for your actual earning period rather than assuming a full year.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 2 ? null : 2"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <span class="font-medium text-sm">What is YTD income on my paystub?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 2 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 2" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    YTD (Year-to-Date) income is your total gross earnings since January 1st of the current year. You can find this on your paystub, usually labeled "YTD Gross" or "YTD Earnings". It includes all wages before taxes and deductions.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 3 ? null : 3"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <span class="font-medium text-sm">Why use job start date instead of January 1st?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 3 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 3" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    If you started your job after January 1st, using your actual start date gives a more accurate projection. Otherwise, it would assume you earned your YTD amount over more days than you actually worked.
+                </div>
+            </div>
+            <div class="glass-card rounded-xl overflow-hidden">
+                <button
+                    @click="openFaq = openFaq === 4 ? null : 4"
+                    class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <span class="font-medium text-sm">Is my data secure?</span>
+                    <svg class="h-5 w-5 text-gray-400 transition-transform" :class="{ 'rotate-180': openFaq === 4 }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div x-show="openFaq === 4" x-collapse class="px-5 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                    Yes! All calculations happen in your browser. Your financial data is never sent to our servers. We use HTTPS encryption for all connections, and no personal financial information is stored on our end.
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Links -->
     <div class="mt-12 text-center">
         <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">More Tools</p>
         <div class="flex flex-wrap justify-center gap-3">
-            <a href="/smart-money" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition-colors">Budget Planner</a>
-            <a href="/housing" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition-colors">Housing Calculator</a>
-            <a href="/auto" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition-colors">Auto Calculator</a>
+            <a href="/smart-money" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition-all hover:shadow-lg">Budget Planner</a>
+            <a href="/housing" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition-all hover:shadow-lg">Housing Calculator</a>
+            <a href="/auto" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition-all hover:shadow-lg">Auto Calculator</a>
         </div>
     </div>
 </div>
+
+<!-- JSON-LD FAQPage Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {"@type": "Question", "name": "How is my annual income calculated?", "acceptedAnswer": {"@type": "Answer", "text": "We take your year-to-date (YTD) gross income and divide it by the number of days you've worked, then multiply by 365 to project your annual income. This accounts for your actual earning period rather than assuming a full year."}},
+        {"@type": "Question", "name": "What is YTD income on my paystub?", "acceptedAnswer": {"@type": "Answer", "text": "YTD (Year-to-Date) income is your total gross earnings since January 1st of the current year. You can find this on your paystub, usually labeled YTD Gross or YTD Earnings. It includes all wages before taxes and deductions."}},
+        {"@type": "Question", "name": "Why use job start date instead of January 1st?", "acceptedAnswer": {"@type": "Answer", "text": "If you started your job after January 1st, using your actual start date gives a more accurate projection. Otherwise, it would assume you earned your YTD amount over more days than you actually worked."}},
+        {"@type": "Question", "name": "Is my data secure?", "acceptedAnswer": {"@type": "Answer", "text": "Yes! All calculations happen in your browser. Your financial data is never sent to our servers. We use HTTPS encryption for all connections, and no personal financial information is stored on our end."}}
+    ]
+}
+</script>
 
 <script>
     // Format money input with commas
@@ -130,5 +283,98 @@
         }
         e.target.value = parts.join('.');
     });
+
+    function calcHistory() {
+        return {
+            history: JSON.parse(localStorage.getItem('calculation-history') || '[]'),
+            scenarios: JSON.parse(localStorage.getItem('income-calc-scenarios') || '[]'),
+            showHistory: false,
+            showSaveModal: false,
+            scenarioName: '',
+            saveConfirm: false,
+            formStartDate: '{{.DefaultStartDate}}',
+            formYtdIncome: '',
+            formCheckDate: '{{.Today}}',
+
+            init() {
+                // Listen for HTMX swap to capture results
+                document.getElementById('results')?.addEventListener('htmx:afterSwap', (e) => {
+                    this.captureResult();
+                });
+            },
+
+            captureResult() {
+                const el = document.querySelector('#results > div[data-annual]');
+                if (!el) return;
+                const record = {
+                    id: Date.now().toString(),
+                    date: new Date().toISOString(),
+                    annualIncome: parseInt(el.dataset.annual) || 0,
+                    monthlyIncome: parseInt(el.dataset.monthly) || 0,
+                    weeklyIncome: parseInt(el.dataset.weekly) || 0,
+                    dailyIncome: parseInt(el.dataset.daily) || 0,
+                    daysWorked: parseInt(el.dataset.days) || 0,
+                    startDate: this.formStartDate,
+                    ytdIncome: this.formYtdIncome,
+                    checkDate: this.formCheckDate
+                };
+                // Dedupe: remove if same annual within 1%
+                this.history = this.history.filter(h => Math.abs(h.annualIncome - record.annualIncome) / record.annualIncome > 0.01);
+                this.history.unshift(record);
+                if (this.history.length > 5) this.history = this.history.slice(0, 5);
+                localStorage.setItem('calculation-history', JSON.stringify(this.history));
+
+                // Also store income for cross-calculator sync
+                localStorage.setItem('autolytiq-annual-income', record.annualIncome);
+                localStorage.setItem('autolytiq-monthly-income', record.monthlyIncome);
+            },
+
+            restoreFromHistory(h) {
+                this.formStartDate = h.startDate;
+                this.formYtdIncome = h.ytdIncome;
+                this.formCheckDate = h.checkDate;
+                this.$nextTick(() => { htmx.trigger('#calc-form', 'submit'); });
+            },
+
+            clearHistory() {
+                this.history = [];
+                localStorage.removeItem('calculation-history');
+            },
+
+            saveScenario() {
+                if (!this.scenarioName.trim()) return;
+                const scenario = {
+                    id: Date.now().toString(),
+                    name: this.scenarioName.trim(),
+                    startDate: this.formStartDate,
+                    ytdIncome: this.formYtdIncome,
+                    checkDate: this.formCheckDate
+                };
+                this.scenarios.push(scenario);
+                localStorage.setItem('income-calc-scenarios', JSON.stringify(this.scenarios));
+                this.scenarioName = '';
+                this.showSaveModal = false;
+                this.saveConfirm = true;
+                setTimeout(() => { this.saveConfirm = false; }, 2000);
+            },
+
+            loadScenario(s) {
+                this.formStartDate = s.startDate;
+                this.formYtdIncome = s.ytdIncome;
+                this.formCheckDate = s.checkDate;
+                this.$nextTick(() => { htmx.trigger('#calc-form', 'submit'); });
+            },
+
+            deleteScenario(id) {
+                this.scenarios = this.scenarios.filter(s => s.id !== id);
+                localStorage.setItem('income-calc-scenarios', JSON.stringify(this.scenarios));
+            },
+
+            formatTimestamp(iso) {
+                const d = new Date(iso);
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            }
+        };
+    }
 </script>
 {{end}}
