@@ -3,8 +3,11 @@ package middleware
 
 import (
 	"compress/gzip"
+	"crypto/rand"
+	"encoding/hex"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"runtime/debug"
 	"strings"
@@ -129,6 +132,147 @@ func SecurityHeaders(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+// ============================================================================
+// Rate Limiter
+// ============================================================================
+
+type visitor struct {
+	count    int
+	lastSeen time.Time
+}
+
+// RateLimiter limits requests per IP address. It allows `limit` requests per
+// `window` duration. Expired entries are cleaned up periodically.
+func RateLimiter(limit int, window time.Duration) Middleware {
+	var mu sync.Mutex
+	visitors := make(map[string]*visitor)
+
+	// Background cleanup every minute
+	go func() {
+		for {
+			time.Sleep(time.Minute)
+			mu.Lock()
+			for ip, v := range visitors {
+				if time.Since(v.lastSeen) > window {
+					delete(visitors, ip)
+				}
+			}
+			mu.Unlock()
+		}
+	}()
+
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Only rate-limit POST requests
+			if r.Method != http.MethodPost {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			ip := extractIP(r)
+
+			mu.Lock()
+			v, exists := visitors[ip]
+			if !exists || time.Since(v.lastSeen) > window {
+				visitors[ip] = &visitor{count: 1, lastSeen: time.Now()}
+				mu.Unlock()
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			v.count++
+			v.lastSeen = time.Now()
+
+			if v.count > limit {
+				mu.Unlock()
+				w.Header().Set("Retry-After", "60")
+				http.Error(w, "Rate limit exceeded. Please wait before trying again.", http.StatusTooManyRequests)
+				return
+			}
+			mu.Unlock()
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func extractIP(r *http.Request) string {
+	// Check X-Forwarded-For (behind proxy/Cloudflare)
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		parts := strings.SplitN(xff, ",", 2)
+		return strings.TrimSpace(parts[0])
+	}
+	// Check X-Real-IP
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return xri
+	}
+	// Fall back to remote address
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return ip
+}
+
+// ============================================================================
+// CSRF Protection
+// ============================================================================
+
+// CSRFToken generates and validates CSRF tokens using double-submit cookies.
+// It sets a csrf_token cookie on GET requests and validates the token on POST
+// requests by comparing the cookie value with the X-CSRF-Token header or
+// _csrf form field.
+func CSRFToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet || r.Method == http.MethodHead {
+			// Set CSRF cookie if not present
+			if _, err := r.Cookie("csrf_token"); err != nil {
+				token := generateToken()
+				http.SetCookie(w, &http.Cookie{
+					Name:     "csrf_token",
+					Value:    token,
+					Path:     "/",
+					HttpOnly: false, // JS needs to read it for HTMX
+					SameSite: http.SameSiteStrictMode,
+					MaxAge:   3600,
+				})
+			}
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// For POST/PUT/DELETE, validate CSRF token
+		if r.Method == http.MethodPost || r.Method == http.MethodPut || r.Method == http.MethodDelete {
+			cookie, err := r.Cookie("csrf_token")
+			if err != nil {
+				http.Error(w, "CSRF token missing", http.StatusForbidden)
+				return
+			}
+
+			// Check header first, then form field
+			token := r.Header.Get("X-CSRF-Token")
+			if token == "" {
+				if err := r.ParseForm(); err == nil {
+					token = r.FormValue("_csrf")
+				}
+			}
+
+			if token == "" || token != cookie.Value {
+				http.Error(w, "CSRF token invalid", http.StatusForbidden)
+				return
+			}
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func generateToken() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return hex.EncodeToString(b)
 }
 
 // gzipResponseWriter wraps http.ResponseWriter with gzip compression.

@@ -4,6 +4,8 @@ package handlers
 import (
 	"fmt"
 	"html/template"
+	"io"
+	"log"
 	"math"
 	"net/http"
 	"os"
@@ -14,17 +16,22 @@ import (
 	"github.com/autolytiq/income-calculator/internal/calc"
 	"github.com/autolytiq/income-calculator/internal/data"
 	"github.com/autolytiq/income-calculator/internal/db"
+	"github.com/autolytiq/income-calculator/internal/email"
 )
 
 // Handler holds dependencies for HTTP handlers.
 type Handler struct {
-	tmpl *template.Template
-	db   *db.DB
+	tmpl      *template.Template
+	db        *db.DB
+	emailCfg  *email.Config
 }
 
 // New creates a new Handler with the given template and optional database.
 func New(tmpl *template.Template, database ...*db.DB) *Handler {
-	h := &Handler{tmpl: tmpl}
+	h := &Handler{
+		tmpl:     tmpl,
+		emailCfg: email.LoadConfig(),
+	}
 	if len(database) > 0 {
 		h.db = database[0]
 	}
@@ -901,6 +908,51 @@ func (h *Handler) Share(w http.ResponseWriter, r *http.Request) {
 	}, "share-content", pageData)
 }
 
+func (h *Handler) CalcVariantIndex(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Free Income & Pay Calculators 2026 | Hourly, Salary, 1099, Take-Home",
+		Description: "8 free income calculators: hourly to salary, salary to hourly, 1099 tax, overtime pay, quarterly tax, biweekly paycheck, take-home pay, and gross to net.",
+		Canonical:   baseURL + "/income-calculator",
+	}, "calc-index-content", map[string]interface{}{
+		"Variants": data.AllCalcVariants(),
+	})
+}
+
+func (h *Handler) CalcVariant(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("variant")
+	v := data.GetCalcVariant(slug)
+	if v == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	now := time.Now()
+
+	// Build related
+	var related []*data.CalcVariant
+	for _, rs := range v.RelatedSlugs {
+		if rv := data.GetCalcVariant(rs); rv != nil {
+			related = append(related, rv)
+		}
+	}
+
+	pageData := map[string]interface{}{
+		"Variant":          v,
+		"FAQs":             v.FAQs,
+		"Related":          related,
+		"AllVariants":      data.AllCalcVariants(),
+		"Year":             now.Year(),
+		"Today":            now.Format("2006-01-02"),
+		"DefaultStartDate": time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location()).Format("2006-01-02"),
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       v.MetaTitle,
+		Description: v.Description,
+		Canonical:   baseURL + "/income-calculator/" + v.Slug,
+	}, "calc-variant-content", pageData)
+}
+
 func (h *Handler) Desk(w http.ResponseWriter, r *http.Request) {
 	h.renderPage(w, PageMeta{
 		Title:       "Financial Command Center - Free Dashboard | Autolytiq",
@@ -1067,7 +1119,9 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
   <url><loc>https://autolytiqs.com/quiz</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/rent-vs-buy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://autolytiqs.com/inflation</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/income-calculator</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://autolytiqs.com/desk</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/pricing</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://autolytiqs.com/afford</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/salary</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`)
@@ -1087,6 +1141,10 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	for _, slug := range data.AllStateSlugs() {
 		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/taxes/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
 	}
+	// Calculator variant pages
+	for _, slug := range data.AllCalcVariantSlugs() {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/income-calculator/%s</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>", slug)
+	}
 	// Best/Compare pages
 	b.WriteString("\n  <url><loc>https://autolytiqs.com/best</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
 	b.WriteString("\n  <url><loc>https://autolytiqs.com/compare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
@@ -1105,6 +1163,196 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 
 // =============================================================================
 // Admin Handlers
+// =============================================================================
+
+// =============================================================================
+// Pricing & Stripe
+// =============================================================================
+
+func (h *Handler) Pricing(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Pricing - Free Calculators & Pro Financial Report | Autolytiq",
+		Description: "All Autolytiq calculators are free forever. Get a personalized Pro Financial Report with tax optimization, wealth projections, and savings roadmap.",
+		Canonical:   baseURL + "/pricing",
+	}, "pricing-content", nil)
+}
+
+func (h *Handler) CheckoutSuccess(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Payment Successful | Autolytiq",
+		Description: "Your Pro Report purchase was successful.",
+	}, "checkout-success-content", nil)
+}
+
+func (h *Handler) CheckoutCancel(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Payment Cancelled | Autolytiq",
+		Description: "Your payment was cancelled.",
+	}, "checkout-cancel-content", nil)
+}
+
+// CreateCheckout creates a Stripe Checkout session (requires STRIPE_SECRET_KEY env var)
+func (h *Handler) CreateCheckout(w http.ResponseWriter, r *http.Request) {
+	stripeKey := os.Getenv("STRIPE_SECRET_KEY")
+	if stripeKey == "" {
+		http.Error(w, "Stripe is not configured yet. Coming soon!", http.StatusServiceUnavailable)
+		return
+	}
+
+	priceID := os.Getenv("STRIPE_PRICE_ID")
+	if priceID == "" {
+		http.Error(w, "Stripe price not configured", http.StatusServiceUnavailable)
+		return
+	}
+
+	body := fmt.Sprintf(
+		"mode=payment&success_url=%s/checkout/success&cancel_url=%s/checkout/cancel&line_items[0][price]=%s&line_items[0][quantity]=1",
+		baseURL, baseURL, priceID,
+	)
+
+	req, _ := http.NewRequest("POST", "https://api.stripe.com/v1/checkout/sessions", strings.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+stripeKey)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		http.Error(w, "Failed to create checkout session", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		http.Error(w, "Stripe error", http.StatusInternalServerError)
+		return
+	}
+
+	// Parse the session URL from the JSON response
+	respBody, _ := io.ReadAll(resp.Body)
+	respStr := string(respBody)
+	// Extract URL between "url":"..." from JSON
+	urlStart := strings.Index(respStr, `"url":"`)
+	if urlStart == -1 {
+		http.Error(w, "Could not parse checkout URL", http.StatusInternalServerError)
+		return
+	}
+	urlStart += 7
+	urlEnd := strings.Index(respStr[urlStart:], `"`)
+	if urlEnd == -1 {
+		http.Error(w, "Could not parse checkout URL", http.StatusInternalServerError)
+		return
+	}
+	checkoutURL := respStr[urlStart : urlStart+urlEnd]
+
+	http.Redirect(w, r, checkoutURL, http.StatusSeeOther)
+}
+
+// StripeWebhook handles Stripe webhook events
+func (h *Handler) StripeWebhook(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(io.LimitReader(r.Body, 65536))
+	if err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	// Log the webhook event for now
+	log.Printf("Stripe webhook received: %d bytes", len(body))
+
+	// TODO: Verify signature with STRIPE_WEBHOOK_SECRET
+	// TODO: Process checkout.session.completed events
+	// TODO: Deliver pro report
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"received": true}`))
+}
+
+// =============================================================================
+// Drip Campaign
+// =============================================================================
+
+// ProcessDrip sends due drip emails. Called by background scheduler or admin trigger.
+func (h *Handler) ProcessDrip() int {
+	if h.db == nil || !h.emailCfg.Enabled {
+		return 0
+	}
+
+	// Build delay map from sequence
+	delayDays := make(map[int]int)
+	for _, e := range data.DripSequence() {
+		delayDays[e.Step] = e.Delay
+	}
+
+	due, err := h.db.GetDueEmails(delayDays)
+	if err != nil {
+		log.Printf("drip: error getting due emails: %v", err)
+		return 0
+	}
+
+	sent := 0
+	for _, lead := range due {
+		drip := data.GetDripEmail(lead.NextStep)
+		if drip == nil {
+			continue
+		}
+
+		// Replace placeholders
+		name := lead.Name
+		if name == "" {
+			name = "there"
+		}
+		body := strings.ReplaceAll(drip.Body, "{{.Name}}", name)
+		unsubURL := fmt.Sprintf("https://autolytiqs.com/unsubscribe/%s", lead.UnsubscribeToken)
+		body = strings.ReplaceAll(body, "{{.UnsubscribeURL}}", unsubURL)
+
+		htmlBody := email.WrapInLayout(body, unsubURL)
+
+		if err := email.Send(h.emailCfg, lead.Email, drip.Subject, htmlBody); err != nil {
+			log.Printf("drip: failed to send step %d to %s: %v", lead.NextStep, lead.Email, err)
+			continue
+		}
+
+		if err := h.db.RecordDripSend(lead.ID, lead.NextStep); err != nil {
+			log.Printf("drip: failed to record send for %s step %d: %v", lead.Email, lead.NextStep, err)
+			continue
+		}
+
+		sent++
+		log.Printf("drip: sent step %d to %s", lead.NextStep, lead.Email)
+	}
+
+	return sent
+}
+
+// AdminDripTrigger manually triggers the drip campaign processor.
+func (h *Handler) AdminDripTrigger(w http.ResponseWriter, r *http.Request) {
+	if !h.isAdminAuthed(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	sent := h.ProcessDrip()
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprintf(w, "Drip campaign processed: %d emails sent\nSMTP enabled: %v\n", sent, h.emailCfg.Enabled)
+}
+
+// AdminDripStats returns drip campaign statistics.
+func (h *Handler) AdminDripStats(w http.ResponseWriter, r *http.Request) {
+	if !h.isAdminAuthed(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	if h.db == nil {
+		http.Error(w, "DB unavailable", http.StatusServiceUnavailable)
+		return
+	}
+
+	stats, _ := h.db.GetDripStats()
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `{"total_sent":%d,"step1_sent":%d,"step8_sent":%d,"pending":%d,"smtp_enabled":%v}`,
+		stats.TotalSent, stats.Step1Sent, stats.Step8Sent, stats.Pending, h.emailCfg.Enabled)
+}
+
+// =============================================================================
+// Admin
 // =============================================================================
 
 func (h *Handler) adminKey() string {

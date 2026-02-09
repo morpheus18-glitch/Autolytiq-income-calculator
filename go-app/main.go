@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/autolytiq/income-calculator/internal/db"
 	"github.com/autolytiq/income-calculator/internal/handlers"
@@ -78,6 +79,8 @@ func main() {
 	mux.HandleFunc("GET /rent-vs-buy", h.RentVsBuy)
 	mux.HandleFunc("GET /inflation", h.Inflation)
 	mux.HandleFunc("GET /share", h.Share)
+	mux.HandleFunc("GET /income-calculator", h.CalcVariantIndex)
+	mux.HandleFunc("GET /income-calculator/{variant}", h.CalcVariant)
 	mux.HandleFunc("GET /quiz", h.Quiz)
 	mux.HandleFunc("GET /desk", h.Desk)
 	mux.HandleFunc("GET /best", h.BestIndex)
@@ -90,6 +93,9 @@ func main() {
 	mux.HandleFunc("GET /afford/{salary}", h.Afford)
 	mux.HandleFunc("GET /salary", h.SalaryIndex)
 	mux.HandleFunc("GET /salary/{job}", h.Salary)
+	mux.HandleFunc("GET /pricing", h.Pricing)
+	mux.HandleFunc("GET /checkout/success", h.CheckoutSuccess)
+	mux.HandleFunc("GET /checkout/cancel", h.CheckoutCancel)
 
 	// HTMX API endpoints (partials)
 	mux.HandleFunc("POST /api/calculate-income", h.CalculateIncome)
@@ -104,6 +110,8 @@ func main() {
 	mux.HandleFunc("POST /api/calculate-compound", h.CalculateCompound)
 	mux.HandleFunc("POST /api/quiz-answer", h.QuizAnswer)
 	mux.HandleFunc("POST /api/subscribe", h.Subscribe)
+	mux.HandleFunc("POST /api/create-checkout", h.CreateCheckout)
+	mux.HandleFunc("POST /api/webhooks/stripe", h.StripeWebhook)
 	mux.HandleFunc("GET /unsubscribe/{token}", h.Unsubscribe)
 
 	// Admin
@@ -115,6 +123,8 @@ func main() {
 	mux.HandleFunc("POST /admin/toggle/{id}", h.AdminToggleLead)
 	mux.HandleFunc("DELETE /admin/delete/{id}", h.AdminDeleteLead)
 	mux.HandleFunc("GET /api/track-affiliate", h.TrackAffiliate)
+	mux.HandleFunc("POST /admin/drip-trigger", h.AdminDripTrigger)
+	mux.HandleFunc("GET /admin/drip-stats", h.AdminDripStats)
 
 	// Health check
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
@@ -136,6 +146,7 @@ func main() {
 		middleware.Logger(nil),
 		middleware.Recover(nil),
 		middleware.SecurityHeaders,
+		middleware.RateLimiter(30, time.Minute), // 30 POST requests per IP per minute
 		middleware.Compress,
 	)
 	handler := chain(mux)
@@ -152,6 +163,18 @@ func main() {
 			inner.ServeHTTP(w, r)
 		})
 	}
+
+	// Background drip campaign processor (runs every hour)
+	go func() {
+		time.Sleep(30 * time.Second) // Wait for server to fully start
+		for {
+			sent := h.ProcessDrip()
+			if sent > 0 {
+				log.Printf("Drip campaign: sent %d emails", sent)
+			}
+			time.Sleep(1 * time.Hour)
+		}
+	}()
 
 	// Get port from env or default
 	port := os.Getenv("PORT")

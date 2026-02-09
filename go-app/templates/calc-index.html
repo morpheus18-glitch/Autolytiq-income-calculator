@@ -1,0 +1,56 @@
+{{define "calc-index-content"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Free Income & Pay Calculators 2026",
+    "description": "8 free income calculators: hourly to salary, salary to hourly, 1099 tax, overtime pay, quarterly tax, biweekly paycheck, take-home pay, and gross to net.",
+    "url": "https://autolytiqs.com/income-calculator"
+}
+</script>
+
+<section class="py-12 sm:py-16">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-3">Free Income & Pay Calculators</h1>
+            <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">Choose the calculator that fits your situation. All free, no signup required.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-5 mb-12">
+            {{range .Variants}}
+            <a href="/income-calculator/{{.Slug}}" class="group p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 hover:shadow-lg transition-all">
+                <h2 class="text-lg font-bold mb-2 group-hover:text-primary-500 transition-colors">{{.Title}}</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">{{.Description}}</p>
+                <div class="flex items-center gap-1 text-primary-500 text-sm font-medium">
+                    Try it free
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </div>
+            </a>
+            {{end}}
+        </div>
+
+        <!-- Core Tools -->
+        <div class="text-center mb-6">
+            <h2 class="text-xl font-bold">More Financial Tools</h2>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-4">
+            <a href="/calculator" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 transition-all text-center">
+                <p class="font-medium text-sm">Income Calculator</p>
+                <p class="text-xs text-gray-400">YTD to annual</p>
+            </a>
+            <a href="/smart-money" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 transition-all text-center">
+                <p class="font-medium text-sm">Budget Planner</p>
+                <p class="text-xs text-gray-400">50/30/20 rule</p>
+            </a>
+            <a href="/housing" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 transition-all text-center">
+                <p class="font-medium text-sm">Mortgage</p>
+                <p class="text-xs text-gray-400">PITI breakdown</p>
+            </a>
+            <a href="/taxes" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 transition-all text-center">
+                <p class="font-medium text-sm">Tax Calculator</p>
+                <p class="text-xs text-gray-400">Federal + state</p>
+            </a>
+        </div>
+    </div>
+</section>
+{{end}}

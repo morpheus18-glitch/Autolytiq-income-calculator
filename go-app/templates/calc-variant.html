@@ -1,0 +1,307 @@
+{{define "calc-variant-content"}}
+<!-- FAQ JSON-LD Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {{range $i, $faq := .FAQs}}{{if $i}},{{end}}
+        {
+            "@type": "Question",
+            "name": "{{$faq.Q}}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{{$faq.A}}"
+            }
+        }
+        {{end}}
+    ]
+}
+</script>
+
+<section class="py-12 sm:py-16">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <!-- Breadcrumb -->
+        <nav class="mb-6 text-sm text-gray-500">
+            <a href="/" class="hover:text-primary-500">Home</a>
+            <span class="mx-2">/</span>
+            <a href="/income-calculator" class="hover:text-primary-500">Calculators</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-700 dark:text-gray-300">{{.Variant.Title}}</span>
+        </nav>
+
+        <!-- Hero -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-3">{{.Variant.Heading}}</h1>
+            <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">{{.Variant.Subheading}}</p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Calculator Form (2 cols) -->
+            <div class="lg:col-span-2">
+                <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    {{if eq .Variant.Slug "hourly"}}
+                    <h2 class="text-lg font-bold mb-4">Enter Your Hourly Rate</h2>
+                    <form hx-post="/api/calculate-income" hx-target="#variant-results" hx-swap="innerHTML" class="space-y-4">
+                        <input type="hidden" name="startDate" value="{{.DefaultStartDate}}">
+                        <input type="hidden" name="checkDate" value="{{.Today}}">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Hourly Rate ($)</label>
+                            <input type="number" name="ytdIncome" step="0.01" placeholder="25.00" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 outline-none"
+                                x-data x-init="$el.focus()"
+                                x-on:input="
+                                    let rate = parseFloat($el.value) || 0;
+                                    let annual = rate * 2080;
+                                    let daysSoFar = Math.ceil((new Date() - new Date(new Date().getFullYear(),0,1)) / 86400000);
+                                    let ytd = (annual / 365) * daysSoFar;
+                                    $refs.ytdHidden.value = Math.round(ytd);
+                                ">
+                            <input type="hidden" name="ytdIncome" x-ref="ytdHidden" value="0">
+                        </div>
+                        <p class="text-xs text-gray-400">We'll convert this to an annual projection automatically.</p>
+                        <button type="submit" class="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors">
+                            Calculate Annual Salary
+                        </button>
+                    </form>
+
+                    {{else if eq .Variant.Slug "salary-to-hourly"}}
+                    <h2 class="text-lg font-bold mb-4">Enter Your Annual Salary</h2>
+                    <form hx-post="/api/calculate-income" hx-target="#variant-results" hx-swap="innerHTML" class="space-y-4">
+                        <input type="hidden" name="startDate" value="{{.DefaultStartDate}}">
+                        <input type="hidden" name="checkDate" value="{{.Today}}">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Annual Salary ($)</label>
+                            <input type="number" name="placeholder_salary" step="1000" placeholder="65000" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 outline-none"
+                                x-data x-init="$el.focus()"
+                                x-on:input="
+                                    let salary = parseFloat($el.value) || 0;
+                                    let daysSoFar = Math.ceil((new Date() - new Date(new Date().getFullYear(),0,1)) / 86400000);
+                                    let ytd = (salary / 365) * daysSoFar;
+                                    $refs.ytdHidden.value = Math.round(ytd);
+                                ">
+                            <input type="hidden" name="ytdIncome" x-ref="ytdHidden" value="0">
+                        </div>
+                        <div class="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-sm text-blue-700 dark:text-blue-300" x-data="{salary: 0}" x-effect="salary = parseFloat(document.querySelector('[name=placeholder_salary]')?.value) || 0">
+                            Hourly rate: <strong x-text="'$' + (salary / 2080).toFixed(2)">$0.00</strong> (based on 40 hrs/week)
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors">
+                            Calculate Hourly Rate
+                        </button>
+                    </form>
+
+                    {{else if eq .Variant.Slug "1099"}}
+                    <h2 class="text-lg font-bold mb-4">Enter Your 1099 Income</h2>
+                    <form hx-post="/api/calculate-taxes" hx-target="#variant-results" hx-swap="innerHTML" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Gross 1099 Income ($)</label>
+                            <input type="number" name="gross_annual" step="1000" placeholder="80000" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 outline-none"
+                                x-data x-init="$el.focus()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">State Tax Rate (%)</label>
+                            <input type="number" name="state_tax_rate" min="0" max="15" step="0.1" value="5"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                            <div class="flex gap-1 mt-1">
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='0'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">TX/FL 0%</button>
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='5'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">NC 5%</button>
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='9.3'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">CA 9.3%</button>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-sm text-amber-700 dark:text-amber-300">
+                            Self-employment tax (15.3%) is included in results.
+                        </div>
+                        <input type="hidden" name="retirement_pct" value="0">
+                        <input type="hidden" name="health_insurance" value="0">
+                        <button type="submit" class="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors">
+                            Calculate 1099 Taxes
+                        </button>
+                    </form>
+
+                    {{else if eq .Variant.Slug "overtime"}}
+                    <h2 class="text-lg font-bold mb-4">Enter Your Pay Details</h2>
+                    <form hx-post="/api/calculate-income" hx-target="#variant-results" hx-swap="innerHTML" class="space-y-4"
+                        x-data="{rate: 0, regular: 40, ot: 0}"
+                    >
+                        <input type="hidden" name="startDate" value="{{.DefaultStartDate}}">
+                        <input type="hidden" name="checkDate" value="{{.Today}}">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Hourly Rate ($)</label>
+                                <input type="number" step="0.01" placeholder="25.00" required x-model="rate"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Regular Hours/Week</label>
+                                <input type="number" placeholder="40" x-model="regular"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Overtime Hours/Week (1.5x)</label>
+                            <input type="number" placeholder="5" x-model="ot"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                        </div>
+                        <div class="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-sm text-emerald-700 dark:text-emerald-300">
+                            Weekly earnings: <strong x-text="'$' + ((rate * regular) + (rate * 1.5 * ot)).toFixed(0)">$0</strong>
+                            (Regular: <span x-text="'$' + (rate * regular).toFixed(0)">$0</span> + OT: <span x-text="'$' + (rate * 1.5 * ot).toFixed(0)">$0</span>)
+                        </div>
+                        <input type="hidden" name="ytdIncome"
+                            :value="Math.round(((rate * regular + rate * 1.5 * ot) * 52 / 365) * (Math.ceil((new Date() - new Date(new Date().getFullYear(),0,1)) / 86400000)))">
+                        <button type="submit" class="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors">
+                            Calculate Overtime Income
+                        </button>
+                    </form>
+
+                    {{else if eq .Variant.Slug "quarterly"}}
+                    <h2 class="text-lg font-bold mb-4">Estimate Quarterly Payments</h2>
+                    <form hx-post="/api/calculate-taxes" hx-target="#variant-results" hx-swap="innerHTML" class="space-y-4"
+                        x-data="{income: 0}">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Estimated Annual Income ($)</label>
+                            <input type="number" name="gross_annual" step="1000" placeholder="100000" required x-model="income"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none"
+                                x-init="$el.focus()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">State Tax Rate (%)</label>
+                            <input type="number" name="state_tax_rate" min="0" max="15" step="0.1" value="5"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                            <div class="flex gap-1 mt-1">
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='0'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">TX/FL 0%</button>
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='5'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">NC 5%</button>
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='9.3'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">CA 9.3%</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="retirement_pct" value="0">
+                        <input type="hidden" name="health_insurance" value="0">
+                        <div class="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-sm text-blue-700 dark:text-blue-300">
+                            <p class="font-medium mb-1">2026 Due Dates:</p>
+                            <div class="grid grid-cols-2 gap-1 text-xs">
+                                <span>Q1: April 15, 2026</span>
+                                <span>Q2: June 15, 2026</span>
+                                <span>Q3: September 15, 2026</span>
+                                <span>Q4: January 15, 2027</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors">
+                            Calculate Quarterly Payments
+                        </button>
+                    </form>
+
+                    {{else}}
+                    <!-- Default: take-home, biweekly, gross-to-net all use the tax calculator -->
+                    <h2 class="text-lg font-bold mb-4">Enter Your Income Details</h2>
+                    <form hx-post="/api/calculate-taxes" hx-target="#variant-results" hx-swap="innerHTML" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Annual Gross Salary ($)</label>
+                            <input type="number" name="gross_annual" step="1000" placeholder="65000" required
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none"
+                                x-data x-init="$el.focus()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">State Tax Rate (%)</label>
+                            <input type="number" name="state_tax_rate" min="0" max="15" step="0.1" value="5"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                            <div class="flex gap-1 mt-1">
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='0'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">TX/FL 0%</button>
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='5'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">NC 5%</button>
+                                <button type="button" onclick="this.closest('form').querySelector('[name=state_tax_rate]').value='9.3'" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition-colors">CA 9.3%</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">401(k) %</label>
+                                <input type="number" name="retirement_pct" value="0" step="1" min="0" max="100"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Health Insurance/yr ($)</label>
+                                <input type="number" name="health_insurance" value="0" step="100"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500/30 outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors">
+                            {{if eq .Variant.Slug "biweekly"}}Calculate Biweekly Pay{{else if eq .Variant.Slug "gross-to-net"}}Convert Gross to Net{{else}}Calculate Take-Home Pay{{end}}
+                        </button>
+                    </form>
+                    {{end}}
+
+                    <!-- Results -->
+                    <div id="variant-results" class="mt-6"></div>
+                </div>
+
+                <!-- Features -->
+                <div class="mt-8 p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4">What This Calculator Does</h2>
+                    <ul class="space-y-3">
+                        {{range .Variant.Features}}
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">{{.}}</span>
+                        </li>
+                        {{end}}
+                    </ul>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="mt-8 p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4">Frequently Asked Questions</h2>
+                    <div class="space-y-4">
+                        {{range .Variant.FAQs}}
+                        <details class="group" x-data="{open: false}">
+                            <summary @click="open = !open" class="flex items-center justify-between cursor-pointer py-2 text-sm font-medium hover:text-primary-500 transition-colors">
+                                {{.Q}}
+                                <svg class="w-4 h-4 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 pb-2 pl-1">{{.A}}</p>
+                        </details>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Related Calculators -->
+                <div class="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h3 class="text-sm font-bold mb-3 text-gray-500 uppercase tracking-wider">Related Calculators</h3>
+                    <div class="space-y-2">
+                        {{range .Related}}
+                        <a href="/income-calculator/{{.Slug}}" class="block p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                            <p class="font-medium text-sm">{{.Title}}</p>
+                            <p class="text-xs text-gray-400 mt-0.5 line-clamp-2">{{.Description}}</p>
+                        </a>
+                        {{end}}
+                    </div>
+                </div>
+
+                <!-- All Calculators -->
+                <div class="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h3 class="text-sm font-bold mb-3 text-gray-500 uppercase tracking-wider">All Calculators</h3>
+                    <div class="space-y-1">
+                        {{range .AllVariants}}
+                        <a href="/income-calculator/{{.Slug}}" class="block px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">{{.Title}}</a>
+                        {{end}}
+                    </div>
+                    <div class="border-t border-gray-200 dark:border-gray-700 mt-3 pt-3 space-y-1">
+                        <a href="/calculator" class="block px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Income Calculator</a>
+                        <a href="/smart-money" class="block px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Budget Planner</a>
+                        <a href="/housing" class="block px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Mortgage Calculator</a>
+                        <a href="/taxes" class="block px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Tax Calculator</a>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="p-5 rounded-2xl bg-gradient-to-br from-primary-500/10 to-emerald-500/10 border border-primary-500/20">
+                    <h3 class="font-bold mb-2">Need the full picture?</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Use our main income calculator with YTD data for the most accurate annual projection.</p>
+                    <a href="/calculator" class="block w-full px-4 py-2.5 text-sm font-medium text-center rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors">Open Income Calculator</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{{end}}

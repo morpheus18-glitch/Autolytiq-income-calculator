@@ -128,6 +128,15 @@ func (db *DB) migrate() error {
 		);
 		CREATE INDEX IF NOT EXISTS idx_ac_affiliate ON affiliate_clicks(affiliate);
 		CREATE INDEX IF NOT EXISTS idx_ac_created ON affiliate_clicks(created_at);
+
+		CREATE TABLE IF NOT EXISTS drip_sends (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			lead_id INTEGER NOT NULL,
+			step INTEGER NOT NULL,
+			sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE(lead_id, step)
+		);
+		CREATE INDEX IF NOT EXISTS idx_ds_lead ON drip_sends(lead_id);
 	`)
 	return err
 }
@@ -455,6 +464,102 @@ func (db *DB) Unsubscribe(token string) (string, error) {
 	}
 	_, err = db.conn.Exec("UPDATE leads SET subscribed = 0, updated_at = CURRENT_TIMESTAMP WHERE unsubscribe_token = ?", token)
 	return email, err
+}
+
+// DueLead is a subscriber due for their next drip email.
+type DueLead struct {
+	ID               int
+	Email            string
+	Name             string
+	UnsubscribeToken string
+	NextStep         int
+}
+
+// GetDueEmails finds subscribers who are due for their next drip email.
+// delayDays maps step number to the delay in days after signup.
+func (db *DB) GetDueEmails(delayDays map[int]int) ([]DueLead, error) {
+	// Get all subscribed leads who haven't completed the sequence
+	rows, err := db.conn.Query(`
+		SELECT l.id, l.email, COALESCE(l.name,''), l.unsubscribe_token, l.last_email_sent, l.created_at
+		FROM leads l
+		WHERE l.subscribed = 1
+		  AND l.last_email_sent < 8
+		ORDER BY l.created_at ASC
+		LIMIT 50
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var due []DueLead
+	now := time.Now()
+	for rows.Next() {
+		var id, lastSent int
+		var email, name, token, createdAt string
+		rows.Scan(&id, &email, &name, &token, &lastSent, &createdAt)
+
+		nextStep := lastSent + 1
+		delay, ok := delayDays[nextStep]
+		if !ok {
+			continue
+		}
+
+		signupTime, err := time.Parse("2006-01-02 15:04:05", createdAt)
+		if err != nil {
+			continue
+		}
+
+		// Check if enough days have passed since signup
+		dueDate := signupTime.Add(time.Duration(delay) * 24 * time.Hour)
+		if now.After(dueDate) {
+			due = append(due, DueLead{
+				ID:               id,
+				Email:            email,
+				Name:             name,
+				UnsubscribeToken: token,
+				NextStep:         nextStep,
+			})
+		}
+	}
+	return due, nil
+}
+
+// RecordDripSend records that a drip email was sent to a lead.
+func (db *DB) RecordDripSend(leadID, step int) error {
+	tx, err := db.conn.Begin()
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("INSERT OR IGNORE INTO drip_sends (lead_id, step) VALUES (?, ?)", leadID, step)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	_, err = tx.Exec("UPDATE leads SET last_email_sent = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", step, leadID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit()
+}
+
+// DripStats returns stats about the drip campaign.
+type DripStats struct {
+	TotalSent   int
+	Step1Sent   int
+	Step8Sent   int
+	Pending     int // subscribed leads who haven't finished
+}
+
+// GetDripStats returns drip campaign statistics.
+func (db *DB) GetDripStats() (*DripStats, error) {
+	s := &DripStats{}
+	db.conn.QueryRow("SELECT COUNT(*) FROM drip_sends").Scan(&s.TotalSent)
+	db.conn.QueryRow("SELECT COUNT(*) FROM drip_sends WHERE step = 1").Scan(&s.Step1Sent)
+	db.conn.QueryRow("SELECT COUNT(*) FROM drip_sends WHERE step = 8").Scan(&s.Step8Sent)
+	db.conn.QueryRow("SELECT COUNT(*) FROM leads WHERE subscribed = 1 AND last_email_sent < 8").Scan(&s.Pending)
+	return s, nil
 }
 
 // Close closes the database connection.
