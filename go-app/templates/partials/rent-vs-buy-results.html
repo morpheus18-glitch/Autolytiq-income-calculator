@@ -1,0 +1,60 @@
+{{define "rent-vs-buy-results"}}
+<div class="space-y-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <!-- Verdict -->
+    <div class="text-center p-6 rounded-xl {{if .BuyWins}}bg-purple-500/10 border border-purple-500/20{{else}}bg-blue-500/10 border border-blue-500/20{{end}}">
+        <div class="text-3xl font-bold mb-2 {{if .BuyWins}}text-purple-600 dark:text-purple-400{{else}}text-blue-600 dark:text-blue-400{{end}}">
+            {{if .BuyWins}}Buying Wins by ${{.SavingsFormatted}}{{else}}Renting Wins by ${{.SavingsFormatted}}{{end}}
+        </div>
+        <p class="text-sm text-gray-500">Over {{.Years}} years, based on your inputs</p>
+    </div>
+
+    <!-- Side by Side -->
+    <div class="grid sm:grid-cols-2 gap-4">
+        <!-- Buy Column -->
+        <div class="p-5 rounded-xl border-2 {{if .BuyWins}}border-purple-500/30 bg-purple-500/5{{else}}border-gray-200 dark:border-gray-700{{end}}">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-purple-600 dark:text-purple-400">Buy</h3>
+                {{if .BuyWins}}<span class="px-2 py-0.5 text-xs font-bold rounded-full bg-purple-500 text-white">WINNER</span>{{end}}
+            </div>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span class="text-gray-500">Monthly PITI</span><span class="font-medium">${{.BuyMonthlyFormatted}}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Down Payment</span><span class="font-medium">${{.DownPaymentFormatted}}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Total Paid ({{.Years}}yr)</span><span class="font-medium">${{.BuyTotalPaidFormatted}}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Home Value ({{.Years}}yr)</span><span class="font-medium text-emerald-500">${{.HomeValueFormatted}}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Equity Built</span><span class="font-medium text-emerald-500">${{.EquityFormatted}}</span></div>
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between font-semibold">
+                    <span>Net Cost</span><span>${{.BuyNetCostFormatted}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rent Column -->
+        <div class="p-5 rounded-xl border-2 {{if not .BuyWins}}border-blue-500/30 bg-blue-500/5{{else}}border-gray-200 dark:border-gray-700{{end}}">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-blue-600 dark:text-blue-400">Rent</h3>
+                {{if not .BuyWins}}<span class="px-2 py-0.5 text-xs font-bold rounded-full bg-blue-500 text-white">WINNER</span>{{end}}
+            </div>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span class="text-gray-500">Starting Rent</span><span class="font-medium">${{.RentStartFormatted}}/mo</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Final Rent (yr {{.Years}})</span><span class="font-medium">${{.RentEndFormatted}}/mo</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Total Rent ({{.Years}}yr)</span><span class="font-medium">${{.RentTotalFormatted}}</span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Investment Returns</span><span class="font-medium text-emerald-500">${{.InvestmentReturnsFormatted}}</span></div>
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between font-semibold">
+                    <span>Net Cost</span><span>${{.RentNetCostFormatted}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Price to Rent Ratio -->
+    <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-center">
+        <div class="text-sm text-gray-500 mb-1">Price-to-Rent Ratio</div>
+        <div class="text-2xl font-bold {{if lt .PriceToRent 15.0}}text-purple-500{{else if gt .PriceToRent 20.0}}text-blue-500{{else}}text-amber-500{{end}}">
+            {{.PriceToRentStr}}
+        </div>
+        <div class="text-xs text-gray-400 mt-1">
+            {{if lt .PriceToRent 15.0}}Under 15: Favors buying{{else if gt .PriceToRent 20.0}}Over 20: Favors renting{{else}}15-20: Could go either way{{end}}
+        </div>
+    </div>
+</div>
+{{end}}

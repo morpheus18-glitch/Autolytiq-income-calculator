@@ -1,0 +1,42 @@
+{{define "inflation-results"}}
+<div class="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="text-center p-4 rounded-xl bg-orange-500/10 border border-orange-500/20">
+        <div class="text-sm text-gray-500 mb-1">Your ${{.OriginalFormatted}} will be worth</div>
+        <div class="text-3xl font-bold text-orange-500">${{.FutureValueFormatted}}</div>
+        <div class="text-sm text-gray-400 mt-1">in today's purchasing power after {{.Years}} years</div>
+    </div>
+    <div class="grid grid-cols-2 gap-3 text-center">
+        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+            <div class="text-xs text-gray-400">Purchasing Power Lost</div>
+            <div class="text-lg font-bold text-red-500">-${{.LostFormatted}}</div>
+        </div>
+        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+            <div class="text-xs text-gray-400">Value Retained</div>
+            <div class="text-lg font-bold">{{.RetainedPct}}%</div>
+        </div>
+    </div>
+</div>
+{{end}}
+
+{{define "compound-results"}}
+<div class="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="text-center p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+        <div class="text-sm text-gray-500 mb-1">Future Value After {{.Years}} Years</div>
+        <div class="text-3xl font-bold text-emerald-500">${{.FutureValueFormatted}}</div>
+    </div>
+    <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+            <div class="text-xs text-gray-400">You Invest</div>
+            <div class="text-sm font-bold">${{.TotalInvestedFormatted}}</div>
+        </div>
+        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+            <div class="text-xs text-gray-400">Interest Earned</div>
+            <div class="text-sm font-bold text-emerald-500">${{.InterestEarnedFormatted}}</div>
+        </div>
+        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+            <div class="text-xs text-gray-400">Growth Multiple</div>
+            <div class="text-sm font-bold">{{.GrowthMultiple}}x</div>
+        </div>
+    </div>
+</div>
+{{end}}

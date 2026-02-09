@@ -1,0 +1,54 @@
+{{- /* Shareable income results page */ -}}
+
+{{define "share-content"}}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div class="text-center mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold mb-2">Income Breakdown</h1>
+        <p class="text-gray-500 dark:text-gray-400">Shared from Autolytiq Income Calculator</p>
+    </div>
+
+    <!-- Results Card -->
+    <div class="glass-card rounded-2xl border-2 border-primary-500/20 shadow-2xl overflow-hidden mb-8">
+        <div class="px-6 py-4 bg-gradient-to-r from-primary-500/5 to-transparent border-b border-gray-200/50 dark:border-gray-700/50 text-center">
+            <div class="text-sm text-gray-500 mb-1">Projected Annual Income</div>
+            <div class="text-4xl sm:text-5xl font-bold text-primary-500">${{.AnnualFormatted}}</div>
+        </div>
+
+        <div class="p-6 space-y-4">
+            {{if .MonthlyFormatted}}
+            <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                <span class="text-sm text-gray-500">Monthly Income</span>
+                <span class="text-lg font-semibold">${{.MonthlyFormatted}}</span>
+            </div>
+            {{end}}
+            {{if .WeeklyFormatted}}
+            <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                <span class="text-sm text-gray-500">Weekly Income</span>
+                <span class="text-lg font-semibold">${{.WeeklyFormatted}}</span>
+            </div>
+            {{end}}
+            {{if .DailyFormatted}}
+            <div class="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                <span class="text-sm text-gray-500">Daily Rate</span>
+                <span class="text-lg font-semibold">${{.DailyFormatted}}</span>
+            </div>
+            {{end}}
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center space-y-4">
+        <a href="/calculator" class="inline-flex items-center gap-2 px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 transition-all">
+            Calculate Your Own Income
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+        </a>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">
+            <a href="/smart-money" class="p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-emerald-500/50 transition-all text-center text-sm font-medium">Budget Planner</a>
+            <a href="/housing" class="p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-500/50 transition-all text-center text-sm font-medium">Housing</a>
+            <a href="/taxes" class="p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-red-500/50 transition-all text-center text-sm font-medium">Tax Calculator</a>
+            <a href="/quiz" class="p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-500/50 transition-all text-center text-sm font-medium">Money Quiz</a>
+        </div>
+    </div>
+</div>
+{{end}}

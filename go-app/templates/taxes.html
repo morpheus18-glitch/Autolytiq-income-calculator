@@ -239,6 +239,45 @@
         </div>
     </div>
 
+    <!-- Browse by State -->
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold mb-2 text-center">State Income Tax Guides</h2>
+        <p class="text-gray-500 dark:text-gray-400 text-center mb-6">Calculate your take-home pay in any state</p>
+
+        {{if .NoTaxStates}}
+        <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            No Income Tax States
+        </h3>
+        <div class="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2 mb-6">
+            {{range .NoTaxStates}}
+            <a href="/taxes/{{.Slug}}" class="glass-card p-3 rounded-lg text-center hover:border-emerald-500/50 transition-all group">
+                <div class="text-lg font-bold text-emerald-500">{{.Code}}</div>
+                <div class="text-xs text-gray-500 group-hover:text-emerald-500 transition-colors truncate">{{.Name}}</div>
+            </a>
+            {{end}}
+        </div>
+        {{end}}
+
+        {{if .TaxStates}}
+        <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            States With Income Tax
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-6">
+            {{range .TaxStates}}
+            <a href="/taxes/{{.Slug}}" class="glass-card p-3 rounded-lg hover:border-red-500/30 transition-all group flex items-center justify-between">
+                <div>
+                    <span class="text-sm font-bold text-gray-400">{{.Code}}</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary-500 transition-colors ml-1">{{.Name}}</span>
+                </div>
+                <span class="text-xs font-medium text-red-500">{{.Rate}}%</span>
+            </a>
+            {{end}}
+        </div>
+        {{end}}
+    </div>
+
     <!-- Related Tools -->
     <div class="mt-12">
         <h2 class="text-xl font-bold mb-6 text-center">Related Tools</h2>

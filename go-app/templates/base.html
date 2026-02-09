@@ -168,11 +168,20 @@
                     <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                         <li><a href="/gig-calculator" class="nav-link hover:text-primary-500">Gig Calculator</a></li>
                         <li><a href="/income-streams" class="nav-link hover:text-primary-500">Income Streams</a></li>
+                        <li><a href="/rent-vs-buy" class="nav-link hover:text-primary-500">Rent vs. Buy</a></li>
+                        <li><a href="/inflation" class="nav-link hover:text-primary-500">Inflation Calculator</a></li>
+                        <li><a href="/quiz" class="nav-link hover:text-primary-500">Money Personality Quiz</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-4">About</h4>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">Free financial tools for smarter money decisions.</p>
+                    <h4 class="font-semibold mb-4">Stay Updated</h4>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Free financial tips delivered weekly.</p>
+                    <form hx-post="/api/subscribe" hx-target="#footer-subscribe-result" hx-swap="innerHTML" class="space-y-2">
+                        <input type="hidden" name="source" value="footer">
+                        <input type="email" name="email" required placeholder="you@email.com" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500/50 outline-none transition-all">
+                        <button type="submit" class="w-full px-3 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors">Subscribe Free</button>
+                    </form>
+                    <div id="footer-subscribe-result" class="mt-2"></div>
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">

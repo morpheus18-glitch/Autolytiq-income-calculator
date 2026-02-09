@@ -203,11 +203,126 @@ func (h *Handler) FreeTools(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Taxes(w http.ResponseWriter, r *http.Request) {
+	// Build state list for browse section
+	type stateLink struct {
+		Slug string
+		Code string
+		Name string
+		Rate float64
+		NoTax bool
+	}
+	var noTaxStates, taxStates []stateLink
+	for _, slug := range data.AllStateSlugs() {
+		s := data.GetState(slug)
+		if s == nil {
+			continue
+		}
+		sl := stateLink{Slug: s.Slug, Code: s.Code, Name: s.Name, Rate: s.TopRate, NoTax: !s.HasStateTax}
+		if s.HasStateTax {
+			taxStates = append(taxStates, sl)
+		} else {
+			noTaxStates = append(noTaxStates, sl)
+		}
+	}
 	h.renderPage(w, PageMeta{
 		Title:       "Federal & State Tax Calculator - Estimate Take-Home Pay | Autolytiq",
 		Description: "Estimate your take-home pay after federal, state, Social Security, and Medicare taxes. Free tax calculator with 2024 brackets and deductions.",
 		Canonical:   baseURL + "/taxes",
-	}, "taxes-content", nil)
+	}, "taxes-content", map[string]interface{}{"NoTaxStates": noTaxStates, "TaxStates": taxStates})
+}
+
+func (h *Handler) StateTax(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("state")
+	s := data.GetState(slug)
+	if s == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Estimate taxes on average salary
+	avgSalary := float64(s.AverageSalary)
+	// Rough federal estimate: ~12% effective rate for median incomes
+	estFederal := int(avgSalary * 0.12)
+	estState := int(avgSalary * s.TopRate / 100)
+	estFICA := int(avgSalary * 0.0765)
+	estNet := s.AverageSalary - estFederal - estState - estFICA
+
+	// Related states: mix of no-tax states (if this is no-tax) or similar-rate states
+	type relatedState struct {
+		Slug string
+		Code string
+		Name string
+		Rate float64
+		NoTax bool
+		COL  int
+	}
+	var related []relatedState
+	allSlugs := data.AllStateSlugs()
+
+	if !s.HasStateTax {
+		// Show other no-tax states
+		for _, rs := range allSlugs {
+			if rs == slug { continue }
+			other := data.GetState(rs)
+			if other != nil && !other.HasStateTax {
+				related = append(related, relatedState{Slug: other.Slug, Code: other.Code, Name: other.Name, NoTax: true, COL: other.CostOfLiving})
+			}
+		}
+	}
+	// Add states with similar cost of living or nearby rates until we have 8
+	for _, rs := range allSlugs {
+		if len(related) >= 8 { break }
+		if rs == slug { continue }
+		other := data.GetState(rs)
+		if other == nil { continue }
+		// Skip if already added
+		alreadyAdded := false
+		for _, r := range related {
+			if r.Slug == other.Slug { alreadyAdded = true; break }
+		}
+		if alreadyAdded { continue }
+		// Similar COL (within 15 points) or similar rate (within 2%)
+		colDiff := other.CostOfLiving - s.CostOfLiving
+		if colDiff < 0 { colDiff = -colDiff }
+		rateDiff := other.TopRate - s.TopRate
+		if rateDiff < 0 { rateDiff = -rateDiff }
+		if colDiff <= 15 || rateDiff <= 2.0 {
+			related = append(related, relatedState{Slug: other.Slug, Code: other.Code, Name: other.Name, Rate: other.TopRate, NoTax: !other.HasStateTax, COL: other.CostOfLiving})
+		}
+	}
+
+	topRateStr := fmt.Sprintf("%.1f", s.TopRate)
+	if !s.HasStateTax {
+		topRateStr = "0"
+	}
+
+	pageData := map[string]interface{}{
+		"Name":               s.Name,
+		"Code":               s.Code,
+		"Slug":               s.Slug,
+		"NoTax":              !s.HasStateTax,
+		"TopRate":            s.TopRate,
+		"TopRateStr":         topRateStr,
+		"LocalTaxes":         s.LocalTaxes,
+		"CostOfLiving":       s.CostOfLiving,
+		"AvgSalaryFormatted": formatMoney(s.AverageSalary),
+		"AvgSalaryRaw":       formatMoney(s.AverageSalary),
+		"Description":        s.Description,
+		"Highlights":         s.Highlights,
+		"Cities":             s.MajorCities,
+		"EstFederalFormatted": formatMoney(estFederal),
+		"EstStateFormatted":   formatMoney(estState),
+		"EstFICAFormatted":    formatMoney(estFICA),
+		"EstNetFormatted":     formatMoney(estNet),
+		"EstMonthlyFormatted": formatMoney(estNet / 12),
+		"RelatedStates":       related,
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       fmt.Sprintf("%s Income Tax Calculator 2026 - Tax Rate & Take-Home Pay | Autolytiq", s.Name),
+		Description: fmt.Sprintf("%s income tax guide: top rate %.1f%%, average salary $%s, cost of living %d. Calculate your %s take-home pay.", s.Name, s.TopRate, formatMoney(s.AverageSalary), s.CostOfLiving, s.Name),
+		Canonical:   baseURL + "/taxes/" + s.Slug,
+	}, "taxes-state-content", pageData)
 }
 
 func (h *Handler) GigCalculator(w http.ResponseWriter, r *http.Request) {
@@ -646,6 +761,222 @@ func (h *Handler) CompareDetail(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *Handler) RentVsBuy(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Rent vs Buy Calculator - Should You Rent or Buy a Home? | Autolytiq",
+		Description: "Compare the true cost of renting versus buying a home over time. See monthly costs, equity building, and which option saves you more money.",
+		Canonical:   baseURL + "/rent-vs-buy",
+	}, "rent-vs-buy-content", nil)
+}
+
+func (h *Handler) CalculateRentVsBuy(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		h.renderError(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+
+	homePrice, _ := strconv.ParseFloat(cleanMoney(r.FormValue("home_price")), 64)
+	downPct, _ := strconv.ParseFloat(r.FormValue("down_payment_pct"), 64)
+	mortgageRate, _ := strconv.ParseFloat(r.FormValue("mortgage_rate"), 64)
+	appreciation, _ := strconv.ParseFloat(r.FormValue("home_appreciation"), 64)
+	monthlyRent, _ := strconv.ParseFloat(cleanMoney(r.FormValue("monthly_rent")), 64)
+	rentIncrease, _ := strconv.ParseFloat(r.FormValue("rent_increase"), 64)
+	years, _ := strconv.Atoi(r.FormValue("years"))
+
+	if homePrice <= 0 || monthlyRent <= 0 {
+		h.renderError(w, "Please enter a valid home price and rent", http.StatusBadRequest)
+		return
+	}
+	if years <= 0 {
+		years = 5
+	}
+
+	// Buy calculations
+	downPayment := homePrice * downPct / 100
+	loanAmount := homePrice - downPayment
+	monthlyMortgage := calc.CalculateMonthlyPayment(loanAmount, mortgageRate, 360)
+	propertyTax := int(homePrice * 0.011 / 12)      // 1.1% annually
+	insurance := 100                                  // ~$1200/yr
+	maintenance := int(homePrice * 0.01 / 12)         // 1% annually
+	pmi := 0
+	if downPct < 20 {
+		pmi = int(loanAmount * 0.005 / 12) // ~0.5% PMI
+	}
+	buyMonthly := monthlyMortgage + propertyTax + insurance + maintenance + pmi
+	buyTotalPaid := buyMonthly * years * 12 + int(downPayment)
+
+	// Home value after appreciation
+	futureHomeValue := homePrice
+	for i := 0; i < years; i++ {
+		futureHomeValue *= (1 + appreciation/100)
+	}
+
+	// Simplified equity: down payment + appreciation gain + ~30% of mortgage payments go to principal in early years
+	principalPaid := int(float64(monthlyMortgage*years*12) * 0.30) // rough estimate
+	equity := int(downPayment) + int(futureHomeValue-homePrice) + principalPaid
+	buyNetCost := buyTotalPaid - equity
+
+	// Rent calculations
+	totalRent := 0
+	currentRent := monthlyRent
+	finalRent := monthlyRent
+	for y := 0; y < years; y++ {
+		totalRent += int(currentRent * 12)
+		finalRent = currentRent
+		currentRent *= (1 + rentIncrease/100)
+	}
+
+	// Investment returns: down payment invested + monthly savings invested
+	investReturn := 0.07 // 7% annual stock market return
+	savedDP := downPayment
+	for y := 0; y < years; y++ {
+		savedDP *= (1 + investReturn)
+	}
+	investmentReturns := int(savedDP - downPayment)
+	rentNetCost := totalRent - investmentReturns
+
+	buyWins := buyNetCost < rentNetCost
+	var savings int
+	if buyWins {
+		savings = rentNetCost - buyNetCost
+	} else {
+		savings = buyNetCost - rentNetCost
+	}
+
+	priceToRent := homePrice / (monthlyRent * 12)
+
+	result := map[string]interface{}{
+		"BuyWins":                    buyWins,
+		"SavingsFormatted":           formatMoney(savings),
+		"Years":                      years,
+		"BuyMonthlyFormatted":        formatMoney(buyMonthly),
+		"DownPaymentFormatted":       formatMoney(int(downPayment)),
+		"BuyTotalPaidFormatted":      formatMoney(buyTotalPaid),
+		"HomeValueFormatted":         formatMoney(int(futureHomeValue)),
+		"EquityFormatted":            formatMoney(equity),
+		"BuyNetCostFormatted":        formatMoney(buyNetCost),
+		"RentStartFormatted":         formatMoney(int(monthlyRent)),
+		"RentEndFormatted":           formatMoney(int(finalRent)),
+		"RentTotalFormatted":         formatMoney(totalRent),
+		"InvestmentReturnsFormatted": formatMoney(investmentReturns),
+		"RentNetCostFormatted":       formatMoney(rentNetCost),
+		"PriceToRent":                priceToRent,
+		"PriceToRentStr":             fmt.Sprintf("%.1f", priceToRent),
+	}
+	h.renderPartial(w, "rent-vs-buy-results", result)
+}
+
+func (h *Handler) Share(w http.ResponseWriter, r *http.Request) {
+	annual, _ := strconv.Atoi(r.URL.Query().Get("a"))
+	monthly, _ := strconv.Atoi(r.URL.Query().Get("m"))
+	weekly, _ := strconv.Atoi(r.URL.Query().Get("w"))
+	daily, _ := strconv.Atoi(r.URL.Query().Get("d"))
+
+	if annual <= 0 {
+		http.Redirect(w, r, "/calculator", http.StatusFound)
+		return
+	}
+
+	pageData := map[string]interface{}{
+		"AnnualFormatted":  formatMoney(annual),
+		"MonthlyFormatted": "",
+		"WeeklyFormatted":  "",
+		"DailyFormatted":   "",
+	}
+	if monthly > 0 {
+		pageData["MonthlyFormatted"] = formatMoney(monthly)
+	}
+	if weekly > 0 {
+		pageData["WeeklyFormatted"] = formatMoney(weekly)
+	}
+	if daily > 0 {
+		pageData["DailyFormatted"] = formatMoney(daily)
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       fmt.Sprintf("$%s Annual Income Breakdown | Autolytiq", formatMoney(annual)),
+		Description: fmt.Sprintf("Income breakdown: $%s annual, $%s monthly. Calculate your own projected income at Autolytiq.", formatMoney(annual), formatMoney(monthly)),
+		Canonical:   baseURL + "/share",
+	}, "share-content", pageData)
+}
+
+func (h *Handler) Quiz(w http.ResponseWriter, r *http.Request) {
+	q := data.QuizQuestions[0]
+	stepData := map[string]interface{}{
+		"StepNum":     1,
+		"TotalSteps":  len(data.QuizQuestions),
+		"ProgressPct": 10,
+		"Question":    q.Question,
+		"Options":     q.Options,
+		"PrevAnswers": []int{},
+	}
+	h.renderPage(w, PageMeta{
+		Title:       "Financial Personality Quiz - What's Your Money Type? | Autolytiq",
+		Description: "Take our free 10-question quiz to discover your financial personality type. Get personalized money tips, strengths, and recommended tools.",
+		Canonical:   baseURL + "/quiz",
+	}, "quiz-content", stepData)
+}
+
+func (h *Handler) QuizAnswer(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		h.renderError(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+
+	// Collect all answers from form
+	answerStrs := r.Form["answers"]
+	var answers []int
+	for _, a := range answerStrs {
+		v, err := strconv.Atoi(a)
+		if err != nil {
+			continue
+		}
+		answers = append(answers, v)
+	}
+
+	stepNum, _ := strconv.Atoi(r.FormValue("step"))
+	totalQ := len(data.QuizQuestions)
+
+	// If we have all answers, show result
+	if len(answers) >= totalQ {
+		resultID := data.CalculateQuizResult(answers)
+		p := data.GetQuizPersonality(resultID)
+		if p == nil {
+			p = data.GetQuizPersonality("balanced")
+		}
+		resultData := map[string]interface{}{
+			"Title":       p.Title,
+			"Emoji":       p.Emoji,
+			"Color":       p.Color,
+			"Description": p.Description,
+			"Strengths":   p.Strengths,
+			"WatchOuts":   p.WatchOuts,
+			"Tips":        p.Tips,
+			"Tools":       p.Tools,
+		}
+		h.renderPartial(w, "quiz-result", resultData)
+		return
+	}
+
+	// Show next question
+	nextStep := stepNum + 1
+	if nextStep > totalQ {
+		nextStep = totalQ
+	}
+	q := data.QuizQuestions[nextStep-1]
+	pct := (nextStep * 100) / totalQ
+
+	stepData := map[string]interface{}{
+		"StepNum":     nextStep,
+		"TotalSteps":  totalQ,
+		"ProgressPct": pct,
+		"Question":    q.Question,
+		"Options":     q.Options,
+		"PrevAnswers": answers,
+	}
+	h.renderPartial(w, "quiz-step", stepData)
+}
+
 func (h *Handler) IncomeStreams(w http.ResponseWriter, r *http.Request) {
 	h.renderPage(w, PageMeta{
 		Title:       "Income Streams Tracker - Multiple Income Calculator | Autolytiq",
@@ -724,6 +1055,9 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
   <url><loc>https://autolytiqs.com/income-streams</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://autolytiqs.com/taxes</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://autolytiqs.com/free-tools</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/quiz</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/rent-vs-buy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://autolytiqs.com/inflation</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://autolytiqs.com/afford</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/salary</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`)
@@ -738,6 +1072,10 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	// Salary pages
 	for _, slug := range data.AllSalarySlugs() {
 		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/salary/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
+	}
+	// State tax pages
+	for _, slug := range data.AllStateSlugs() {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/taxes/%s</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>", slug)
 	}
 	// Best/Compare pages
 	b.WriteString("\n  <url><loc>https://autolytiqs.com/best</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>")
@@ -1040,6 +1378,78 @@ func (h *Handler) CalculateTaxes(w http.ResponseWriter, r *http.Request) {
 		"TakeHomeRate":             math.Round(takeHomeRate*10) / 10,
 	}
 	h.renderPartial(w, "tax-results", result)
+}
+
+func (h *Handler) Inflation(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Inflation & Compound Interest Calculator | Autolytiq",
+		Description: "Calculate how inflation erodes your purchasing power and how compound interest grows your wealth over time. Free financial calculator.",
+		Canonical:   baseURL + "/inflation",
+	}, "inflation-content", nil)
+}
+
+func (h *Handler) CalculateInflation(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		h.renderError(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+	amount, _ := strconv.ParseFloat(cleanMoney(r.FormValue("amount")), 64)
+	rate, _ := strconv.ParseFloat(r.FormValue("rate"), 64)
+	years, _ := strconv.Atoi(r.FormValue("years"))
+	if amount <= 0 || years <= 0 {
+		h.renderError(w, "Please enter valid values", http.StatusBadRequest)
+		return
+	}
+
+	futureValue := amount
+	for i := 0; i < years; i++ {
+		futureValue /= (1 + rate/100)
+	}
+	lost := amount - futureValue
+	retainedPct := futureValue / amount * 100
+
+	result := map[string]interface{}{
+		"OriginalFormatted":   formatMoney(int(amount)),
+		"FutureValueFormatted": formatMoney(int(futureValue)),
+		"LostFormatted":        formatMoney(int(lost)),
+		"RetainedPct":          fmt.Sprintf("%.0f", retainedPct),
+		"Years":                years,
+	}
+	h.renderPartial(w, "inflation-results", result)
+}
+
+func (h *Handler) CalculateCompound(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		h.renderError(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+	principal, _ := strconv.ParseFloat(cleanMoney(r.FormValue("principal")), 64)
+	monthly, _ := strconv.ParseFloat(cleanMoney(r.FormValue("monthly")), 64)
+	rate, _ := strconv.ParseFloat(r.FormValue("rate"), 64)
+	years, _ := strconv.Atoi(r.FormValue("years"))
+	if principal <= 0 || years <= 0 {
+		h.renderError(w, "Please enter valid values", http.StatusBadRequest)
+		return
+	}
+
+	monthlyRate := rate / 100 / 12
+	months := years * 12
+	balance := principal
+	for m := 0; m < months; m++ {
+		balance = balance*(1+monthlyRate) + monthly
+	}
+	totalInvested := principal + monthly*float64(months)
+	interestEarned := balance - totalInvested
+	growthMult := balance / totalInvested
+
+	result := map[string]interface{}{
+		"FutureValueFormatted":    formatMoney(int(balance)),
+		"TotalInvestedFormatted":  formatMoney(int(totalInvested)),
+		"InterestEarnedFormatted": formatMoney(int(interestEarned)),
+		"GrowthMultiple":          fmt.Sprintf("%.1f", growthMult),
+		"Years":                   years,
+	}
+	h.renderPartial(w, "compound-results", result)
 }
 
 func (h *Handler) CalculateGig(w http.ResponseWriter, r *http.Request) {

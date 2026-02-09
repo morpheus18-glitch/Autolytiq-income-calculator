@@ -1,0 +1,219 @@
+{{- /* Rent vs Buy Calculator page template */ -}}
+
+{{define "rent-vs-buy-content"}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Hero -->
+    <div class="text-center mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-4">
+            <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Housing Decision</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Should You <span class="text-indigo-500 neon-text">Rent or Buy?</span>
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Compare the true cost of renting versus buying over time. See which makes more financial sense for your situation.
+        </p>
+    </div>
+
+    <div class="grid lg:grid-cols-5 gap-6 mb-8">
+        <!-- LEFT: Info -->
+        <div class="lg:col-span-2 space-y-5">
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    What We Compare
+                </h2>
+                <div class="space-y-3 text-sm">
+                    <div class="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                        <div class="font-medium text-purple-600 dark:text-purple-400">Buying Costs</div>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Mortgage P&I, property taxes, insurance, PMI, maintenance (1% of value/yr), and opportunity cost of down payment</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <div class="font-medium text-blue-600 dark:text-blue-400">Renting Costs</div>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Monthly rent with annual increases, renter's insurance, and investment returns on money you'd spend on a down payment</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                        <div class="font-medium text-emerald-600 dark:text-emerald-400">Equity Building</div>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Home appreciation vs. investment returns on saved down payment and monthly cost difference</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                    Rules of Thumb
+                </h3>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        Buy if staying 5+ years in the same area
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        Price-to-rent ratio under 15 = buying favored
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        Keep total housing costs under 28% of gross income
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <svg class="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        Have 3-6 months expenses saved beyond down payment
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT: Calculator -->
+        <div class="lg:col-span-3">
+            <div class="glass-card rounded-2xl border-2 border-indigo-500/20 shadow-2xl overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-indigo-500/5 to-transparent border-b border-gray-200/50 dark:border-gray-700/50">
+                    <h2 class="text-lg lg:text-xl font-semibold flex items-center gap-2">
+                        <div class="p-1.5 rounded-lg bg-indigo-500/10">
+                            <svg class="h-5 w-5 lg:h-6 lg:w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                        </div>
+                        Rent vs. Buy Calculator
+                    </h2>
+                </div>
+
+                <div class="p-6">
+                    <form hx-post="/api/calculate-rent-vs-buy" hx-target="#rvb-results" hx-swap="innerHTML" hx-indicator="#rvb-loading" class="space-y-5">
+                        <!-- Buying Inputs -->
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-semibold text-purple-500 uppercase tracking-wider">If You Buy</h3>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="home_price" class="text-sm font-medium">Home Price</label>
+                                    <div class="money-input-wrapper">
+                                        <input type="text" id="home_price" name="home_price" inputmode="decimal" placeholder="350,000" required class="money-input w-full h-12 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all mono-value">
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="down_payment_pct" class="text-sm font-medium">Down Payment %</label>
+                                    <div class="relative">
+                                        <input type="number" id="down_payment_pct" name="down_payment_pct" min="0" max="100" step="1" value="20" class="w-full h-12 px-4 pr-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all mono-value">
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="mortgage_rate" class="text-sm font-medium">Mortgage Rate</label>
+                                    <div class="relative">
+                                        <input type="number" id="mortgage_rate" name="mortgage_rate" min="0" max="15" step="0.125" value="6.5" class="w-full h-12 px-4 pr-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all mono-value">
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="home_appreciation" class="text-sm font-medium">Annual Appreciation</label>
+                                    <div class="relative">
+                                        <input type="number" id="home_appreciation" name="home_appreciation" min="0" max="15" step="0.5" value="3" class="w-full h-12 px-4 pr-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all mono-value">
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Renting Inputs -->
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-semibold text-blue-500 uppercase tracking-wider">If You Rent</h3>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="monthly_rent" class="text-sm font-medium">Monthly Rent</label>
+                                    <div class="money-input-wrapper">
+                                        <input type="text" id="monthly_rent" name="monthly_rent" inputmode="decimal" placeholder="1,800" required class="money-input w-full h-12 pl-8 pr-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all mono-value">
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="rent_increase" class="text-sm font-medium">Annual Rent Increase</label>
+                                    <div class="relative">
+                                        <input type="number" id="rent_increase" name="rent_increase" min="0" max="15" step="0.5" value="3" class="w-full h-12 px-4 pr-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 outline-none transition-all mono-value">
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="space-y-2">
+                            <label for="years" class="text-sm font-medium">How Long Will You Stay?</label>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="cursor-pointer"><input type="radio" name="years" value="3" class="hidden peer"><span class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 peer-checked:text-indigo-600 text-sm font-medium transition-all">3 years</span></label>
+                                <label class="cursor-pointer"><input type="radio" name="years" value="5" checked class="hidden peer"><span class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 peer-checked:text-indigo-600 text-sm font-medium transition-all">5 years</span></label>
+                                <label class="cursor-pointer"><input type="radio" name="years" value="7" class="hidden peer"><span class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 peer-checked:text-indigo-600 text-sm font-medium transition-all">7 years</span></label>
+                                <label class="cursor-pointer"><input type="radio" name="years" value="10" class="hidden peer"><span class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 peer-checked:border-indigo-500 peer-checked:bg-indigo-500/10 peer-checked:text-indigo-600 text-sm font-medium transition-all">10 years</span></label>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center pt-2">
+                            <button type="submit" class="relative flex items-center justify-center gap-2 px-8 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-xl transition-all focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2">
+                                <span class="htmx-indicator absolute inset-0 flex items-center justify-center" id="rvb-loading">
+                                    <div class="spinner" style="border-color: rgba(99,102,241,0.3); border-top-color: #6366f1;"></div>
+                                </span>
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                                Compare Rent vs. Buy
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="rvb-results" class="mt-6"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Tools -->
+    <div class="mt-12">
+        <h2 class="text-xl font-bold mb-6 text-center">Related Tools</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <a href="/housing" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-purple-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                <div class="text-sm font-medium">Mortgage Calculator</div>
+            </a>
+            <a href="/calculator" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-primary-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-primary-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <div class="text-sm font-medium">Income Calculator</div>
+            </a>
+            <a href="/afford" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-amber-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-amber-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                <div class="text-sm font-medium">Salary Guides</div>
+            </a>
+            <a href="/taxes" class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-red-500/50 transition-all cursor-pointer text-center group">
+                <svg class="h-6 w-6 text-red-500 mx-auto mb-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16l3.5-2 3.5 2 3.5-2 3.5 2z" /></svg>
+                <div class="text-sm font-medium">Tax Calculator</div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.money-input').forEach(function(el) {
+        el.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+            if (parts[0]) parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            e.target.value = parts.join('.');
+        });
+    });
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {"@type": "Question", "name": "Is it cheaper to rent or buy?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on your local market, how long you plan to stay, and your financial situation. Generally, buying becomes cheaper after 5-7 years due to equity building and fixed mortgage costs, while renting is more flexible and cheaper short-term."}},
+        {"@type": "Question", "name": "What is the price-to-rent ratio?", "acceptedAnswer": {"@type": "Answer", "text": "The price-to-rent ratio divides the home price by annual rent. Below 15 favors buying, 15-20 is neutral, and above 20 favors renting."}}
+    ]
+}
+</script>
+{{end}}
