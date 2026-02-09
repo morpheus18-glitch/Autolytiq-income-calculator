@@ -107,8 +107,139 @@ func (db *DB) migrate() error {
 		);
 		CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
 		CREATE INDEX IF NOT EXISTS idx_leads_token ON leads(unsubscribe_token);
+
+		CREATE TABLE IF NOT EXISTS page_views (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			path TEXT NOT NULL,
+			referrer TEXT,
+			user_agent TEXT,
+			ip TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE INDEX IF NOT EXISTS idx_pv_path ON page_views(path);
+		CREATE INDEX IF NOT EXISTS idx_pv_created ON page_views(created_at);
+
+		CREATE TABLE IF NOT EXISTS affiliate_clicks (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			affiliate TEXT NOT NULL,
+			page TEXT,
+			ip TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE INDEX IF NOT EXISTS idx_ac_affiliate ON affiliate_clicks(affiliate);
+		CREATE INDEX IF NOT EXISTS idx_ac_created ON affiliate_clicks(created_at);
 	`)
 	return err
+}
+
+// TrackPageView records a page view.
+func (db *DB) TrackPageView(path, referrer, userAgent, ip string) {
+	db.conn.Exec("INSERT INTO page_views (path, referrer, user_agent, ip) VALUES (?, ?, ?, ?)",
+		path, referrer, userAgent, ip)
+}
+
+// TrackAffiliateClick records an affiliate link click.
+func (db *DB) TrackAffiliateClick(affiliate, page, ip string) {
+	db.conn.Exec("INSERT INTO affiliate_clicks (affiliate, page, ip) VALUES (?, ?, ?)",
+		affiliate, page, ip)
+}
+
+// PageViewStats holds page view analytics.
+type PageViewStats struct {
+	TotalViews    int
+	TodayViews    int
+	WeekViews     int
+	MonthViews    int
+	TopPages      []PageCount
+	DailyViews    []DayCount
+}
+
+// PageCount is a page path with its view count.
+type PageCount struct {
+	Path  string
+	Count int
+}
+
+// DayCount is a date with its count.
+type DayCount struct {
+	Date  string
+	Count int
+}
+
+// AffiliateStats holds affiliate click analytics.
+type AffiliateStats struct {
+	TotalClicks int
+	TodayClicks int
+	WeekClicks  int
+	ByAffiliate []AffiliateCount
+	ByPage      []PageCount
+}
+
+// AffiliateCount is an affiliate with its click count.
+type AffiliateCount struct {
+	Affiliate string
+	Count     int
+}
+
+// GetPageViewStats returns page view analytics.
+func (db *DB) GetPageViewStats() (*PageViewStats, error) {
+	s := &PageViewStats{}
+	db.conn.QueryRow("SELECT COUNT(*) FROM page_views").Scan(&s.TotalViews)
+	db.conn.QueryRow("SELECT COUNT(*) FROM page_views WHERE date(created_at) = date('now')").Scan(&s.TodayViews)
+	db.conn.QueryRow("SELECT COUNT(*) FROM page_views WHERE created_at >= date('now', '-7 days')").Scan(&s.WeekViews)
+	db.conn.QueryRow("SELECT COUNT(*) FROM page_views WHERE created_at >= date('now', '-30 days')").Scan(&s.MonthViews)
+
+	rows, _ := db.conn.Query(`SELECT path, COUNT(*) as c FROM page_views WHERE created_at >= date('now', '-30 days') GROUP BY path ORDER BY c DESC LIMIT 20`)
+	if rows != nil {
+		defer rows.Close()
+		for rows.Next() {
+			var pc PageCount
+			rows.Scan(&pc.Path, &pc.Count)
+			s.TopPages = append(s.TopPages, pc)
+		}
+	}
+
+	rows2, _ := db.conn.Query(`SELECT date(created_at) as d, COUNT(*) as c FROM page_views WHERE created_at >= date('now', '-14 days') GROUP BY d ORDER BY d ASC`)
+	if rows2 != nil {
+		defer rows2.Close()
+		for rows2.Next() {
+			var dc DayCount
+			rows2.Scan(&dc.Date, &dc.Count)
+			s.DailyViews = append(s.DailyViews, dc)
+		}
+	}
+
+	return s, nil
+}
+
+// GetAffiliateStats returns affiliate click analytics.
+func (db *DB) GetAffiliateStats() (*AffiliateStats, error) {
+	s := &AffiliateStats{}
+	db.conn.QueryRow("SELECT COUNT(*) FROM affiliate_clicks").Scan(&s.TotalClicks)
+	db.conn.QueryRow("SELECT COUNT(*) FROM affiliate_clicks WHERE date(created_at) = date('now')").Scan(&s.TodayClicks)
+	db.conn.QueryRow("SELECT COUNT(*) FROM affiliate_clicks WHERE created_at >= date('now', '-7 days')").Scan(&s.WeekClicks)
+
+	rows, _ := db.conn.Query(`SELECT affiliate, COUNT(*) as c FROM affiliate_clicks GROUP BY affiliate ORDER BY c DESC`)
+	if rows != nil {
+		defer rows.Close()
+		for rows.Next() {
+			var ac AffiliateCount
+			rows.Scan(&ac.Affiliate, &ac.Count)
+			s.ByAffiliate = append(s.ByAffiliate, ac)
+		}
+	}
+
+	rows2, _ := db.conn.Query(`SELECT page, COUNT(*) as c FROM affiliate_clicks WHERE page != '' GROUP BY page ORDER BY c DESC LIMIT 10`)
+	if rows2 != nil {
+		defer rows2.Close()
+		for rows2.Next() {
+			var pc PageCount
+			rows2.Scan(&pc.Path, &pc.Count)
+			s.ByPage = append(s.ByPage, pc)
+		}
+	}
+
+	return s, nil
 }
 
 func generateToken() string {

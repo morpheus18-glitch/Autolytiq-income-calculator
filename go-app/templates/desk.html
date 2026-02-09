@@ -1,0 +1,283 @@
+{{define "desk-content"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Financial Command Center - Autolytiq",
+    "description": "Your personal finance dashboard. Track your financial health, access calculators, and build a stronger financial future."
+}
+</script>
+
+<section class="py-12 sm:py-16" x-data="deskApp()">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-3">Financial Command Center</h1>
+            <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Your personal finance dashboard. Track progress, run calculations, and take control of your money.</p>
+        </div>
+
+        <!-- First-time Guide Banner -->
+        <div x-show="showGuide" x-transition class="mb-8 p-5 rounded-2xl bg-gradient-to-r from-primary-500/10 to-blue-500/10 border border-primary-500/20 relative">
+            <button @click="dismissGuide()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h2 class="text-lg font-bold mb-3 text-primary-600 dark:text-primary-400">Welcome! Here's how to get started:</h2>
+            <div class="grid sm:grid-cols-3 gap-4">
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-bold">1</div>
+                    <div>
+                        <p class="font-medium text-sm">Calculate Your Income</p>
+                        <p class="text-xs text-gray-500">Start with the income calculator to project your annual earnings</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-bold">2</div>
+                    <div>
+                        <p class="font-medium text-sm">Build Your Budget</p>
+                        <p class="text-xs text-gray-500">Use the 50/30/20 rule to plan your spending</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center text-sm font-bold">3</div>
+                    <div>
+                        <p class="font-medium text-sm">Check Affordability</p>
+                        <p class="text-xs text-gray-500">See what you can afford for housing and auto</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Left Column: Calculators Grid -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Quick Calculator Access -->
+                <div class="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        Calculators
+                    </h2>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <a href="/calculator" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-primary-500 transition-colors">Income Calculator</p>
+                                <p class="text-xs text-gray-400">Project annual income from YTD</p>
+                            </div>
+                        </a>
+                        <a href="/smart-money" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-emerald-500 transition-colors">Budget Planner</p>
+                                <p class="text-xs text-gray-400">50/30/20 budget breakdown</p>
+                            </div>
+                        </a>
+                        <a href="/housing" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-purple-500 transition-colors">Mortgage Calculator</p>
+                                <p class="text-xs text-gray-400">Affordability + PITI breakdown</p>
+                            </div>
+                        </a>
+                        <a href="/auto" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-blue-500 transition-colors">Auto Loan</p>
+                                <p class="text-xs text-gray-400">Car payment + affordability</p>
+                            </div>
+                        </a>
+                        <a href="/taxes" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-red-500 transition-colors">Tax Estimator</p>
+                                <p class="text-xs text-gray-400">Federal + state tax breakdown</p>
+                            </div>
+                        </a>
+                        <a href="/rent-vs-buy" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-amber-500 transition-colors">Rent vs Buy</p>
+                                <p class="text-xs text-gray-400">Compare renting and buying costs</p>
+                            </div>
+                        </a>
+                        <a href="/gig-calculator" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-orange-500 transition-colors">Gig Calculator</p>
+                                <p class="text-xs text-gray-400">Freelancer & gig worker income</p>
+                            </div>
+                        </a>
+                        <a href="/inflation" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-sm group-hover:text-teal-500 transition-colors">Inflation & Compound</p>
+                                <p class="text-xs text-gray-400">Purchasing power & growth</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Pro Report Upsell -->
+                <div class="p-5 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 border border-gray-700 text-white shadow-sm">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary-500/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="font-bold text-lg">Pro Financial Report</h3>
+                                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-primary-500/30 text-primary-300">COMING SOON</span>
+                            </div>
+                            <p class="text-sm text-gray-300 mb-4">Get a comprehensive, personalized financial analysis including tax optimization strategies, investment projections, and a custom savings plan tailored to your income and goals.</p>
+                            <div class="grid sm:grid-cols-2 gap-2 mb-4">
+                                <div class="flex items-center gap-2 text-sm text-gray-300">
+                                    <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Personalized tax strategy
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-300">
+                                    <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    5-year wealth projection
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-300">
+                                    <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Custom savings roadmap
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-300">
+                                    <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Downloadable PDF report
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button disabled class="px-5 py-2.5 bg-primary-500/50 text-white text-sm font-semibold rounded-lg cursor-not-allowed">
+                                    Notify Me When Available
+                                </button>
+                                <span class="text-xs text-gray-400">Free during beta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- More Resources -->
+                <div class="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        Resources
+                    </h2>
+                    <div class="grid sm:grid-cols-3 gap-3">
+                        <a href="/blog" class="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-center">
+                            <p class="font-medium text-sm">Blog</p>
+                            <p class="text-xs text-gray-400">Financial tips & guides</p>
+                        </a>
+                        <a href="/quiz" class="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-center">
+                            <p class="font-medium text-sm">Money Quiz</p>
+                            <p class="text-xs text-gray-400">Find your financial personality</p>
+                        </a>
+                        <a href="/compare" class="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-center">
+                            <p class="font-medium text-sm">Compare Products</p>
+                            <p class="text-xs text-gray-400">Side-by-side financial tools</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Financial Health Checklist -->
+            <div class="space-y-6">
+                <!-- Progress Score -->
+                <div class="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h2 class="text-lg font-bold mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Financial Health
+                    </h2>
+                    <div class="text-center mb-4">
+                        <div class="text-4xl font-bold" :class="score >= 80 ? 'text-emerald-500' : score >= 50 ? 'text-amber-500' : 'text-red-500'" x-text="score + '%'"></div>
+                        <p class="text-xs text-gray-400 mt-1" x-text="score >= 80 ? 'Excellent progress!' : score >= 50 ? 'Getting there!' : 'Just getting started'"></p>
+                    </div>
+                    <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-1">
+                        <div class="h-full rounded-full transition-all duration-500" :class="score >= 80 ? 'bg-emerald-500' : score >= 50 ? 'bg-amber-500' : 'bg-red-500'" :style="'width: ' + score + '%'"></div>
+                    </div>
+                    <p class="text-xs text-gray-400 text-right" x-text="checkedCount + '/' + totalCount + ' completed'"></p>
+                </div>
+
+                <!-- Checklist -->
+                <div class="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        Financial Checklist
+                    </h2>
+                    <div class="space-y-2">
+                        <template x-for="(item, index) in checklist" :key="index">
+                            <label class="flex items-start gap-3 p-2.5 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" :class="item.done ? 'opacity-70' : ''">
+                                <input type="checkbox" x-model="item.done" @change="saveChecklist()" class="mt-0.5 w-4 h-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500">
+                                <div>
+                                    <p class="text-sm font-medium" :class="item.done ? 'line-through text-gray-400' : ''" x-text="item.label"></p>
+                                    <p class="text-xs text-gray-400" x-text="item.tip"></p>
+                                </div>
+                            </label>
+                        </template>
+                    </div>
+                    <button @click="resetChecklist()" class="mt-4 w-full text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Reset Checklist</button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <h2 class="text-sm font-bold mb-3 text-gray-500 uppercase tracking-wider">Quick Actions</h2>
+                    <div class="space-y-2">
+                        <a href="/calculator" class="block w-full px-4 py-2.5 text-sm font-medium text-center rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors">Calculate My Income</a>
+                        <a href="/smart-money" class="block w-full px-4 py-2.5 text-sm font-medium text-center rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Build My Budget</a>
+                        <a href="/quiz" class="block w-full px-4 py-2.5 text-sm font-medium text-center rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Take Money Quiz</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function deskApp() {
+    const defaultChecklist = [
+        { label: 'Know your annual income', tip: 'Use our income calculator', done: false },
+        { label: 'Create a monthly budget', tip: '50/30/20 rule is a great start', done: false },
+        { label: 'Build emergency fund', tip: 'Aim for 3-6 months of expenses', done: false },
+        { label: 'Check your tax burden', tip: 'Know your effective rate', done: false },
+        { label: 'Review housing costs', tip: 'Keep under 28% of income', done: false },
+        { label: 'Evaluate auto expenses', tip: 'Keep under 12% of income', done: false },
+        { label: 'Start retirement savings', tip: '401k, IRA, or Roth IRA', done: false },
+        { label: 'Review insurance coverage', tip: 'Health, auto, renter/home', done: false },
+        { label: 'Pay down high-interest debt', tip: 'Target cards over 15% APR first', done: false },
+        { label: 'Set financial goals', tip: 'Short, medium, and long-term', done: false }
+    ];
+
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem('desk_checklist')); } catch(e) {}
+    const checklist = (saved && saved.length === defaultChecklist.length) ? saved : defaultChecklist.map(i => ({...i}));
+
+    const guideShown = localStorage.getItem('desk_guide_dismissed');
+
+    return {
+        checklist: checklist,
+        showGuide: !guideShown,
+        get checkedCount() { return this.checklist.filter(i => i.done).length; },
+        get totalCount() { return this.checklist.length; },
+        get score() { return Math.round((this.checkedCount / this.totalCount) * 100); },
+        saveChecklist() { localStorage.setItem('desk_checklist', JSON.stringify(this.checklist)); },
+        resetChecklist() { this.checklist.forEach(i => i.done = false); this.saveChecklist(); },
+        dismissGuide() { this.showGuide = false; localStorage.setItem('desk_guide_dismissed', '1'); }
+    };
+}
+</script>
+{{end}}

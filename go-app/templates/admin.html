@@ -1,0 +1,293 @@
+{{define "admin-login"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Login | Autolytiq</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-950 flex items-center justify-center">
+    <div class="w-full max-w-sm p-8">
+        <div class="text-center mb-8">
+            <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Admin Access</h1>
+        </div>
+        {{if .Error}}<div class="p-3 mb-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">{{.Error}}</div>{{end}}
+        <form method="POST" action="/admin/login" class="space-y-4">
+            <input type="password" name="key" placeholder="Admin Key" required autofocus
+                class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none">
+            <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors">
+                Sign In
+            </button>
+        </form>
+    </div>
+</body>
+</html>
+{{end}}
+
+{{define "admin-dashboard"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Dashboard | Autolytiq</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>.htmx-request .htmx-indicator{display:flex!important}.htmx-indicator{display:none}</style>
+</head>
+<body class="min-h-screen bg-gray-950 text-gray-100">
+    <!-- Top Bar -->
+    <header class="sticky top-0 z-40 bg-gray-900/80 backdrop-blur-xl border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <span class="font-bold text-lg">Autolytiq Admin</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-sm text-gray-400 hover:text-white transition-colors">View Site</a>
+                <a href="/admin/export-csv" class="text-sm px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">Export CSV</a>
+                <a href="/admin/logout" class="text-sm text-red-400 hover:text-red-300 transition-colors">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800">
+                <div class="text-xs text-gray-500 uppercase tracking-wider">Total Leads</div>
+                <div class="text-2xl font-bold text-emerald-400 mt-1">{{.Stats.Total}}</div>
+            </div>
+            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800">
+                <div class="text-xs text-gray-500 uppercase tracking-wider">Subscribed</div>
+                <div class="text-2xl font-bold text-blue-400 mt-1">{{.Stats.Subscribed}}</div>
+            </div>
+            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800">
+                <div class="text-xs text-gray-500 uppercase tracking-wider">Unsubscribed</div>
+                <div class="text-2xl font-bold text-gray-400 mt-1">{{.Stats.Unsubscribed}}</div>
+            </div>
+            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800">
+                <div class="text-xs text-gray-500 uppercase tracking-wider">Today</div>
+                <div class="text-2xl font-bold text-amber-400 mt-1">{{.Stats.Today}}</div>
+            </div>
+            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800">
+                <div class="text-xs text-gray-500 uppercase tracking-wider">This Week</div>
+                <div class="text-2xl font-bold text-purple-400 mt-1">{{.Stats.ThisWeek}}</div>
+            </div>
+            <div class="bg-gray-900 rounded-xl p-4 border border-gray-800">
+                <div class="text-xs text-gray-500 uppercase tracking-wider">This Month</div>
+                <div class="text-2xl font-bold text-pink-400 mt-1">{{.Stats.ThisMonth}}</div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6 mb-8">
+            <!-- Page Views -->
+            <div class="bg-gray-900 rounded-xl p-5 border border-gray-800">
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Page Views (30d)</h3>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div><div class="text-xs text-gray-500">Total</div><div class="text-xl font-bold">{{.PVStats.TotalViews}}</div></div>
+                    <div><div class="text-xs text-gray-500">Today</div><div class="text-xl font-bold text-emerald-400">{{.PVStats.TodayViews}}</div></div>
+                    <div><div class="text-xs text-gray-500">This Week</div><div class="text-xl font-bold">{{.PVStats.WeekViews}}</div></div>
+                    <div><div class="text-xs text-gray-500">This Month</div><div class="text-xl font-bold">{{.PVStats.MonthViews}}</div></div>
+                </div>
+                {{if .PVStats.TopPages}}
+                <h4 class="text-xs text-gray-500 mb-2">Top Pages</h4>
+                <div class="space-y-1 max-h-48 overflow-y-auto">
+                    {{range .PVStats.TopPages}}
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-300 truncate mr-2">{{.Path}}</span>
+                        <span class="text-gray-500 shrink-0">{{.Count}}</span>
+                    </div>
+                    {{end}}
+                </div>
+                {{end}}
+            </div>
+
+            <!-- Affiliate Clicks -->
+            <div class="bg-gray-900 rounded-xl p-5 border border-gray-800">
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Affiliate Clicks</h3>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div><div class="text-xs text-gray-500">Total</div><div class="text-xl font-bold">{{.AffStats.TotalClicks}}</div></div>
+                    <div><div class="text-xs text-gray-500">Today</div><div class="text-xl font-bold text-emerald-400">{{.AffStats.TodayClicks}}</div></div>
+                </div>
+                {{if .AffStats.ByAffiliate}}
+                <h4 class="text-xs text-gray-500 mb-2">By Affiliate</h4>
+                <div class="space-y-1">
+                    {{range .AffStats.ByAffiliate}}
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-300">{{.Affiliate}}</span>
+                        <span class="text-gray-500">{{.Count}}</span>
+                    </div>
+                    {{end}}
+                </div>
+                {{end}}
+                {{if .AffStats.ByPage}}
+                <h4 class="text-xs text-gray-500 mt-3 mb-2">By Page</h4>
+                <div class="space-y-1">
+                    {{range .AffStats.ByPage}}
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-300 truncate mr-2">{{.Path}}</span>
+                        <span class="text-gray-500 shrink-0">{{.Count}}</span>
+                    </div>
+                    {{end}}
+                </div>
+                {{end}}
+            </div>
+
+            <!-- Lead Sources -->
+            <div class="bg-gray-900 rounded-xl p-5 border border-gray-800">
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Lead Sources</h3>
+                {{if .Stats.BySource}}
+                <div class="space-y-2">
+                    {{range .Stats.BySource}}
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-300">{{.Source}}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="w-24 bg-gray-800 rounded-full h-2">
+                                <div class="bg-emerald-500 h-2 rounded-full" style="width: {{.Count}}%"></div>
+                            </div>
+                            <span class="text-sm text-gray-500 w-8 text-right">{{.Count}}</span>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+                {{else}}
+                <p class="text-sm text-gray-500">No leads yet</p>
+                {{end}}
+            </div>
+        </div>
+
+        <!-- Leads Table -->
+        <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <h2 class="text-lg font-semibold">Leads ({{.LeadPage.Total}})</h2>
+                <form method="GET" action="/admin" class="flex items-center gap-2">
+                    <input type="text" name="q" value="{{.Search}}" placeholder="Search email or name..."
+                        class="px-3 py-2 text-sm rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:ring-2 focus:ring-emerald-500/50 outline-none w-64">
+                    <button type="submit" class="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">Search</button>
+                </form>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-400">
+                            <th class="px-4 py-3 text-left">ID</th>
+                            <th class="px-4 py-3 text-left">Email</th>
+                            <th class="px-4 py-3 text-left">Name</th>
+                            <th class="px-4 py-3 text-left">Source</th>
+                            <th class="px-4 py-3 text-left">Status</th>
+                            <th class="px-4 py-3 text-left">Created</th>
+                            <th class="px-4 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leads-tbody">
+                        {{range .LeadPage.Leads}}
+                        <tr class="border-b border-gray-800/50 hover:bg-gray-800/30" id="lead-{{.ID}}">
+                            <td class="px-4 py-3 text-gray-500">{{.ID}}</td>
+                            <td class="px-4 py-3 font-medium">{{.Email}}</td>
+                            <td class="px-4 py-3 text-gray-400">{{if .Name}}{{.Name}}{{else}}&mdash;{{end}}</td>
+                            <td class="px-4 py-3"><span class="px-2 py-0.5 text-xs rounded-full bg-gray-800 text-gray-300">{{.Source}}</span></td>
+                            <td class="px-4 py-3">
+                                {{if .Subscribed}}
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400">Subscribed</span>
+                                {{else}}
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-red-500/20 text-red-400">Unsubscribed</span>
+                                {{end}}
+                            </td>
+                            <td class="px-4 py-3 text-gray-500">{{.CreatedAt}}</td>
+                            <td class="px-4 py-3 text-right">
+                                <button hx-post="/admin/toggle/{{.ID}}" hx-target="#lead-{{.ID}}" hx-swap="outerHTML"
+                                    class="text-xs px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 transition-colors mr-1">
+                                    {{if .Subscribed}}Unsub{{else}}Resub{{end}}
+                                </button>
+                                <button hx-delete="/admin/delete/{{.ID}}" hx-target="#lead-{{.ID}}" hx-swap="outerHTML swap:200ms"
+                                    hx-confirm="Delete this lead?"
+                                    class="text-xs px-2 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors">
+                                    Del
+                                </button>
+                            </td>
+                        </tr>
+                        {{else}}
+                        <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">No leads found</td></tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {{if gt .LeadPage.TotalPages 1}}
+            <div class="px-5 py-4 border-t border-gray-800 flex items-center justify-between">
+                <span class="text-sm text-gray-500">Page {{.LeadPage.Page}} of {{.LeadPage.TotalPages}}</span>
+                <div class="flex gap-2">
+                    {{if gt .LeadPage.Page 1}}
+                    <a href="/admin?page={{.PrevPage}}{{if .Search}}&q={{.Search}}{{end}}" class="px-3 py-1.5 text-sm rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">&larr; Prev</a>
+                    {{end}}
+                    {{if lt .LeadPage.Page .LeadPage.TotalPages}}
+                    <a href="/admin?page={{.NextPage}}{{if .Search}}&q={{.Search}}{{end}}" class="px-3 py-1.5 text-sm rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">Next &rarr;</a>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+        </div>
+
+        <!-- Recent Activity -->
+        {{if .RecentLeads}}
+        <div class="mt-6 bg-gray-900 rounded-xl p-5 border border-gray-800">
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Recent Signups</h3>
+            <div class="space-y-2">
+                {{range .RecentLeads}}
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold">{{slice .Email 0 1}}</div>
+                        <div>
+                            <div class="text-gray-200">{{.Email}}</div>
+                            <div class="text-xs text-gray-500">via {{.Source}}</div>
+                        </div>
+                    </div>
+                    <span class="text-xs text-gray-500">{{.TimeAgo}}</span>
+                </div>
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+    </main>
+</body>
+</html>
+{{end}}
+
+{{define "admin-lead-row"}}
+<tr class="border-b border-gray-800/50 hover:bg-gray-800/30" id="lead-{{.ID}}">
+    <td class="px-4 py-3 text-gray-500">{{.ID}}</td>
+    <td class="px-4 py-3 font-medium">{{.Email}}</td>
+    <td class="px-4 py-3 text-gray-400">{{if .Name}}{{.Name}}{{else}}&mdash;{{end}}</td>
+    <td class="px-4 py-3"><span class="px-2 py-0.5 text-xs rounded-full bg-gray-800 text-gray-300">{{.Source}}</span></td>
+    <td class="px-4 py-3">
+        {{if .Subscribed}}
+        <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400">Subscribed</span>
+        {{else}}
+        <span class="px-2 py-0.5 text-xs rounded-full bg-red-500/20 text-red-400">Unsubscribed</span>
+        {{end}}
+    </td>
+    <td class="px-4 py-3 text-gray-500">{{.CreatedAt}}</td>
+    <td class="px-4 py-3 text-right">
+        <button hx-post="/admin/toggle/{{.ID}}" hx-target="#lead-{{.ID}}" hx-swap="outerHTML"
+            class="text-xs px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 transition-colors mr-1">
+            {{if .Subscribed}}Unsub{{else}}Resub{{end}}
+        </button>
+        <button hx-delete="/admin/delete/{{.ID}}" hx-target="#lead-{{.ID}}" hx-swap="outerHTML swap:200ms"
+            hx-confirm="Delete this lead?"
+            class="text-xs px-2 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 transition-colors">
+            Del
+        </button>
+    </td>
+</tr>
+{{end}}

@@ -54,6 +54,22 @@
         </div>
     </div>
 
+    <!-- Share & Export -->
+    <div class="flex flex-wrap items-center justify-center gap-2 pt-2 pb-1 border-t border-slate-200 dark:border-slate-700">
+        <span class="text-xs text-slate-400 mr-1">Share:</span>
+        <button onclick="navigator.clipboard.writeText('https://autolytiqs.com/share?a={{.GrossAnnual}}&m={{.GrossMonthly}}&w={{.GrossWeekly}}&d={{.GrossDaily}}').then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Link',1500)})"
+            class="px-2.5 py-1 text-xs rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Link</button>
+        <a href="https://twitter.com/intent/tweet?text=I%20projected%20my%20annual%20income%20at%20%24{{formatNumber .GrossAnnual}}%20with%20Autolytiq!&url=https://autolytiqs.com/share?a={{.GrossAnnual}}%26m={{.GrossMonthly}}" target="_blank" rel="noopener"
+            class="px-2.5 py-1 text-xs rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-500/20 transition-colors">Twitter</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://autolytiqs.com/share?a={{.GrossAnnual}}%26m={{.GrossMonthly}}" target="_blank" rel="noopener"
+            class="px-2.5 py-1 text-xs rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-600/20 transition-colors">Facebook</a>
+        <button onclick="window.print()"
+            class="px-2.5 py-1 text-xs rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-1">
+            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            PDF
+        </button>
+    </div>
+
     <!-- CTA -->
     <div class="flex flex-wrap gap-3 justify-center pt-2">
         <a href="/smart-money" class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors">

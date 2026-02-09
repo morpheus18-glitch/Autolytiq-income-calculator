@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"math"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -900,6 +901,14 @@ func (h *Handler) Share(w http.ResponseWriter, r *http.Request) {
 	}, "share-content", pageData)
 }
 
+func (h *Handler) Desk(w http.ResponseWriter, r *http.Request) {
+	h.renderPage(w, PageMeta{
+		Title:       "Financial Command Center - Free Dashboard | Autolytiq",
+		Description: "Your personal finance dashboard. Track financial health, access calculators, and build a stronger financial future with Autolytiq.",
+		Canonical:   baseURL + "/desk",
+	}, "desk-content", nil)
+}
+
 func (h *Handler) Quiz(w http.ResponseWriter, r *http.Request) {
 	q := data.QuizQuestions[0]
 	stepData := map[string]interface{}{
@@ -1058,6 +1067,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
   <url><loc>https://autolytiqs.com/quiz</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/rent-vs-buy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://autolytiqs.com/inflation</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://autolytiqs.com/desk</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/blog</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://autolytiqs.com/afford</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://autolytiqs.com/salary</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>`)
@@ -1091,6 +1101,226 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
   <url><loc>https://autolytiqs.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>`)
 	w.Write([]byte(b.String()))
+}
+
+// =============================================================================
+// Admin Handlers
+// =============================================================================
+
+func (h *Handler) adminKey() string {
+	key := os.Getenv("ADMIN_KEY")
+	if key == "" {
+		key = "autolytiq-admin-2026"
+	}
+	return key
+}
+
+func (h *Handler) isAdminAuthed(r *http.Request) bool {
+	cookie, err := r.Cookie("admin_session")
+	if err != nil {
+		return false
+	}
+	return cookie.Value == h.adminKey()
+}
+
+func (h *Handler) AdminLogin(w http.ResponseWriter, r *http.Request) {
+	if h.isAdminAuthed(r) {
+		http.Redirect(w, r, "/admin", http.StatusFound)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	h.tmpl.ExecuteTemplate(w, "admin-login", map[string]interface{}{"Error": ""})
+}
+
+func (h *Handler) AdminLoginPost(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	key := r.FormValue("key")
+	if key != h.adminKey() {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		h.tmpl.ExecuteTemplate(w, "admin-login", map[string]interface{}{"Error": "Invalid admin key"})
+		return
+	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     "admin_session",
+		Value:    key,
+		Path:     "/admin",
+		MaxAge:   86400 * 7, // 7 days
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
+	http.Redirect(w, r, "/admin", http.StatusFound)
+}
+
+func (h *Handler) AdminLogout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:   "admin_session",
+		Value:  "",
+		Path:   "/admin",
+		MaxAge: -1,
+	})
+	http.Redirect(w, r, "/admin/login", http.StatusFound)
+}
+
+func (h *Handler) AdminDashboard(w http.ResponseWriter, r *http.Request) {
+	if !h.isAdminAuthed(r) {
+		http.Redirect(w, r, "/admin/login", http.StatusFound)
+		return
+	}
+	if h.db == nil {
+		http.Error(w, "Database not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	// Parse query params
+	search := r.URL.Query().Get("q")
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	if page < 1 {
+		page = 1
+	}
+
+	// Get all data
+	stats, _ := h.db.GetStats()
+	leadPage, _ := h.db.GetLeads(page, 25, search)
+	pvStats, _ := h.db.GetPageViewStats()
+	affStats, _ := h.db.GetAffiliateStats()
+	recent, _ := h.db.RecentLeads(5)
+
+	// Add TimeAgo to recent leads
+	type recentView struct {
+		Email   string
+		Source  string
+		TimeAgo string
+	}
+	var recentViews []recentView
+	for _, l := range recent {
+		recentViews = append(recentViews, recentView{
+			Email:   l.Email,
+			Source:  l.Source,
+			TimeAgo: db.TimeAgo(l.CreatedAt),
+		})
+	}
+
+	if stats == nil {
+		stats = &db.LeadStats{}
+	}
+	if leadPage == nil {
+		leadPage = &db.LeadPage{}
+	}
+	if pvStats == nil {
+		pvStats = &db.PageViewStats{}
+	}
+	if affStats == nil {
+		affStats = &db.AffiliateStats{}
+	}
+
+	data := map[string]interface{}{
+		"Stats":       stats,
+		"LeadPage":    leadPage,
+		"PVStats":     pvStats,
+		"AffStats":    affStats,
+		"RecentLeads": recentViews,
+		"Search":      search,
+		"PrevPage":    page - 1,
+		"NextPage":    page + 1,
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	h.tmpl.ExecuteTemplate(w, "admin-dashboard", data)
+}
+
+func (h *Handler) AdminToggleLead(w http.ResponseWriter, r *http.Request) {
+	if !h.isAdminAuthed(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	id, _ := strconv.Atoi(r.PathValue("id"))
+	if h.db == nil {
+		http.Error(w, "DB unavailable", http.StatusServiceUnavailable)
+		return
+	}
+
+	newSub, err := h.db.ToggleSubscription(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	// Return updated row
+	leadPage, _ := h.db.GetLeads(1, 1000, "")
+	var lead *db.Lead
+	if leadPage != nil {
+		for _, l := range leadPage.Leads {
+			if l.ID == id {
+				lead = &l
+				lead.Subscribed = newSub
+				break
+			}
+		}
+	}
+
+	if lead == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	h.tmpl.ExecuteTemplate(w, "admin-lead-row", lead)
+}
+
+func (h *Handler) AdminDeleteLead(w http.ResponseWriter, r *http.Request) {
+	if !h.isAdminAuthed(r) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	id, _ := strconv.Atoi(r.PathValue("id"))
+	if h.db == nil {
+		http.Error(w, "DB unavailable", http.StatusServiceUnavailable)
+		return
+	}
+
+	if err := h.db.DeleteLead(id); err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	// Return empty string to remove the row
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *Handler) AdminExportCSV(w http.ResponseWriter, r *http.Request) {
+	if !h.isAdminAuthed(r) {
+		http.Redirect(w, r, "/admin/login", http.StatusFound)
+		return
+	}
+	if h.db == nil {
+		http.Error(w, "DB unavailable", http.StatusServiceUnavailable)
+		return
+	}
+
+	csv, err := h.db.ExportCSV()
+	if err != nil {
+		http.Error(w, "Export failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", "attachment; filename=leads-export.csv")
+	w.Write([]byte(csv))
+}
+
+// TrackAffiliate handles affiliate click tracking.
+func (h *Handler) TrackAffiliate(w http.ResponseWriter, r *http.Request) {
+	if h.db == nil {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	affiliate := r.URL.Query().Get("a")
+	page := r.URL.Query().Get("p")
+	ip := r.RemoteAddr
+	if affiliate != "" {
+		h.db.TrackAffiliateClick(affiliate, page, ip)
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // =============================================================================

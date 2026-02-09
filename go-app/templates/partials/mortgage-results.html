@@ -143,6 +143,22 @@
         </div>
     </div>
 
+    <!-- Share & Export -->
+    <div class="flex flex-wrap items-center justify-center gap-2 pt-3 mb-4 border-t border-gray-200 dark:border-gray-700">
+        <span class="text-xs text-gray-400 mr-1">Share:</span>
+        <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Link',1500)})"
+            class="px-2.5 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Link</button>
+        <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20mortgage%20affordability%20calculator!&url=https://autolytiqs.com/housing" target="_blank" rel="noopener"
+            class="px-2.5 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-blue-500/20 transition-colors">Twitter</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://autolytiqs.com/housing" target="_blank" rel="noopener"
+            class="px-2.5 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-blue-600/20 transition-colors">Facebook</a>
+        <button onclick="window.print()"
+            class="px-2.5 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-1">
+            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            PDF
+        </button>
+    </div>
+
     <!-- Actions -->
     <div class="flex flex-wrap gap-3 justify-center animate-fade-in-up" style="animation-delay: 0.45s">
         <a href="/smart-money" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors text-sm font-medium">
@@ -151,15 +167,6 @@
             </svg>
             Create Budget
         </a>
-        <button
-            onclick="window.print()"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
-        >
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            Print Results
-        </button>
     </div>
 </div>
 {{end}}

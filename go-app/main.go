@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/autolytiq/income-calculator/internal/db"
 	"github.com/autolytiq/income-calculator/internal/handlers"
@@ -78,6 +79,7 @@ func main() {
 	mux.HandleFunc("GET /inflation", h.Inflation)
 	mux.HandleFunc("GET /share", h.Share)
 	mux.HandleFunc("GET /quiz", h.Quiz)
+	mux.HandleFunc("GET /desk", h.Desk)
 	mux.HandleFunc("GET /best", h.BestIndex)
 	mux.HandleFunc("GET /best/{category}", h.BestCategory)
 	mux.HandleFunc("GET /compare", h.CompareIndex)
@@ -104,6 +106,16 @@ func main() {
 	mux.HandleFunc("POST /api/subscribe", h.Subscribe)
 	mux.HandleFunc("GET /unsubscribe/{token}", h.Unsubscribe)
 
+	// Admin
+	mux.HandleFunc("GET /admin", h.AdminDashboard)
+	mux.HandleFunc("GET /admin/login", h.AdminLogin)
+	mux.HandleFunc("POST /admin/login", h.AdminLoginPost)
+	mux.HandleFunc("GET /admin/logout", h.AdminLogout)
+	mux.HandleFunc("GET /admin/export-csv", h.AdminExportCSV)
+	mux.HandleFunc("POST /admin/toggle/{id}", h.AdminToggleLead)
+	mux.HandleFunc("DELETE /admin/delete/{id}", h.AdminDeleteLead)
+	mux.HandleFunc("GET /api/track-affiliate", h.TrackAffiliate)
+
 	// Health check
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -127,6 +139,19 @@ func main() {
 		middleware.Compress,
 	)
 	handler := chain(mux)
+
+	// Wrap with page view tracking
+	if database != nil {
+		inner := handler
+		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			p := r.URL.Path
+			if r.Method == "GET" && !strings.HasPrefix(p, "/static/") && !strings.HasPrefix(p, "/api/") &&
+				!strings.HasPrefix(p, "/admin") && p != "/health" && p != "/robots.txt" && p != "/sitemap.xml" {
+				go database.TrackPageView(p, r.Referer(), r.UserAgent(), r.RemoteAddr)
+			}
+			inner.ServeHTTP(w, r)
+		})
+	}
 
 	// Get port from env or default
 	port := os.Getenv("PORT")
