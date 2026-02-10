@@ -13,16 +13,32 @@
     <meta property="og:title" content="{{.Title}}">
     <meta property="og:description" content="{{.Description}}">
     {{if .Canonical}}<meta property="og:url" content="{{.Canonical}}">{{end}}
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://autolytiqs.com/static/img/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{.Title}}">
     <meta name="twitter:description" content="{{.Description}}">
+    <meta name="twitter:image" content="https://autolytiqs.com/static/img/og-default.png">
     <link rel="icon" type="image/svg+xml" href="/static/css/favicon.svg">
     <title>{{.Title}}</title>
 
-    <!-- Google Fonts: Inter + JetBrains Mono -->
+    <!-- Preconnect / DNS Prefetch -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+
+    <!-- Google Fonts: Inter + JetBrains Mono (trimmed weights) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (pre-built) + Custom CSS -->
+    <link rel="stylesheet" href="/static/css/tailwind.css">
+    <link rel="stylesheet" href="/static/css/app.css">
+
+    <style>
+        [x-cloak] { display: none !important; }
+        .htmx-request .htmx-indicator { display: flex !important; }
+        .htmx-indicator { display: none; }
+    </style>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WY4FDJP3MW"></script>
@@ -45,34 +61,6 @@
     }
     </script>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'monospace'],
-                    },
-                    colors: {
-                        primary: {
-                            50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7',
-                            400: '#34d399', 500: '#10b981', 600: '#059669', 700: '#047857',
-                            800: '#065f46', 900: '#064e3b', 950: '#022c22',
-                        }
-                    },
-                    borderRadius: {
-                        'xl': '0.75rem',
-                        '2xl': '1rem',
-                        '3xl': '1.5rem',
-                    }
-                }
-            }
-        }
-    </script>
-
     <!-- Alpine.js Collapse Plugin (must load before Alpine core) -->
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <!-- Alpine.js -->
@@ -80,22 +68,13 @@
 
     <!-- HTMX -->
     <script defer src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <script>
-    // Attach CSRF token to all HTMX requests
+    <!-- CSRF token injection for HTMX (deferred to run after HTMX loads) -->
+    <script defer>
     document.addEventListener('htmx:configRequest', function(evt) {
         var csrf = document.cookie.split('; ').find(function(c) { return c.startsWith('csrf_token='); });
         if (csrf) { evt.detail.headers['X-CSRF-Token'] = csrf.split('=')[1]; }
     });
     </script>
-
-    <!-- Custom CSS (Neon Elite Design System) -->
-    <link rel="stylesheet" href="/static/css/app.css">
-
-    <style>
-        [x-cloak] { display: none !important; }
-        .htmx-request .htmx-indicator { display: flex !important; }
-        .htmx-indicator { display: none; }
-    </style>
 </head>
 <body class="min-h-screen bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors">
     <!-- Skip Link -->
@@ -107,11 +86,26 @@
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <a href="/" class="flex items-center gap-2 group">
-                    <div class="logo-icon w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
+                    <svg class="logo-icon w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00FF7F"/>
+                                <stop offset="100%" stop-color="#00CC66"/>
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="16" cy="16" r="15" fill="#050505" stroke="url(#neonGrad)" stroke-width="1"/>
+                        <path d="M16 6L8 26h3.5l1.5-4h6l1.5 4H24L16 6zm0 6l2.2 6h-4.4L16 12z" fill="url(#neonGrad)" filter="url(#glow)"/>
+                        <rect x="11" y="21" width="2" height="3" fill="url(#neonGrad)" opacity="0.6"/>
+                        <rect x="15" y="19" width="2" height="5" fill="url(#neonGrad)" opacity="0.6"/>
+                        <rect x="19" y="20" width="2" height="4" fill="url(#neonGrad)" opacity="0.6"/>
+                    </svg>
                     <span class="logo-text font-bold text-xl">Autolytiq</span>
                 </a>
 

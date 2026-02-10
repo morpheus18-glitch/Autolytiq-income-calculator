@@ -1,0 +1,73 @@
+{{define "hourly-index-content"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Hourly to Annual Salary Converter - 2026",
+    "description": "Convert any hourly wage to annual salary. See yearly, monthly, weekly, and daily breakdowns with tax estimates for $10-$100/hour.",
+    "url": "https://autolytiqs.com/hourly"
+}
+</script>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-4">
+            <svg class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-sm font-medium text-primary-600 dark:text-primary-400">2026 Salary Data</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
+            Hourly to <span class="text-primary-500">Annual Salary</span>
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            How much is your hourly wage per year? Select your rate to see annual salary, monthly pay, weekly earnings, and take-home after taxes.
+        </p>
+    </div>
+
+    <!-- Quick answer boxes for top searches -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        {{range .Featured}}
+        <a href="/hourly/{{.Slug}}" class="glass-card rounded-xl p-5 hover:shadow-lg transition-all group text-center">
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">${{.Slug}}/hour</div>
+            <div class="text-2xl font-bold font-mono text-primary-500 mb-1">${{.AnnualFormatted}}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">per year before taxes</div>
+        </a>
+        {{end}}
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {{range .Rates}}
+        <a href="/hourly/{{.Slug}}" class="glass-card rounded-xl p-5 hover:shadow-lg transition-all group">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-bold group-hover:text-primary-500 transition-colors">${{.Slug}}/hr</h3>
+                <svg class="h-4 w-4 text-gray-400 group-hover:text-primary-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+            <div class="text-xl font-bold font-mono text-primary-500">${{.AnnualFormatted}}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Take-home: ${{.TakeHomeFormatted}}
+            </div>
+        </a>
+        {{end}}
+    </div>
+
+    <!-- SEO content -->
+    <div class="mt-12 glass-card rounded-xl p-6 prose-article max-w-4xl mx-auto">
+        <h2>How to Convert Hourly Wage to Annual Salary</h2>
+        <p>
+            To calculate your annual salary from an hourly wage, multiply your hourly rate by 2,080
+            (the number of working hours in a year: 40 hours/week &times; 52 weeks). For example,
+            $25 per hour equals $52,000 per year before taxes.
+        </p>
+        <h3>Quick Formula</h3>
+        <p class="font-mono bg-gray-50 dark:bg-gray-800 p-3 rounded-lg text-center">
+            Annual Salary = Hourly Rate &times; 2,080
+        </p>
+        <h3>Why This Matters</h3>
+        <p>
+            Knowing your annual salary helps you budget, qualify for loans, compare job offers,
+            and understand your true earning power. Our breakdowns include federal and state tax
+            estimates so you can see your actual take-home pay.
+        </p>
+    </div>
+</div>
+{{end}}

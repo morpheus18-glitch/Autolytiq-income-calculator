@@ -241,7 +241,7 @@ func (h *Handler) Taxes(w http.ResponseWriter, r *http.Request) {
 	}
 	h.renderPage(w, PageMeta{
 		Title:       "Federal & State Tax Calculator - Estimate Take-Home Pay | Autolytiq",
-		Description: "Estimate your take-home pay after federal, state, Social Security, and Medicare taxes. Free tax calculator with 2024 brackets and deductions.",
+		Description: "Estimate your take-home pay after federal, state, Social Security, and Medicare taxes. Free tax calculator with 2026 brackets and deductions.",
 		Canonical:   baseURL + "/taxes",
 	}, "taxes-content", map[string]interface{}{"NoTaxStates": noTaxStates, "TaxStates": taxStates})
 }
@@ -570,6 +570,11 @@ func (h *Handler) Salary(w http.ResponseWriter, r *http.Request) {
 		"P25Formatted":    formatMoney(s.Percentile25),
 		"P75Formatted":    formatMoney(s.Percentile75),
 		"P90Formatted":    formatMoney(s.Percentile90),
+		"Median":          s.Median,
+		"P10":             s.Percentile10,
+		"P25":             s.Percentile25,
+		"P75":             s.Percentile75,
+		"P90":             s.Percentile90,
 		"TopStates":       topStates,
 		"RelatedJobs":     relatedJobs,
 		"Afford":          afford,
@@ -580,6 +585,246 @@ func (h *Handler) Salary(w http.ResponseWriter, r *http.Request) {
 		Description: fmt.Sprintf("%s salary guide for 2026. Median salary: $%s. Entry-level to senior pay ranges, top-paying states, and job outlook.", s.Title, formatMoney(s.Median)),
 		Canonical:   baseURL + "/salary/" + s.Slug,
 	}, "salary-content", pageData)
+}
+
+// =============================================================================
+// Hourly-to-Annual Salary Pages
+// =============================================================================
+
+func (h *Handler) HourlyIndex(w http.ResponseWriter, r *http.Request) {
+	type rateView struct {
+		Slug              string
+		AnnualFormatted   string
+		TakeHomeFormatted string
+	}
+	// Featured rates (most searched)
+	featuredRates := []int{15, 20, 25, 30}
+	var featured []rateView
+	for _, rate := range featuredRates {
+		d := data.CalculateHourly(rate)
+		featured = append(featured, rateView{
+			Slug:              formatMoney(d.Rate),
+			AnnualFormatted:   formatMoney(d.Annual),
+			TakeHomeFormatted: formatMoney(d.TakeHome),
+		})
+	}
+	// All rates
+	var rates []rateView
+	for _, rate := range data.HourlyRates {
+		d := data.CalculateHourly(rate)
+		rates = append(rates, rateView{
+			Slug:              formatMoney(d.Rate),
+			AnnualFormatted:   formatMoney(d.Annual),
+			TakeHomeFormatted: formatMoney(d.TakeHome),
+		})
+	}
+	h.renderPage(w, PageMeta{
+		Title:       "Hourly to Annual Salary Calculator - Convert Any Wage | Autolytiq",
+		Description: "Convert hourly wages to yearly salary. See annual, monthly, weekly, and daily pay breakdowns with tax estimates for $10-$100/hour.",
+		Canonical:   baseURL + "/hourly",
+	}, "hourly-index-content", map[string]interface{}{"Featured": featured, "Rates": rates})
+}
+
+func (h *Handler) Hourly(w http.ResponseWriter, r *http.Request) {
+	slug := r.PathValue("rate")
+	d := data.GetHourlyBySlug(slug)
+	if d == nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	monthlyTax := d.TotalTaxes / 12
+	monthlyNet := d.MonthlyNet
+	needs := int(float64(monthlyNet) * 0.5)
+	wants := int(float64(monthlyNet) * 0.3)
+	savings := int(float64(monthlyNet) * 0.2)
+	maxRent := int(float64(d.Monthly) * 0.3)
+
+	// Nearby rates (±3, within bounds)
+	type nearbyView struct {
+		Slug            string
+		AnnualFormatted string
+	}
+	var nearby []nearbyView
+	for delta := -3; delta <= 3; delta++ {
+		nr := d.Rate + delta
+		if nr == d.Rate || nr < 10 || nr > 100 {
+			continue
+		}
+		nd := data.CalculateHourly(nr)
+		nearby = append(nearby, nearbyView{
+			Slug:            formatMoney(nd.Rate),
+			AnnualFormatted: formatMoney(nd.Annual),
+		})
+	}
+
+	effRateStr := fmt.Sprintf("%.1f", d.EffRate)
+
+	// Contextual insights that make each page unique
+	var wageTier, wageContext, taxBracket, lifestyleNote, jobExamples, vsMedian string
+	medianUS := 59228 // 2024 US median individual income
+	rate := d.Rate
+
+	switch {
+	case rate <= 12:
+		wageTier = "Near Minimum Wage"
+		wageContext = fmt.Sprintf("At $%d/hour, you're earning near the federal minimum wage ($7.25) but below the living wage in most US metro areas. Many states and cities have set higher minimums — check your local rate.", rate)
+		jobExamples = "Common jobs at this rate include fast food workers, retail cashiers, entry-level warehouse staff, and dishwashers."
+		lifestyleNote = "At this income level, housing is your biggest challenge. Look for shared housing or rent-controlled units, and take full advantage of earned income tax credits (EITC) which could add $2,000-$6,000 to your annual income at tax time."
+	case rate <= 15:
+		wageTier = "Entry Level"
+		wageContext = fmt.Sprintf("$%d/hour is a common starting wage for many service and entry-level positions. This rate is at or above the minimum wage in most states, though it may be tight in high cost-of-living cities like New York, San Francisco, or Los Angeles.", rate)
+		jobExamples = "Typical jobs at this rate include baristas, retail associates, home health aides, delivery drivers, and entry-level administrative assistants."
+		lifestyleNote = "Budget carefully with the 50/30/20 rule. Consider a roommate to keep rent under 30% of gross income, and build a starter emergency fund of $1,000 before scaling to 3 months of expenses."
+	case rate <= 20:
+		wageTier = "Above Entry Level"
+		wageContext = fmt.Sprintf("At $%d/hour, you're earning above entry-level in most markets. This is a solid stepping-stone wage — above minimum but below the national median. Many skilled trade apprentices and experienced service workers earn in this range.", rate)
+		jobExamples = "Jobs in this range include experienced retail managers, dental assistants, HVAC apprentices, bank tellers, and licensed practical nurses (LPNs)."
+		lifestyleNote = "You can afford a modest apartment on your own in most mid-size cities. Focus on building credit, starting retirement contributions (even $50/month matters at this stage), and developing skills for the $25+/hour range."
+	case rate <= 25:
+		wageTier = "Median Range"
+		wageContext = fmt.Sprintf("$%d/hour puts you right around the national median hourly wage. This is a solid middle-class income in most of the country, though it can be stretched thin in expensive coastal cities.", rate)
+		jobExamples = "Common jobs at this rate include electrician apprentices, medical billing specialists, IT help desk technicians, experienced administrative assistants, and CDL truck drivers."
+		lifestyleNote = "You can comfortably rent a one-bedroom in most US cities, own a reliable used car, and start building real savings. Max out any employer 401(k) match — it's free money."
+	case rate <= 30:
+		wageTier = "Above Median"
+		wageContext = fmt.Sprintf("At $%d/hour, you earn more than roughly 60%% of American workers. This is a comfortable wage that provides financial stability in most regions, with room for saving and discretionary spending.", rate)
+		jobExamples = "Jobs at this level include journeyman electricians, registered dental hygienists, web developers, police officers, and experienced bookkeepers."
+		lifestyleNote = "This income supports a comfortable lifestyle in most US cities. You can realistically save for a down payment on a starter home. Consider opening a Roth IRA alongside your employer retirement plan."
+	case rate <= 40:
+		wageTier = "Upper Middle"
+		wageContext = fmt.Sprintf("$%d/hour places you well above the US median income. You're in the upper-middle tier of earners, with meaningful disposable income after covering necessities.", rate)
+		jobExamples = "Typical jobs include registered nurses, experienced tradespeople (master electricians, plumbers), mid-level software developers, project managers, and paralegals at large firms."
+		lifestyleNote = "At this income, homeownership is realistic in most markets outside major metros. You can afford to fully fund a Roth IRA ($7,000/year), build a 6-month emergency fund, and start investing in a taxable brokerage account."
+	case rate <= 55:
+		wageTier = "High Earner"
+		wageContext = fmt.Sprintf("At $%d/hour, you're in approximately the top 25%% of wage earners in the United States. This income provides significant financial flexibility and the ability to build wealth through diversified saving and investing.", rate)
+		jobExamples = "Roles at this level include experienced software engineers, nurse practitioners, engineering managers, senior accountants (CPA), and mid-career marketing directors."
+		lifestyleNote = "You can comfortably afford a home in most US markets, max out retirement accounts, and build a substantial investment portfolio. Watch for lifestyle inflation — the jump from $40 to $50+/hour is where many people increase spending proportionally instead of saving the difference."
+	case rate <= 75:
+		wageTier = "Top 15%"
+		wageContext = fmt.Sprintf("$%d/hour puts you in roughly the top 15%% of individual earners in the US. This is a professional-level salary that provides significant financial security and wealth-building potential.", rate)
+		jobExamples = "Professionals at this level include senior software engineers, pharmacists, physician assistants, engineering directors, and experienced financial analysts at major firms."
+		lifestyleNote = "At this income, focus shifts from \"can I afford it\" to optimization — tax-efficient investing, backdoor Roth conversions, HSA maxing, and potentially real estate investing. Consider working with a fee-only financial advisor."
+	default:
+		wageTier = "Top 10%"
+		wageContext = fmt.Sprintf("At $%d/hour, you're in the top 10%% of individual earners in the United States. This represents a senior professional or executive-level income with substantial wealth-building capacity.", rate)
+		jobExamples = "Roles at this level include senior engineering managers, specialized physicians, partners at consulting or law firms, and C-suite executives at mid-size companies."
+		lifestyleNote = "Your primary financial focus should be tax optimization and wealth preservation. Maximize all tax-advantaged accounts, consider municipal bonds for tax-free income, and diversify across asset classes. Estate planning becomes relevant at this income level."
+	}
+
+	// Tax bracket info
+	taxable := d.Annual - 14600 // standard deduction
+	switch {
+	case taxable <= 11600:
+		taxBracket = "10%"
+	case taxable <= 47150:
+		taxBracket = "12%"
+	case taxable <= 100525:
+		taxBracket = "22%"
+	case taxable <= 191950:
+		taxBracket = "24%"
+	case taxable <= 243725:
+		taxBracket = "32%"
+	case taxable <= 609350:
+		taxBracket = "35%"
+	default:
+		taxBracket = "37%"
+	}
+
+	// Comparison to median
+	if d.Annual > medianUS {
+		pctAbove := (d.Annual - medianUS) * 100 / medianUS
+		vsMedian = fmt.Sprintf("$%d/hour ($%s/year) is %d%% above the U.S. median individual income of $59,228.", rate, formatMoney(d.Annual), pctAbove)
+	} else if d.Annual < medianUS {
+		pctBelow := (medianUS - d.Annual) * 100 / medianUS
+		vsMedian = fmt.Sprintf("$%d/hour ($%s/year) is %d%% below the U.S. median individual income of $59,228.", rate, formatMoney(d.Annual), pctBelow)
+	} else {
+		vsMedian = fmt.Sprintf("$%d/hour ($%s/year) is right at the U.S. median individual income.", rate, formatMoney(d.Annual))
+	}
+
+	// Per-rate raise/comparison insight (unique to every single rate)
+	raiseAnnual := 2080 // $1/hr raise = $2,080/year
+	raiseNote := fmt.Sprintf("A $1/hour raise to $%d/hr would add $%s to your annual income, bringing you to $%s/year.", rate+1, formatMoney(raiseAnnual), formatMoney(d.Annual+raiseAnnual))
+	if rate > 10 {
+		lossNote := fmt.Sprintf(" Conversely, at $%d/hr you'd earn $%s/year — $%s less.", rate-1, formatMoney(d.Annual-raiseAnnual), formatMoney(raiseAnnual))
+		raiseNote += lossNote
+	}
+
+	// Comparison wage table data (unique per rate: shows 5, 10, 15 more/less)
+	type wageCompare struct {
+		Rate            int
+		AnnualFormatted string
+		Diff            string
+		Dir             string
+	}
+	var comparisons []wageCompare
+	for _, delta := range []int{-10, -5, 5, 10} {
+		cr := rate + delta
+		if cr < 7 || cr > 110 || cr == rate {
+			continue
+		}
+		ca := cr * 2080
+		diff := ca - d.Annual
+		dir := "more"
+		if diff < 0 {
+			diff = -diff
+			dir = "less"
+		}
+		comparisons = append(comparisons, wageCompare{
+			Rate:            cr,
+			AnnualFormatted: formatMoney(ca),
+			Diff:            formatMoney(diff),
+			Dir:             dir,
+		})
+	}
+
+	// Part-time / overtime variants (unique per rate)
+	partTime20 := rate * 20 * 52
+	partTime30 := rate * 30 * 52
+	overtime5 := (rate*40 + int(float64(rate)*1.5)*5) * 52
+	overtime10 := (rate*40 + int(float64(rate)*1.5)*10) * 52
+
+	pageData := map[string]interface{}{
+		"Rate":                d.Rate,
+		"AnnualFormatted":     formatMoney(d.Annual),
+		"MonthlyFormatted":    formatMoney(d.Monthly),
+		"BiweeklyFormatted":   formatMoney(d.Biweekly),
+		"WeeklyFormatted":     formatMoney(d.Weekly),
+		"DailyFormatted":      formatMoney(d.Daily),
+		"TakeHomeFormatted":   formatMoney(d.TakeHome),
+		"MonthlyNetFormatted": formatMoney(monthlyNet),
+		"MonthlyTaxFormatted": formatMoney(monthlyTax),
+		"FederalTaxFormatted": formatMoney(d.FederalTax),
+		"StateTaxFormatted":   formatMoney(d.StateTax),
+		"FICAFormatted":       formatMoney(d.FICA),
+		"TotalTaxesFormatted": formatMoney(d.TotalTaxes),
+		"EffRate":             effRateStr,
+		"NeedsFormatted":      formatMoney(needs),
+		"WantsFormatted":      formatMoney(wants),
+		"SavingsFormatted":    formatMoney(savings),
+		"MaxRentFormatted":    formatMoney(maxRent),
+		"AffordSlug":          d.AffordSlug,
+		"NearbyRates":         nearby,
+		"WageTier":            wageTier,
+		"WageContext":          wageContext,
+		"TaxBracket":          taxBracket,
+		"LifestyleNote":       lifestyleNote,
+		"JobExamples":         jobExamples,
+		"VsMedian":            vsMedian,
+		"RaiseNote":           raiseNote,
+		"Comparisons":         comparisons,
+		"PartTime20":          formatMoney(partTime20),
+		"PartTime30":          formatMoney(partTime30),
+		"Overtime5":           formatMoney(overtime5),
+		"Overtime10":          formatMoney(overtime10),
+	}
+
+	h.renderPage(w, PageMeta{
+		Title:       fmt.Sprintf("$%d an Hour Is How Much a Year? (%s Annual Salary) | Autolytiq", d.Rate, "$"+formatMoney(d.Annual)),
+		Description: fmt.Sprintf("$%d per hour is $%s a year before taxes. See monthly ($%s), weekly ($%s), and daily pay plus take-home after taxes ($%s/year).", d.Rate, formatMoney(d.Annual), formatMoney(d.Monthly), formatMoney(d.Weekly), formatMoney(d.TakeHome)),
+		Canonical:   baseURL + "/hourly/" + d.Slug,
+	}, "hourly-content", pageData)
 }
 
 func (h *Handler) BestIndex(w http.ResponseWriter, r *http.Request) {
@@ -1117,47 +1362,56 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	var b strings.Builder
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`)
-	// Core pages
+
+	writeURL := func(path, priority, changefreq string) {
+		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>", path, today, changefreq, priority)
+	}
+
+	// Core tool pages (highest priority)
 	corePages := []string{
 		"/", "/calculator", "/smart-money", "/housing", "/auto",
 		"/gig-calculator", "/income-streams", "/taxes", "/free-tools",
 		"/quiz", "/rent-vs-buy", "/inflation", "/income-calculator",
 		"/desk", "/pricing", "/blog",
-		"/afford", "/salary", "/best", "/compare",
+		"/afford", "/salary", "/hourly", "/best", "/compare",
 	}
 	for _, p := range corePages {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com%s</loc><lastmod>%s</lastmod></url>", p, today)
+		writeURL(p, "1.0", "weekly")
 	}
 	// Blog articles
 	for _, slug := range data.AllBlogSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/blog/%s</loc><lastmod>%s</lastmod></url>", slug, today)
+		writeURL("/blog/"+slug, "0.7", "monthly")
+	}
+	// Hourly pages (high traffic potential)
+	for _, slug := range data.AllHourlySlugs() {
+		writeURL("/hourly/"+slug, "0.8", "monthly")
 	}
 	// Afford pages
 	for _, slug := range data.AllAffordSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/afford/%s</loc><lastmod>%s</lastmod></url>", slug, today)
+		writeURL("/afford/"+slug, "0.8", "monthly")
 	}
 	// Salary pages
 	for _, slug := range data.AllSalarySlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/salary/%s</loc><lastmod>%s</lastmod></url>", slug, today)
+		writeURL("/salary/"+slug, "0.8", "monthly")
 	}
 	// State tax pages
 	for _, slug := range data.AllStateSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/taxes/%s</loc><lastmod>%s</lastmod></url>", slug, today)
+		writeURL("/taxes/"+slug, "0.8", "monthly")
 	}
 	// Calculator variant pages
 	for _, slug := range data.AllCalcVariantSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/income-calculator/%s</loc><lastmod>%s</lastmod></url>", slug, today)
+		writeURL("/income-calculator/"+slug, "0.7", "monthly")
 	}
 	// Best/Compare pages
 	for _, slug := range data.AllCategorySlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/best/%s</loc><lastmod>%s</lastmod></url>", slug, today)
+		writeURL("/best/"+slug, "0.6", "monthly")
 	}
 	for _, slug := range data.AllVersusSlugs() {
-		fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/compare/%s</loc><lastmod>%s</lastmod></url>", slug, today)
+		writeURL("/compare/"+slug, "0.6", "monthly")
 	}
 	// Legal pages
-	fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/privacy</loc><lastmod>%s</lastmod></url>", today)
-	fmt.Fprintf(&b, "\n  <url><loc>https://autolytiqs.com/terms</loc><lastmod>%s</lastmod></url>", today)
+	writeURL("/privacy", "0.1", "yearly")
+	writeURL("/terms", "0.1", "yearly")
 	b.WriteString("\n</urlset>")
 	w.Write([]byte(b.String()))
 }

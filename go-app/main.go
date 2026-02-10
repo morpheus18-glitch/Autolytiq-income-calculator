@@ -59,9 +59,13 @@ func main() {
 	// Create router
 	mux := http.NewServeMux()
 
-	// Static files
+	// Static files with cache headers
 	staticSub, _ := fs.Sub(staticFS, "static")
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticSub))))
+	staticHandler := http.StripPrefix("/static/", http.FileServer(http.FS(staticSub)))
+	mux.Handle("GET /static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		staticHandler.ServeHTTP(w, r)
+	}))
 
 	// Pages
 	mux.HandleFunc("GET /{$}", h.Home)
@@ -93,6 +97,8 @@ func main() {
 	mux.HandleFunc("GET /afford/{salary}", h.Afford)
 	mux.HandleFunc("GET /salary", h.SalaryIndex)
 	mux.HandleFunc("GET /salary/{job}", h.Salary)
+	mux.HandleFunc("GET /hourly", h.HourlyIndex)
+	mux.HandleFunc("GET /hourly/{rate}", h.Hourly)
 	mux.HandleFunc("GET /pricing", h.Pricing)
 	mux.HandleFunc("GET /checkout/success", h.CheckoutSuccess)
 	mux.HandleFunc("GET /checkout/cancel", h.CheckoutCancel)

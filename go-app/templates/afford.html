@@ -1,4 +1,47 @@
 {{define "afford-content"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "What can I afford on a {{.Display}} salary?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "On a {{.Display}} salary ({{.TakeHomeFormatted}} after taxes), you can afford up to {{.MaxRentFormatted}}/month in rent or a {{.MaxMortgageFormatted}} home, {{.MaxCarFormatted}}/month for a car payment, and should save {{.SavingsFormatted}}/month using the 50/30/20 budget rule."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "How much rent can I afford on {{.Display}} a year?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "On a {{.Display}} annual salary, your monthly take-home is approximately {{.MonthlyNetFormatted}}. Following the 30% rule, your maximum rent should be {{.MaxRentFormatted}} per month."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "What is the monthly budget breakdown for a {{.Display}} salary?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Using the 50/30/20 rule on {{.MonthlyNetFormatted}} monthly net income: {{.NeedsFormatted}} for needs (housing, food, utilities), {{.WantsFormatted}} for wants (dining, entertainment), and {{.SavingsFormatted}} for savings and debt repayment."
+            }
+        }
+    ]
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autolytiqs.com/"},
+        {"@type": "ListItem", "position": 2, "name": "Affordability", "item": "https://autolytiqs.com/afford"},
+        {"@type": "ListItem", "position": 3, "name": "{{.Display}} Salary"}
+    ]
+}
+</script>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">

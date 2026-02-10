@@ -1,30 +1,6 @@
 {{- /* Free Tools Directory page template - extends base.html */ -}}
 
 
-{{define "title"}}Free Financial Calculators & Tools | Income Calculator{{end}}
-
-{{define "meta"}}
-<meta name="description" content="Free financial calculators and tools to help you manage your money. Income calculator, budget planner, mortgage calculator, auto loan calculator, and more. No signup required.">
-<meta name="keywords" content="free financial calculators, budget tools, income calculator, mortgage calculator, car payment calculator, personal finance tools">
-<meta property="og:title" content="Free Financial Calculators & Tools">
-<meta property="og:description" content="All the free tools you need to manage your finances. Calculate income, create budgets, plan for housing and auto purchases.">
-<meta property="og:url" content="https://autolytiqs.com/free-tools">
-{{end}}
-
-{{define "head"}}
-<style>
-    /* Tool card — unique to free-tools page */
-    .tool-card {
-        transition: all 0.2s ease;
-    }
-
-    .tool-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    }
-</style>
-{{end}}
-
 {{define "free-tools-content"}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
     <!-- Hero Section -->
@@ -312,6 +288,13 @@
             More Tools
         </h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="/hourly" class="glass-card rounded-xl p-5 tool-card group">
+                <div class="p-2 rounded-lg bg-teal-500/10 w-fit mb-3">
+                    <svg class="h-6 w-6 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <h3 class="font-semibold group-hover:text-teal-500 transition-colors mb-1">Hourly to Salary</h3>
+                <p class="text-xs text-gray-500">Convert any hourly wage to annual pay</p>
+            </a>
             <a href="/rent-vs-buy" class="glass-card rounded-xl p-5 tool-card group">
                 <div class="p-2 rounded-lg bg-indigo-500/10 w-fit mb-3">
                     <svg class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>

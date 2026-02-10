@@ -1,4 +1,36 @@
 {{define "salary-content"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Occupation",
+    "name": "{{.Title}}",
+    "description": "{{.Description}}",
+    "occupationalCategory": "{{.Category}}",
+    "qualifications": "{{.Education}}",
+    "estimatedSalary": {
+        "@type": "MonetaryAmountDistribution",
+        "name": "base",
+        "currency": "USD",
+        "unitText": "YEAR",
+        "median": {{.Median}},
+        "percentile10": {{.P10}},
+        "percentile25": {{.P25}},
+        "percentile75": {{.P75}},
+        "percentile90": {{.P90}}
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autolytiqs.com/"},
+        {"@type": "ListItem", "position": 2, "name": "Salary Guide", "item": "https://autolytiqs.com/salary"},
+        {"@type": "ListItem", "position": 3, "name": "{{.Title}}"}
+    ]
+}
+</script>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">

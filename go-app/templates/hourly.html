@@ -1,0 +1,313 @@
+{{define "hourly-content"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "${{.Rate}} an hour is how much a year?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "${{.Rate}} per hour equals ${{.AnnualFormatted}} per year before taxes, based on 40 hours per week for 52 weeks (2,080 hours). After estimated federal, state, and FICA taxes, your take-home pay would be approximately ${{.TakeHomeFormatted}} per year or ${{.MonthlyNetFormatted}} per month."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "How much is ${{.Rate}} an hour per month?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "At ${{.Rate}} per hour working full-time, you earn approximately ${{.MonthlyFormatted}} per month before taxes, and ${{.MonthlyNetFormatted}} per month after taxes."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "How much is ${{.Rate}} an hour per week?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "At ${{.Rate}} per hour working 40 hours per week, you earn ${{.WeeklyFormatted}} per week before taxes."
+            }
+        }
+    ]
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://autolytiqs.com/"},
+        {"@type": "ListItem", "position": 2, "name": "Hourly to Salary", "item": "https://autolytiqs.com/hourly"},
+        {"@type": "ListItem", "position": 3, "name": "${{.Rate}}/hour"}
+    ]
+}
+</script>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <a href="/" class="hover:text-primary-500 transition-colors">Home</a>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <a href="/hourly" class="hover:text-primary-500 transition-colors">Hourly to Salary</a>
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-medium text-slate-900 dark:text-white">${{.Rate}}/hour</span>
+    </div>
+
+    <!-- Hero -->
+    <div class="mb-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/20 mb-4">
+            <svg class="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-sm font-medium">Full-Time (40 hrs/wk)</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            ${{.Rate}} an Hour is <span class="text-primary-500">${{.AnnualFormatted}}</span> a Year
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl">
+            At ${{.Rate}} per hour working full-time (40 hours/week, 52 weeks/year), your annual salary
+            is ${{.AnnualFormatted}} before taxes. After taxes, you take home approximately ${{.TakeHomeFormatted}} per year.
+        </p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Income Breakdown -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">${{.Rate}}/Hour Income Breakdown</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                    <div class="text-center p-3 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Yearly</div>
+                        <div class="text-xl font-bold font-mono text-primary-600 dark:text-primary-400">${{.AnnualFormatted}}</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Monthly</div>
+                        <div class="text-xl font-bold font-mono">${{.MonthlyFormatted}}</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Biweekly</div>
+                        <div class="text-xl font-bold font-mono">${{.BiweeklyFormatted}}</div>
+                    </div>
+                    <div class="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Weekly</div>
+                        <div class="text-xl font-bold font-mono">${{.WeeklyFormatted}}</div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <span class="text-sm">Daily (8 hours)</span>
+                    <span class="font-mono font-medium">${{.DailyFormatted}}</span>
+                </div>
+            </div>
+
+            <!-- Tax Breakdown -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">Tax Breakdown on ${{.AnnualFormatted}}</h2>
+                <div class="space-y-3 mb-4">
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Federal Income Tax</span>
+                        <span class="font-mono font-medium text-red-500">-${{.FederalTaxFormatted}}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">State Income Tax (est. 5%)</span>
+                        <span class="font-mono font-medium text-red-500">-${{.StateTaxFormatted}}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">FICA (Social Security + Medicare)</span>
+                        <span class="font-mono font-medium text-red-500">-${{.FICAFormatted}}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                        <span class="text-sm font-medium">Total Taxes</span>
+                        <span class="font-mono font-bold text-red-600 dark:text-red-400">-${{.TotalTaxesFormatted}}</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                    <div>
+                        <span class="text-sm font-medium">Take-Home Pay</span>
+                        <div class="text-xs text-gray-500">Effective tax rate: {{.EffRate}}%</div>
+                    </div>
+                    <span class="text-2xl font-mono font-bold text-emerald-600 dark:text-emerald-400">${{.TakeHomeFormatted}}</span>
+                </div>
+            </div>
+
+            <!-- Monthly Take-Home -->
+            <div class="glass-card rounded-xl p-6">
+                <h2 class="text-lg font-bold mb-4">Monthly Take-Home at ${{.Rate}}/hr</h2>
+                <div class="grid sm:grid-cols-3 gap-4">
+                    <div class="text-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Gross Monthly</div>
+                        <div class="text-xl font-bold font-mono">${{.MonthlyFormatted}}</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Monthly Taxes</div>
+                        <div class="text-xl font-bold font-mono text-red-500">${{.MonthlyTaxFormatted}}</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Net Monthly</div>
+                        <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">${{.MonthlyNetFormatted}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wage Context -->
+            <div class="glass-card rounded-xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="px-3 py-1 text-sm font-medium rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300">{{.WageTier}}</span>
+                    <span class="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">{{.TaxBracket}} Tax Bracket</span>
+                </div>
+                <h2 class="text-lg font-bold mb-3">Where Does ${{.Rate}}/Hour Stand?</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">{{.VsMedian}}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">{{.WageContext}}</p>
+            </div>
+
+            <!-- SEO Content -->
+            <div class="glass-card rounded-xl p-6 prose-article">
+                <h2>${{.Rate}} Dollars an Hour Is How Much a Year?</h2>
+                <p>
+                    If you earn ${{.Rate}} per hour and work full-time (40 hours per week, 52 weeks per year),
+                    your annual gross salary is <strong>${{.AnnualFormatted}}</strong>. That comes out to
+                    ${{.MonthlyFormatted}} per month, ${{.BiweeklyFormatted}} every two weeks, or ${{.WeeklyFormatted}} per week.
+                </p>
+                <p>
+                    After estimated taxes (federal, state at 5%, and FICA), your take-home pay is approximately
+                    <strong>${{.TakeHomeFormatted}} per year</strong> or <strong>${{.MonthlyNetFormatted}} per month</strong>.
+                    Your effective tax rate at this income level is {{.EffRate}}%. You fall in the
+                    <strong>{{.TaxBracket}} federal tax bracket</strong> for 2026.
+                </p>
+
+                <h3>Who Earns ${{.Rate}} an Hour?</h3>
+                <p>{{.JobExamples}}</p>
+
+                <h3>Can You Live on ${{.Rate}} an Hour?</h3>
+                <p>
+                    On a take-home of ${{.MonthlyNetFormatted}} per month, financial experts recommend the 50/30/20
+                    budget: 50% for needs (${{.NeedsFormatted}}), 30% for wants (${{.WantsFormatted}}), and 20%
+                    for savings (${{.SavingsFormatted}}). Your max recommended rent is ${{.MaxRentFormatted}}/month.
+                </p>
+                <p>{{.LifestyleNote}}</p>
+
+                <h3>What If You Work Part-Time or Overtime?</h3>
+                <p>
+                    Not everyone works a standard 40-hour week at ${{.Rate}}/hour. Here's how your annual income changes:
+                </p>
+                <ul>
+                    <li><strong>20 hours/week (part-time):</strong> ${{.PartTime20}}/year</li>
+                    <li><strong>30 hours/week:</strong> ${{.PartTime30}}/year</li>
+                    <li><strong>45 hours/week (5 hrs OT at 1.5x):</strong> ${{.Overtime5}}/year</li>
+                    <li><strong>50 hours/week (10 hrs OT at 1.5x):</strong> ${{.Overtime10}}/year</li>
+                </ul>
+
+                <h3>The Impact of a Raise</h3>
+                <p>{{.RaiseNote}}</p>
+
+                {{if .Comparisons}}
+                <h3>${{.Rate}}/Hour Compared to Other Wages</h3>
+                <table>
+                    <thead><tr><th>Hourly Rate</th><th>Annual Salary</th><th>Difference</th></tr></thead>
+                    <tbody>
+                    {{range .Comparisons}}
+                        <tr><td>${{.Rate}}/hr</td><td>${{.AnnualFormatted}}</td><td>${{.Diff}} {{.Dir}}</td></tr>
+                    {{end}}
+                    </tbody>
+                </table>
+                {{end}}
+
+                <h3>How to Earn More Than ${{.Rate}}/Hour</h3>
+                <p>
+                    The fastest paths to increasing your hourly rate include: gaining certifications in your field,
+                    negotiating during annual reviews with documented achievements, switching employers (average 10-20% raise),
+                    and developing high-demand technical skills. Even a $2/hour raise adds $4,160 to your annual income.
+                </p>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Calculator CTA -->
+            <div class="glass-card rounded-xl p-6 border-2 border-primary-500/30">
+                <h3 class="font-semibold mb-2 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Custom Calculation
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Calculate with your exact hours, overtime, and state taxes.
+                </p>
+                <a href="/income-calculator/hourly" class="block w-full px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-center text-sm font-medium rounded-lg transition-all">
+                    Hourly Calculator
+                </a>
+            </div>
+
+            <!-- Budget Breakdown -->
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">50/30/20 Budget at ${{.Rate}}/hr</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Based on ${{.MonthlyNetFormatted}}/mo take-home</p>
+                <div class="space-y-2">
+                    <div class="flex justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Needs (50%)</span>
+                        <span class="font-mono font-medium">${{.NeedsFormatted}}/mo</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Wants (30%)</span>
+                        <span class="font-mono font-medium">${{.WantsFormatted}}/mo</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Savings (20%)</span>
+                        <span class="font-mono font-medium text-emerald-500">${{.SavingsFormatted}}/mo</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+                        <span class="text-sm">Max Rent (30%)</span>
+                        <span class="font-mono font-medium text-primary-500">${{.MaxRentFormatted}}/mo</span>
+                    </div>
+                </div>
+                {{if .AffordSlug}}
+                <a href="/afford/{{.AffordSlug}}" class="block w-full mt-3 px-4 py-2 border border-gray-200 dark:border-gray-700 text-center text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    Full Affordability Breakdown
+                </a>
+                {{end}}
+            </div>
+
+            <!-- Tool Links -->
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">Useful Tools</h3>
+                <div class="space-y-2">
+                    <a href="/smart-money" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="text-sm font-medium">Budget Planner</span>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/housing" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="text-sm font-medium">Housing Calculator</span>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/taxes" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="text-sm font-medium">Tax Estimator</span>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="/calculator" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <span class="text-sm font-medium">Income Calculator</span>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Nearby Rates -->
+            {{if .NearbyRates}}
+            <div class="glass-card rounded-xl p-6">
+                <h3 class="text-sm font-semibold mb-3">Nearby Hourly Rates</h3>
+                <div class="space-y-2">
+                    {{range .NearbyRates}}
+                    <a href="/hourly/{{.Slug}}" class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <div>
+                            <div class="text-sm font-medium">${{.Slug}}/hour</div>
+                            <div class="text-xs text-gray-500">${{.AnnualFormatted}}/year</div>
+                        </div>
+                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</div>
+{{end}}

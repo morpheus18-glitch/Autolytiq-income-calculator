@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="neon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00FF7F"/>
+      <stop offset="100%" stop-color="#00CC66"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Subtle grid lines -->
+  <g opacity="0.05" stroke="#00FF7F">
+    <line x1="0" y1="100" x2="1200" y2="100" stroke-width="1"/>
+    <line x1="0" y1="200" x2="1200" y2="200" stroke-width="1"/>
+    <line x1="0" y1="300" x2="1200" y2="300" stroke-width="1"/>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke-width="1"/>
+    <line x1="0" y1="500" x2="1200" y2="500" stroke-width="1"/>
+    <line x1="200" y1="0" x2="200" y2="630" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="630" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke-width="1"/>
+    <line x1="800" y1="0" x2="800" y2="630" stroke-width="1"/>
+    <line x1="1000" y1="0" x2="1000" y2="630" stroke-width="1"/>
+  </g>
+  <!-- Logo circle -->
+  <circle cx="600" cy="200" r="60" fill="#050505" stroke="url(#neon)" stroke-width="2"/>
+  <path d="M600 160L580 240h8l5-14h14l5 14h8L600 160zm0 20l7 20h-14l7-20z" fill="url(#neon)" filter="url(#glow)"/>
+  <rect x="584" y="228" width="6" height="8" fill="url(#neon)" opacity="0.6"/>
+  <rect x="597" y="222" width="6" height="14" fill="url(#neon)" opacity="0.6"/>
+  <rect x="610" y="225" width="6" height="11" fill="url(#neon)" opacity="0.6"/>
+  <!-- Title -->
+  <text x="600" y="330" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="bold" fill="white" text-anchor="middle">Autolytiq</text>
+  <!-- Subtitle -->
+  <text x="600" y="385" font-family="system-ui, -apple-system, sans-serif" font-size="26" fill="#94a3b8" text-anchor="middle">Free Financial Calculators</text>
+  <!-- Feature pills -->
+  <g font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#00FF7F" text-anchor="middle">
+    <rect x="250" y="430" width="160" height="36" rx="18" fill="none" stroke="#00FF7F" stroke-width="1" opacity="0.4"/>
+    <text x="330" y="454">Income</text>
+    <rect x="440" y="430" width="160" height="36" rx="18" fill="none" stroke="#00FF7F" stroke-width="1" opacity="0.4"/>
+    <text x="520" y="454">Budget</text>
+    <rect x="630" y="430" width="160" height="36" rx="18" fill="none" stroke="#00FF7F" stroke-width="1" opacity="0.4"/>
+    <text x="710" y="454">Housing</text>
+    <rect x="820" y="430" width="160" height="36" rx="18" fill="none" stroke="#00FF7F" stroke-width="1" opacity="0.4"/>
+    <text x="900" y="454">Taxes</text>
+  </g>
+  <!-- URL -->
+  <text x="600" y="560" font-family="ui-monospace, monospace" font-size="20" fill="#64748b" text-anchor="middle">autolytiqs.com</text>
+  <!-- Bottom accent line -->
+  <rect x="0" y="620" width="1200" height="10" fill="url(#neon)" opacity="0.3"/>
+</svg>
