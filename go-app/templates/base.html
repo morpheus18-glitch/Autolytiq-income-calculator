@@ -68,11 +68,29 @@
 
     <!-- HTMX -->
     <script defer src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <!-- CSRF token injection for HTMX (deferred to run after HTMX loads) -->
-    <script defer>
+    <!-- HTMX wiring: CSRF header injection + visible error feedback on failure -->
+    <script>
     document.addEventListener('htmx:configRequest', function(evt) {
         var csrf = document.cookie.split('; ').find(function(c) { return c.startsWith('csrf_token='); });
         if (csrf) { evt.detail.headers['X-CSRF-Token'] = csrf.split('=')[1]; }
+    });
+    document.addEventListener('htmx:responseError', function(evt) {
+        var target = evt.detail.target;
+        if (!target) return;
+        var status = evt.detail.xhr ? evt.detail.xhr.status : 0;
+        var body = (evt.detail.xhr && evt.detail.xhr.responseText) || '';
+        target.innerHTML = '<div class="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-300">' +
+            '<strong>Something went wrong.</strong> ' +
+            (status ? ('Server returned ' + status + '. ') : '') +
+            'Please try again. If this keeps happening, refresh the page.' +
+            '</div>';
+    });
+    document.addEventListener('htmx:sendError', function(evt) {
+        var target = evt.detail.target;
+        if (!target) return;
+        target.innerHTML = '<div class="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-300">' +
+            '<strong>Network error.</strong> Check your connection and try again.' +
+            '</div>';
     });
     </script>
 </head>

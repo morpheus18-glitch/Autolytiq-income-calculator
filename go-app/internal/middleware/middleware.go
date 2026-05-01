@@ -223,12 +223,14 @@ func extractIP(r *http.Request) string {
 // CSRFToken generates and validates CSRF tokens using double-submit cookies.
 // It sets a csrf_token cookie on GET requests and validates the token on POST
 // requests by comparing the cookie value with the X-CSRF-Token header or
-// _csrf form field. Webhook endpoints are exempted since they use their own
-// signature verification.
+// _csrf form field. Webhook and stateless calculator endpoints are exempted.
 func CSRFToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Skip CSRF for webhook endpoints (they verify signatures independently)
-		if strings.HasPrefix(r.URL.Path, "/api/webhooks/") {
+		// and for stateless calculator endpoints (pure computation, no side effects)
+		if strings.HasPrefix(r.URL.Path, "/api/webhooks/") ||
+			strings.HasPrefix(r.URL.Path, "/api/calculate-") ||
+			r.URL.Path == "/api/quiz-answer" {
 			next.ServeHTTP(w, r)
 			return
 		}
